@@ -1,0 +1,73 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: "Satoshi";
+  src: url("/assets/CabinetGrotesk.ttf");
+  font-display: swap;
+}
+
+:root {
+  font-family: "Satoshi";
+  -webkit-font-smoothing: antialiased;
+  /* font-synthesis: none */
+}
+
+body {
+  @apply bg-background text-white
+}
+
+::-webkit-scrollbar {
+  @apply w-[5px] h-1.5 cursor-pointer
+}
+  
+::-webkit-scrollbar-thumb {
+  @apply bg-[#1D2535] rounded-md
+}
+
+::-webkit-scrollbar-corner {
+  @apply bg-transparent
+}
+
+@keyframes scale-x-0 {
+  0% {
+    transform: scaleX(1);
+  }
+  100% {
+    transform: scaleX(0);
+  }
+}
+
+@layer utilities {
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  .no-scrollbar::-webkit-scrollbar {
+      display: none;
+  }
+ /* Hide scrollbar for IE, Edge and Firefox */
+  .no-scrollbar {
+      -ms-overflow-style: none;  /* IE and Edge */
+      scrollbar-width: none;  /* Firefox */
+}
+}
+
+.cart-item {
+  transition: height 0.3s ease;
+  overflow: hidden; /* Ensures content doesn't spill out during the transition */
+}
+
+@keyframes pop {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.35);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.animate-pop {
+  animation: pop 300ms ease-out;
+}

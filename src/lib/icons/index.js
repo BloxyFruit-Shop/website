@@ -1,0 +1,43 @@
+// Main icons
+export { default as ArrowDown } from './arrow-down.svelte'
+export { default as ArrowRight } from './arrow-right.svelte'
+export { default as Basket } from './basket.svelte'
+export { default as CaretDown } from './caret-down.svelte'
+export { default as Check } from './check.svelte'
+export { default as CircleInfo } from './circle-info.svelte'
+export { default as CirlceIlustration } from './cirlce-ilustration.svelte'
+export { default as Close } from './close.svelte'
+export { default as Discord } from './discord.svelte'
+export { default as EyeOff } from './eye-off.svelte'
+export { default as Eye } from './eye.svelte'
+export { default as Filters } from './filters.svelte'
+export { default as Fire } from './fire.svelte'
+export { default as Games } from './games.svelte'
+export { default as Google } from './google.svelte'
+export { default as Label } from './label.svelte'
+export { default as Logo } from './logo.svelte'
+export { default as Logout } from './logout.svelte'
+export { default as Minus } from './minus.svelte'
+export { default as OptionsFill } from './options-fill.svelte'
+export { default as PhosphorFlame } from './phosphor-flame.svelte'
+export { default as Plus } from './plus.svelte'
+export { default as PriceTag } from './price-tag.svelte'
+export { default as RoundedArrowRight } from './rounded-arrow-right.svelte'
+export { default as ShoppingCart } from './shopping-cart.svelte'
+export { default as Support } from './support.svelte'
+export { default as Tag } from './tag.svelte'
+export { default as User } from './user.svelte'
+export { default as Youtube } from './youtube.svelte'
+export { default as Trustpilot } from "./trustpilot.svelte"
+export { default as Options } from "./options.svelte"
+export { default as Search } from "./search.svelte"
+export { default as Account } from "./account.svelte"
+export { default as History } from "./history.svelte"
+export { default as Password } from "./password.svelte"
+
+// Payment method icons
+export { default as Amex } from './payment-methods/amex.svelte'
+export { default as Maestro } from './payment-methods/maestro.svelte'
+export { default as Mastercard } from './payment-methods/mastercard.svelte'
+export { default as Paypal } from './payment-methods/paypal.svelte'
+export { default as Visa } from './payment-methods/visa.svelte'

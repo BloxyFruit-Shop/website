@@ -1,0 +1,43 @@
+{
+	"name": "bloxyfruit",
+	"version": "0.0.1",
+	"private": true,
+	"scripts": {
+		"dev": "vite dev",
+		"build": "vite build",
+		"preview": "vite preview"
+	},
+	"devDependencies": {
+		"@sveltejs/adapter-auto": "^3.0.0",
+		"@sveltejs/kit": "^2.0.0",
+		"@sveltejs/vite-plugin-svelte": "^3.0.0",
+		"autoprefixer": "^10.4.20",
+		"postcss": "^8.4.47",
+		"svelte": "^4.2.7",
+		"tailwindcss": "^3.4.11",
+		"vite": "^5.0.3"
+	},
+	"type": "module",
+	"dependencies": {
+		"@shopify/shopify-api": "^11.6.0",
+		"@sveltejs/adapter-node": "^5.2.2",
+		"@tailwindcss/container-queries": "^0.1.1",
+		"bcrypt": "^5.1.1",
+		"bits-ui": "^0.21.15",
+		"clsx": "^2.1.1",
+		"date-fns": "^4.1.0",
+		"express": "^4.21.0",
+		"js-cookie": "^3.0.5",
+		"mongoose": "^8.7.2",
+		"numeral": "^2.0.6",
+		"pluralize": "^8.0.0",
+		"svelte-motion": "^0.12.2",
+		"svelte-ripple-action": "^1.0.6",
+		"sveltekit-superforms": "^2.20.0",
+		"tailwind-merge": "^2.5.2",
+		"tailwind-scrollbar-utilities": "^0.2.0",
+		"tailwindcss-animate": "^1.0.7",
+		"valibot": "^0.42.1",
+		"zeptomail": "^6.0.0"
+	}
+}
