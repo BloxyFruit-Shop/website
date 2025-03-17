@@ -156,6 +156,7 @@
 
   let submittingCheckout
   let multipleGamesOpen
+  let permanentFruitPresent
   let mobileCartOpen, mobileFiltersOpen
   let desktopCartOpen
   let askBeforeBuyModal
@@ -219,7 +220,7 @@
   <meta name="keywords" content="blox fruits, cheap blox fruits, blox fruits items, buy blox fruits, fast blox fruits delivery, anime defenders, anime defenders items, cheap anime defenders, buy anime defenders, the strongest battlegrounds, battlegrounds gamepasses, cheap gamepasses, Roblox items, buy Roblox items, fast delivery Roblox, online Roblox shop, game items, cheap game items, Roblox gamepasses, buy gamepasses, murder mystery 2, anime vanguards, adopt me" />
 </svelte:head>
 
-<img src="/assets/background.png" class="select-none pointer-events-none size-full absolute z-20" />
+<img src="/assets/background.png" class="absolute z-20 pointer-events-none select-none size-full" />
 
 <MobileNavbar>
   <button 
@@ -239,7 +240,7 @@
 </MobileNavbar>
 
 <div 
-  class="hidden md:flex h-11 items-center justify-center gap-3" 
+  class="items-center justify-center hidden gap-3 md:flex h-11" 
   style="background:
     radial-gradient(25.7% 199.93% at 100% 50%, rgba(68, 134, 183, 0.69) 0%, rgba(92, 181, 246, 0) 100%),
     radial-gradient(25.73% 200.13% at 0% 50%, rgba(68, 134, 183, 0.69) 0%, rgba(92, 181, 246, 0) 100%),
@@ -247,25 +248,25 @@
     linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
     url(/assets/landing-background.webp)"
 >
-  <div class="flex-1 flex justify-end gap-3">
+  <div class="flex justify-end flex-1 gap-3">
     <PriceTag class="size-5" />
-    <p class="font-semibold text-sm">Spend {formatCurrency(100 * $currencyRateStore, $currencyStore)} — Get <span class="text-[#3BA4F0]">{formatCurrency(10 * $currencyRateStore, $currencyStore)}</span> Off!</p>
+    <p class="text-sm font-semibold">Spend {formatCurrency(100 * $currencyRateStore, $currencyStore)} — Get <span class="text-[#3BA4F0]">{formatCurrency(10 * $currencyRateStore, $currencyStore)}</span> Off!</p>
   </div>
   <div class="w-[300px] h-2.5 bg-[#1D2535] rounded-xl">
     <div class="bg-gradient-to-r from-[#3BA4F0] to-[#1B92E9] rounded-full h-2.5 origin-left transition-[width] ease-out animate-scale-x" style="width: {Math.min(cartPrice / 100 * 100, 100)}%"></div>
   </div>
-  <div class="flex-1 flex justify-start gap-3">
+  <div class="flex justify-start flex-1 gap-3">
     {#if cartPrice < 100}
-      <p class="font-semibold text-sm">Add <span class="bg-[#5CB5F6]/25 text-[#C8E8FF] py-1 px-1.5 rounded-md">{formatCurrency((100 - cartPrice) * $currencyRateStore, $currencyStore)}</span>  more to unlock discount!</p>
+      <p class="text-sm font-semibold">Add <span class="bg-[#5CB5F6]/25 text-[#C8E8FF] py-1 px-1.5 rounded-md">{formatCurrency((100 - cartPrice) * $currencyRateStore, $currencyStore)}</span>  more to unlock discount!</p>
     {:else}
-      <p class="font-semibold text-sm">Discount applied!</p>
+      <p class="text-sm font-semibold">Discount applied!</p>
     {/if}
-    <PriceTag class="size-5 rotate-90" />
+    <PriceTag class="rotate-90 size-5" />
   </div>
 </div>
 
 <header class="px-4 sm:px-6 md:px-10 flex justify-center items-center w-full h-[80px] bg-[#121620] border-b-2 border-[#1D2535]">
-  <div class="w-full flex items-center justify-between">
+  <div class="flex items-center justify-between w-full">
     <div class="flex items-center gap-12">
       <a href="/">
         <Logo class="w-[110px] md:w-[132px]" />
@@ -315,12 +316,12 @@
                       ${active ? 'bg-white/5' : ''}
                     `}
                   >
-                    <div class="flex-1 flex items-center">
+                    <div class="flex items-center flex-1">
                       <div class="size-10 p-1.5 mr-2 bg-white/5 rounded-md">
                         {#if i > 15}
-                          <img use:lazyLoad={{ src: result.image }} class="opacity-0 rounded-md size-full object-contain object-center" />
+                          <img use:lazyLoad={{ src: result.image }} class="object-contain object-center rounded-md opacity-0 size-full" />
                         {:else}
-                          <img src={result.image} class="rounded-md size-full object-contain object-center" />
+                          <img src={result.image} class="object-contain object-center rounded-md size-full" />
                         {/if}
                       </div>
                       <div class="flex flex-col gap-1">
@@ -337,7 +338,7 @@
       </Combobox.Root>
 
       <div class="items-center gap-4 flex {searchExpanded ? "hidden @[760px]:flex" : ""}">
-        <div class="hidden md:flex gap-1">
+        <div class="hidden gap-1 md:flex">
           <div class="bg-[#1D2535] rounded-l-lg flex items-center px-3 font-semibold text-sm">
             <p class="text-[#809BB5] mr-2">({$cart?.products?.length || 0} items)</p>
             <p>{formatCurrency(cartPrice * $currencyRateStore, $currencyStore)}</p>
@@ -358,16 +359,16 @@
 </header>
 
 <header class="px-4 sm:px-6 md:px-10 flex justify-center items-center w-full h-[80px] bg-[#121620] border-b-2 border-[#1D2535] md:hidden">
-  <div class="w-full flex items-center gap-4">
+  <div class="flex items-center w-full gap-4">
     <Select.Root items={games} bind:selected={game}>
       <Select.Trigger
         class="bg-[#1D2535] rounded-lg flex items-center px-2.5 font-semibold text-sm h-[46px] group"
       >
-        <div class="size-6 md:size-7 pointer-events-none">
-          <img src="/assets/games/{games[game.value].internalName}-logo.webp" class="rounded-md size-full object-contain object-center" />
+        <div class="pointer-events-none size-6 md:size-7">
+          <img src="/assets/games/{games[game.value].internalName}-logo.webp" class="object-contain object-center rounded-md size-full" />
         </div>
-        <p class="font-semibold ml-2 pointer-events-none">{games[game.value].shortName}</p>
-        <ArrowDown class="size-5 ml-1 transition-transform group-aria-expanded:rotate-180" strokeWidth={2} />
+        <p class="ml-2 font-semibold pointer-events-none">{games[game.value].shortName}</p>
+        <ArrowDown class="ml-1 transition-transform size-5 group-aria-expanded:rotate-180" strokeWidth={2} />
       </Select.Trigger>
       <Select.Content
         class="!w-[190px] rounded-lg bg-[#1D2535] px-0.5 py-[3px] shadow-popover outline-none z-50"
@@ -385,7 +386,7 @@
             >
               <a href={`/store/${inGame.internalName}`} class="flex items-center justify-center w-full py-1.5 px-2.5">
                 <div class="size-6 mr-1.5">
-                  <img src="/assets/games/{inGame.internalName}-logo.webp" alt="Game Icon" class="rounded-md size-full object-contain object-center" />
+                  <img src="/assets/games/{inGame.internalName}-logo.webp" alt="Game Icon" class="object-contain object-center rounded-md size-full" />
                 </div>
                 <p class="font-semibold">{inGame.name}</p>
                 <Select.ItemIndicator class="ml-auto" asChild={false}>
@@ -419,9 +420,9 @@
       w-[280px] lg:w-[320px] bg-[#121620] p-4 flex flex-col transition-transform duration-300 md:duration-0 overflow-y-auto
     "
   >
-    <div class="flex items-center md:hidden mb-4">
+    <div class="flex items-center mb-4 md:hidden">
       <Options class="size-6 mr-1.5" />
-      <p class="font-semibold text-lg">Filters</p>
+      <p class="text-lg font-semibold">Filters</p>
       <Button icon size="xsmall" variant="text" color="white" wrapperClass="md:hidden ml-auto" onClick={() => mobileFiltersOpen = false}>
         <Close class="size-[22px]" strokeWidth={2} />
       </Button>
@@ -433,10 +434,10 @@
           <Accordion.Trigger
             class="flex flex-col text-[#809BB5] [&[data-state=open]>div>svg:last-of-type]:rotate-180 w-full pb-4"
           >
-            <div class="flex items-center gap-2 w-full">
+            <div class="flex items-center w-full gap-2">
               <Games class="size-4" />
-              <p class="font-bold text-sm">Games</p>
-              <ArrowDown class="size-5 ml-auto transition-transform" />
+              <p class="text-sm font-bold">Games</p>
+              <ArrowDown class="ml-auto transition-transform size-5" />
             </div>
             <div class="w-full h-[3px] bg-[#1D2535] mt-4 rounded-full"></div>
           </Accordion.Trigger>
@@ -449,12 +450,12 @@
           {#each Object.values(games) as game, i}
             <Button variant="bordered" color="game" to={`/store/${game.internalName}`} wrapperClass="w-full" class="w-full {$page.url.pathname == `/store/${game.internalName}` ? "bg-[#1D2535] border-[#1D2535]" : "bg-[#1D2535]/25 border-[#1D2535]/55"}" insideDivClass="w-full justify-between">
                 <div class="size-7 mr-1.5">
-                  <img src="/assets/games/{game.internalName}-logo.webp" class="rounded-lg size-full object-contain object-center" />
+                  <img src="/assets/games/{game.internalName}-logo.webp" class="object-contain object-center rounded-lg size-full" />
                 </div>
                 {game.name}
               <div class="rounded-lg size-7 flex items-center justify-center ml-auto {$page.url.pathname == `/store/${game.internalName}` ? "bg-[#3BA4F0]" : "bg-[#1D2535]"}">
                 {#if $page.url.pathname == `/store/${game.internalName}`}
-                  <div class="rounded-full size-2 bg-white"></div>
+                  <div class="bg-white rounded-full size-2"></div>
                 {:else}
                   <ArrowRight class="size-[14px] text-white" />
                 {/if}
@@ -465,9 +466,9 @@
       </Accordion.Item>
 
       <div class="flex flex-col text-[#809BB5] mb-4">
-        <div class="flex items-center gap-2 w-full">
+        <div class="flex items-center w-full gap-2">
           <OptionsFill class="size-[22px]" />
-          <p class="font-bold text-sm">Filter Items</p>
+          <p class="text-sm font-bold">Filter Items</p>
           <button
             class="ml-auto text-[#3BA4F0] font-medium text-sm underline decoration-[#3BA4F0] underline-offset-2"
             on:click={() => {
@@ -491,9 +492,9 @@
           <Accordion.Trigger
             class="flex flex-col text-[#809BB5] [&[data-state=open]>div>svg:last-of-type]:rotate-180 w-full p-3.5"
           >
-            <div class="flex items-center gap-2 w-full">
-              <p class="font-bold text-sm">Price Range</p>
-              <ArrowDown class="size-5 ml-auto transition-transform" />
+            <div class="flex items-center w-full gap-2">
+              <p class="text-sm font-bold">Price Range</p>
+              <ArrowDown class="ml-auto transition-transform size-5" />
             </div>
           </Accordion.Trigger>
         </Accordion.Header>
@@ -505,7 +506,7 @@
          <Slider.Root
             bind:value={priceRange}
             let:thumbs
-            class="relative flex w-full touch-none select-none items-center mt-1"
+            class="relative flex items-center w-full mt-1 select-none touch-none"
           >
             <span
               class="relative h-2 w-full grow overflow-hidden rounded-full bg-[#1D2535]"
@@ -519,15 +520,15 @@
               />
             {/each}
           </Slider.Root>
-          <div class="flex justify-between items-center mt-2 gap-2">
+          <div class="flex items-center justify-between gap-2 mt-2">
             <div class="flex items-center w-full bg-[#1D2535] py-2 px-2.5 gap-1.5 rounded-md">
               <p class="font-semibold">{currency.symbol}</p>
-              <p class="flex-1 text-right font-medium">{formatNumber(priceRange[0] * $currencyRateStore)}</p>
+              <p class="flex-1 font-medium text-right">{formatNumber(priceRange[0] * $currencyRateStore)}</p>
             </div>
             <div class="w-12 h-0 border-b-2 border-[#1D2535]"></div>
             <div class="flex items-center w-full bg-[#1D2535] py-2 px-2.5 gap-1.5 rounded-md">
               <p class="font-semibold">{currency.symbol}</p>
-              <p class="flex-1 text-right font-medium">{formatNumber(priceRange[1] * $currencyRateStore)}</p>
+              <p class="flex-1 font-medium text-right">{formatNumber(priceRange[1] * $currencyRateStore)}</p>
             </div>
           </div>
         </Accordion.Content>
@@ -539,9 +540,9 @@
           <Accordion.Trigger
             class="flex flex-col text-[#809BB5] [&[data-state=open]>div>svg:last-of-type]:rotate-180 w-full"
           >
-            <div class="flex items-center gap-2 w-full">
-              <p class="font-bold text-sm">Rarities</p>
-              <ArrowDown class="size-5 ml-auto transition-transform" />
+            <div class="flex items-center w-full gap-2">
+              <p class="text-sm font-bold">Rarities</p>
+              <ArrowDown class="ml-auto transition-transform size-5" />
             </div>
           </Accordion.Trigger>
         </Accordion.Header>
@@ -568,11 +569,11 @@
   </div>
 
   <!-- Page Content  -->
-  <div class="flex-1 flex flex-col overflow-hidden relative">
+  <div class="relative flex flex-col flex-1 overflow-hidden">
     <div class="p-6">
       <div class="bg-[#1D2535]/35 rounded-lg gap-5 flex items-center overflow-x-auto">
         <div 
-          class="flex items-center p-3 md:p-4 relative gap-5 flex-1"
+          class="relative flex items-center flex-1 gap-5 p-3 md:p-4"
           style="min-width: {categories.reduce((acc, item) => acc + item.length * 9.5 + 25, 200 + 50 + 25 + 25)}px"
         >
           <div class="opacity-0 w-16 h-1 rounded-t-xl absolute bg-[#3BA4F0] bottom-0 shadow-[0_-5px_28px_#3BA4F0] transition-[transform,width,opacity]" bind:this={categorySelector}></div>
@@ -598,14 +599,14 @@
           <div class="flex gap-1 ml-auto">
             <div class="bg-[#1D2535] rounded-l-lg text-[#809BB5] flex items-center p-2.5">
               <Filters class="size-[14px] mr-1.5" />
-              <p class="font-semibold text-sm">Sort By:</p>
+              <p class="text-sm font-semibold">Sort By:</p>
             </div>
             <SortBySelector bind:sortBy />
           </div>
         </div>
       </div>
     </div>
-    <div bind:this={scrollContainer} class="overflow-y-auto flex-1 px-6 pb-6 flex flex-col" on:scroll={handleCategorySelector}>
+    <div bind:this={scrollContainer} class="flex flex-col flex-1 px-6 pb-6 overflow-y-auto" on:scroll={handleCategorySelector}>
       {#each categories as category}
         {@const products = filteredCategories[category]}
         {#if products?.length > 0}
@@ -614,7 +615,7 @@
               {#if category == "Best Sellers"}
                 <Fire class="text-[#3BA4F0] size-8" />
               {/if}
-              <p class="text-xl font-semibold py-4" id="{category}-category">{pluralize(category, 2)}</p>
+              <p class="py-4 text-xl font-semibold" id="{category}-category">{pluralize(category, 2)}</p>
             </div>
             <div class="flex-1 bg-[#131A28] rounded-full h-1"></div>
           </div>
@@ -634,6 +635,11 @@
                   if($cart.game && $cart?.game !== data.game.internalName && $cart?.products?.length > 0) {
                     multipleGamesOpen = true
                     return
+                  }
+
+                  if ($cart.game == "blox-fruits" && $cart?.products?.length > 0 && ($cart?.products?.some(item => item.category === "Physical Fruit" || category === "Physical Fruit"))) {
+                    permanentFruitPresent = true;
+                    return;
                   }
 
                   if(askBeforeBuy) {
@@ -660,6 +666,7 @@
                   } else {
                     newProducts.push({
                       variantId,
+                      category,
                       amount: 1
                     })
                   }
@@ -691,7 +698,7 @@
   >
     <div class="flex items-center">
       <ShoppingCart class="size-6 mr-1.5" />
-      <p class="font-semibold text-lg">Cart</p>
+      <p class="text-lg font-semibold">Cart</p>
       <Button icon size="xsmall" variant="text" color="white" wrapperClass="md:hidden ml-auto" onClick={() => mobileCartOpen = false}>
         <Close class="size-[22px]" strokeWidth={2} />
       </Button>
@@ -703,17 +710,17 @@
 
     <div class="relative flex-1 py-4 overflow-hidden">
       {#if cartProducts?.length == 0}
-        <div class="flex flex-col items-center justify-center gap-1 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full" in:fly={{ y: 20 }} out:blur={{ duration: 200 }}>
+        <div class="absolute flex flex-col items-center justify-center w-full gap-1 -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2" in:fly={{ y: 20 }} out:blur={{ duration: 200 }}>
           <div class="relative">
-            <Basket class="size-12 text-white" />
+            <Basket class="text-white size-12" />
             <p class="absolute top-0 right-0 size-5 text-sm rounded-full bg-[#3BA4F0] font-semibold flex items-center justify-center">0</p>
           </div>
-          <p class="text-center font-bold text-xl leading-none mt-2">Your cart is empty</p>
+          <p class="mt-2 text-xl font-bold leading-none text-center">Your cart is empty</p>
           <p class="text-center text-[15px] font-medium text-[#809BB5] leading-none mt-0.5">Start browsing for items now!</p>
         </div>
       {/if}
 
-      <div class="flex flex-col h-full space-y-3 overflow-y-auto no-scrollbar relative" on:scroll={(e) => {
+      <div class="relative flex flex-col h-full space-y-3 overflow-y-auto no-scrollbar" on:scroll={(e) => {
         cartIsAtTop = e.target.scrollTop === 0, cartIsAtBottom = Math.abs(e.target.scrollHeight - e.target.scrollTop - e.target.clientHeight) < 1
       }}>
         {#each cartProducts as { variantId, title, image, amount, price, comparePrice } (variantId) }
@@ -756,7 +763,7 @@
       </div>
     </div>
 
-    <div class="flex justify-between mt-3 font-semibold text-lg">
+    <div class="flex justify-between mt-3 text-lg font-semibold">
       <p>Total Price</p>
       <p>{formatCurrency(cartPrice * $currencyRateStore, $currencyStore)}</p>
     </div>
@@ -769,12 +776,12 @@
       }}
     >
       <input type="hidden" aria-hidden="true" value={JSON.stringify($cart.products)} name="cart" />
-      <Button type="submit" color="accent" variant="gradient" class="w-full text-base mt-3" disabled={$cart?.products?.length == 0} loading={submittingCheckout}>
+      <Button type="submit" color="accent" variant="gradient" class="w-full mt-3 text-base" disabled={$cart?.products?.length == 0} loading={submittingCheckout}>
         Checkout
       </Button>
     </form>
 
-    <div class="flex mt-3 gap-2 justify-center">
+    <div class="flex justify-center gap-2 mt-3">
       {#each [ Mastercard, Maestro, Paypal, Visa ] as icon}
         <div class="bg-white rounded-lg w-[54px] h-[32px] flex items-center justify-center">
           <svelte:component this={icon} class="size-10" />
@@ -784,9 +791,31 @@
   </div>
 </div>
 
+<Modal bind:open={permanentFruitPresent}>
+  <h1 class="text-xl font-semibold">Oops! Cart Update Needed</h1>
+  <p class="mt-6 font-semibold">
+    <span class="text-[#3BA4F0]">Physical Fruits</span> can't be combined with other items.
+    <br/>
+    Please remove all <span class="text-[#3BA4F0]">Physical Fruits</span> or clear your cart to add this item.
+  </p>
+  <Button 
+    variant="gradient" color="accent" class="w-full" wrapperClass="mt-6"
+    onClick={() => {
+      $cart = {
+        game: data.game.internalName,
+        products: []
+      }
+      permanentFruitPresent = false
+    }}
+  >
+    Remove Other Items
+    <ArrowRight class="size-4 ml-1.5" />
+  </Button>
+</Modal>
+
 <Modal bind:open={multipleGamesOpen}>
-  <h1 class="font-semibold text-xl">Oops! Cart Update Needed</h1>
-  <p class="font-semibold mt-6">
+  <h1 class="text-xl font-semibold">Oops! Cart Update Needed</h1>
+  <p class="mt-6 font-semibold">
     Your cart currently contains items from <span class="text-[#3BA4F0]">{games[$cart.game].name}</span>. <br/>
     To add items from <span class="text-[#3BA4F0]">{data.game.name},</span> please remove any items from other games.
   </p>
@@ -812,13 +841,13 @@
       style="background: {rarityColors[games?.[data.game.internalName]?.rarities?.find(r => r.name === askBeforeBuyModal.rarity)?.color || "gray"].gradient}"
     >
       <CirlceIlustration class="absolute bottom-[-308px] right-[-308px] rotate-90 size-[524px]" color={rarityColors[games?.[data.game.internalName]?.rarities?.find(r => r.name === askBeforeBuyModal.rarity)?.color || "gray"].solid} />
-      <div class="size-full relative pointer-events-none select-none">
+      <div class="relative pointer-events-none select-none size-full">
         <img use:lazyLoad={{ src: askBeforeBuyModal.image, opacity: 0.2 }} alt="Item thumbnail" class="size-full object-contain object-center absolute top-0 left-0 blur-xl z-0 opacity-35 transition-[opacity,transform] duration-200" />
-        <img use:lazyLoad={{ src: askBeforeBuyModal.image }} alt="Item thumbnail" class="size-full object-contain object-center z-10 relative opacity-0 transition-opacity" />
+        <img use:lazyLoad={{ src: askBeforeBuyModal.image }} alt="Item thumbnail" class="relative z-10 object-contain object-center transition-opacity opacity-0 size-full" />
       </div>
     </div>
     <div class="flex flex-col gap-1 py-2">
-      <h1 class="font-semibold text-3xl leading-none">{askBeforeBuyModal.title}</h1>
+      <h1 class="text-3xl font-semibold leading-none">{askBeforeBuyModal.title}</h1>
       <p class="text-sm text-[#809BB5] font-semibold leading-none">{askBeforeBuyModal.category}</p>
       <div class="flex max-sm:flex-col sm:items-center gap-1 !leading-none">
         <p class="text-[17px] text-left font-extrabold text-white">{formatCurrency(askBeforeBuyModal.price * $currencyRateStore, $currencyStore)}</p>
