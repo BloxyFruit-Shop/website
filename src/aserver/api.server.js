@@ -19,6 +19,9 @@ import { orders, products as dbProducts, inventory } from '$server/mongo';
 import { cacheProductById, updateProductStock } from '$server/cache';
 import { globalSettings } from '$server/mongo';
 
+/**
+ * Initializes the Shopify API client with required credentials and configurations.
+ */
 export const shopify = shopifyApi({
   apiKey: SHOPIFY_ADMIN_API_KEY,
   apiSecretKey: SHOPIFY_ADMIN_API_SECRET,
@@ -30,11 +33,15 @@ export const shopify = shopifyApi({
   restResources
 });
 
+/**
+ * Creates a Shopify session using the admin API token and store URL.
+ */
 export const shopifySession = new Session({
   accessToken: SHOPIFY_ADMIN_API_TOKEN,
   shop: SHOPIFY_URL
 });
 
+// Unused. Unclear if this was temp, or if it never got implemented
 const currencyArray = [
   'USD',
   'EUR',
@@ -81,11 +88,23 @@ const currencyArray = [
 
 export let currencyRates = {};
 
+/**
+ * Creates an instance of the ZeptoMail client used for sending emails.
+ */
 const emailClient = new SendMailClient({
   url: 'api.zeptomail.eu/',
   token: ZEPTO_MAIL_TOKEN
 });
 
+/**
+ * Sends an email using the ZeptoMail client.
+ *
+ * @param {string} email - Recipient's email address.
+ * @param {string} content - HTML content of the email.
+ * @param {string} title - Subject/title of the email.
+ *
+ * The function constructs an email object with the provided parameters and dispatches it.
+ */
 export const sendEmail = (email, content, title) => {
   emailClient.sendMail({
     from: {
@@ -117,22 +136,58 @@ const cookieOptions = {
 
 export const products = games;
 
-/* Auth token */
+/**
+ * Sets a session cookie in the user's browser.
+ *
+ * @param {object} cookies - Cookie manager that provides the set() method.
+ * @param {string} session - The session data to be stored.
+ *
+ * This function uses the predefined cookie options to securely store the session.
+ */
 export const setSessionCookie = (cookies, session) =>
   cookies.set('session', session, cookieOptions);
+
+/**
+ * Deletes the session cookie from the user's browser.
+ *
+ * @param {object} cookies - Cookie manager that provides the delete() method.
+ *
+ * It removes the session cookie using the predefined cookie options.
+ */
 export const deleteSessionCookie = (cookies) =>
   cookies.delete('session', cookieOptions);
 
-/* Password hashing */
+/**
+ * Compares a plaintext value with a hashed value using bcrypt.
+ *
+ * @param {...any} args - Arguments for bcrypt.compare function.
+ * @returns {Promise<boolean>} - Resolves to true if the values match, otherwise false.
+ */
 export const bcryptCompare = (...args) => {
   return bcrypt.compare(...args);
 };
+
+/**
+ * Generates a bcrypt hash for a given plaintext value.
+ *
+ * @param {...any} args - Arguments for bcrypt.hash function.
+ * @returns {Promise<string>} - Resolves to the generated hash string.
+ */
 export const bcryptHash = (...args) => {
   return bcrypt.hash(...args);
 };
 
 let globalConfig = null;
 
+/**
+ * Loads or initializes global configuration settings from the database.
+ *
+ * This async function attempts to find a document with _id 'settings' in the globalSettings collection.
+ * If not found, it creates a new document with an initial updatedAt timestamp.
+ * In both cases, the global configuration is stored in the local variable and a log is written.
+ *
+ * @returns {Promise<void>}
+ */
 const loadGlobalSettings = async () => {
   try {
     globalConfig = await globalSettings.findOneAndUpdate(
@@ -179,6 +234,19 @@ const inventoryItems = {
   ]
 };
 
+/**
+ * Adds inventory items from the predefined inventoryItems object to the database.
+ *
+ * Iterates over each product title and its associated accounts in inventoryItems.
+ * For each product:
+ *   - Searches for the product in the database.
+ *   - Logs the product if it exists.
+ *   - Prepares bulk write operations for each account (splitting account details).
+ *   - Performs the bulk insertion into the inventory collection if there are items.
+ * Logs success or error messages accordingly.
+ *
+ * @returns {Promise<void>}
+ */
 async function addInventoryItemsToDatabase() {
   console.log('Adding inventory items to database...');
   try {
@@ -207,11 +275,11 @@ async function addInventoryItemsToDatabase() {
         }
       }));
 
-      // console.log(JSON.stringify(bulkOps))
-
+      // Execute bulk operation if there are any items to add
       if (bulkOps.length > 0) {
         const result = await inventory.bulkWrite(bulkOps);
-        // console.log(`Added ${result.insertedCount} accounts for product ${productId}`)
+        // Optionally log result.insertedCount if needed:
+        // console.log(`Added ${result.insertedCount} accounts for product ${product.title}`)
       }
     }
     console.log('Finished adding inventory items');
@@ -220,6 +288,20 @@ async function addInventoryItemsToDatabase() {
   }
 }
 
+/**
+ * Fetches orders from Shopify using the GraphQL API, processes them, and stores them in the local database.
+ *
+ * The function performs the following steps:
+ *   1. Constructs a GraphQL query to fetch up to 250 orders starting from a given cursor.
+ *   2. Iterates over the fetched orders, skipping any with high risk.
+ *   3. Checks whether each order already exists in the local database.
+ *   4. Processes order items by looking up product details and constructing order entries.
+ *   5. Saves new orders in the database.
+ *   6. For items with a deliveryType of 'account', reserves available inventory items and updates the order.
+ *   7. Updates the global configuration with the latest cursor and persists it to the database.
+ *
+ * @returns {Promise<void>}
+ */
 const fetchOrders = async () => {
   console.log('Fetching orders...');
   try {
@@ -286,9 +368,9 @@ const fetchOrders = async () => {
       for (const order of orderEdges) {
         const orderData = order.node;
         if (!orderData) continue;
-        const orderId = orderData.id.replace('gid://shopify/Order/', '');
-
         if (orderData.riskLevel === 'HIGH') continue;
+
+        const orderId = orderData.id.replace('gid://shopify/Order/', '');
 
         const existingOrder = await orders.findOne({ id: orderId });
         console.log(`Order ${orderId} found`);
@@ -309,7 +391,7 @@ const fetchOrders = async () => {
               return null;
             }
 
-            // Create order item
+            // Construct the order item using product and item details
             return {
               category: product.category,
               game: product.game,
@@ -338,15 +420,14 @@ const fetchOrders = async () => {
           updatedAt: new Date(orderData.createdAt)
         });
 
-        // For account-type items, try to reserve inventory items
+        // For account delivery types, attempt to reserve inventory items
         for (const item of validOrderItems) {
           if (item.deliveryType !== 'account') continue;
 
           try {
             const inventoryItems = [];
-            // Loop for the quantity of items needed
+            // Reserve inventory items based on the quantity ordered
             for (let i = 0; i < item.quantity; i++) {
-              // Find available inventory item
               const availableItem = await inventory.findOneAndUpdate(
                 {
                   productId: item.productId,
@@ -421,6 +502,19 @@ const fetchOrders = async () => {
   }
 };
 
+/**
+ * Fetches product items from Shopify for each game collection and updates the local database.
+ *
+ * This function performs the following actions for each game in the products object:
+ *   1. Initializes pagination (cursor) and an empty array for total products.
+ *   2. Constructs and executes a GraphQL query to fetch a batch (up to 250) of products.
+ *   3. Calculates a price conversion rate using the fetched currency rates.
+ *   4. Processes each product by modifying its tags, formatting its price, and extracting key details.
+ *   5. Updates or inserts the product into the database and caches the product data.
+ *   6. Continues paginating until all products for that game are fetched.
+ *
+ * @returns {Promise<void>}
+ */
 export const fetchItems = async () => {
   console.log('Fetching items...');
 
@@ -573,6 +667,18 @@ export const fetchItems = async () => {
   console.log('Finished fetching items');
 };
 
+/**
+ * Main initialization function executed immediately.
+ *
+ * This self-invoking async function performs the following:
+ *   1. Checks if the environment is in build mode and exits if true.
+ *   2. Calls addInventoryItemsToDatabase() to seed inventory items.
+ *   3. Loads global configuration settings via loadGlobalSettings().
+ *   4. Optionally cleans up game-related configuration (commented out).
+ *   5. Sets up periodic tasks for fetching items and orders using a helper that triggers the functions immediately and then at set intervals.
+ *
+ * @returns {Promise<void>}
+ */
 (async function () {
   if (building) return;
 
@@ -580,7 +686,7 @@ export const fetchItems = async () => {
   // Load global settings first
   await loadGlobalSettings();
 
-  // Delete rarities games
+  // Delete rarities games (optional cleanup, currently commented out)
   for (const game in games) {
     // delete games[game].rarities
     // delete games[game].order
@@ -588,14 +694,8 @@ export const fetchItems = async () => {
 
   let fetchItemsInterval;
 
-  // setIntervalImmediately(() => {
-  //   fetch(`https://api.currencyapi.com/v3/latest?apikey=${CURRENCYAPI_API_KEY}&currencies=${currencyArray.join()}`).then(response => response.json()).then(response => {
-  //     currencyRates = Object.fromEntries(
-  //       Object.values(response.data).map(item => [item.code, item.value])
-  //     )
-
-  //     console.log(JSON.stringify(currencyRates))
-
+  // Set up a periodic fetch for product items every 30 seconds using setIntervalImmediately
+  // Optionally, currency conversion rates could be updated via an API call here (commented out)
   currencyRates = {
     AED: 3.9802858985,
     ARS: 1073.1976558456,
@@ -645,5 +745,6 @@ export const fetchItems = async () => {
   //   })
   // }, 8 * 60 * 60 * 1000)
 
+  // Set up a periodic fetch for orders every 10 seconds using setIntervalImmediately
   setIntervalImmediately(fetchOrders, 10 * 1000);
 })();

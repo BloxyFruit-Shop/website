@@ -24,6 +24,7 @@ export const load = async ({ url, params, locals }) => {
     return redirect(303, `/account`);
   }
 
+  // This produces huge waiting time in production. Only meant to be here while developing new features. Comment before merging to build production.
   await fetchItems();
   return {
     products: products['blox-fruits'].products.filter((item) =>

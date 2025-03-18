@@ -71,6 +71,7 @@ export const actions = {
 
     const link = response?.data?.cartCreate?.cart?.id?.match(/gid:\/\/shopify\/Cart\/(.+)/)?.[1] 
 
+    // May want to update this link when in dev mode.
     return link ? redirect(301,`https://checkout.bloxyfruit.com/checkouts/cn/${link}`) : { error: true }
   }
 }
