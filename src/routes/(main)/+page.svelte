@@ -28,13 +28,13 @@
       ready: true,
     },
     {
-      title: "Pets Go!",
-      name: "pets-go",
-      description: "Get the best items and collect more pets and gems than ever!",
-      logo: "/assets/games/pets-go-logo.webp",
-      image: "/assets/games/pets-go.webp", 
-      gradient: "41, 58, 35",
-      ready: true
+      title: "Blue Lock: Rivals",
+      name: "blue-lock-rivals",
+      description: "Compete in intense 5v5 soccer matches as you unlock unique characters and abilities!",
+      logo: "/assets/games/blue-lock-logo.webp",
+      image: "/assets/games/blue-lock.webp", 
+      gradient: "37, 150, 190",
+      ready: true,
     },
     {
       title: "Anime Vanguards",
@@ -55,14 +55,33 @@
       ready: true
     },
     {
+      title: "Anime Adventures",
+      name: "anime-adventures",
+      description: "Assemble your favorite anime heroes to defend against waves of enemies in strategic battles!",
+      logo: "/assets/games/anime-adventures-logo.jpg",
+      image: "/assets/games/anime-adventures.webp",
+      gradient: "37, 150, 190",
+      ready: true
+    },
+    {
+      title: "Pets Go!",
+      name: "pets-go",
+      description: "Get the best items and collect more pets and gems than ever!",
+      logo: "/assets/games/pets-go-logo.webp",
+      image: "/assets/games/pets-go.webp", 
+      gradient: "41, 58, 35",
+      ready: true
+    },
+    {
       title: "Murder Mystery 2",
       description: "Find cool weapons and gear to help you win every round!",
       logo: "/assets/games/mm2-logo.webp",
       image: "/assets/games/mm2.webp", 
-      gradient: "58, 35, 35"
+      gradient: "58, 35, 35",
+      ready: false
     },
   ]
-
+  
   const youtubers = [
     { name: "GatoGod", tag: "@gatogod", link: "https://www.youtube.com/@GatoGod", icon: "/assets/youtubers/GatoGod.jpg", subs: "562k" },
     { name: "Gnoren Dog", tag: "@GnorenDog", link: "https://www.youtube.com/@GnorenDog", icon: "/assets/youtubers/GnorenDog.jpg", subs: "204k" },
