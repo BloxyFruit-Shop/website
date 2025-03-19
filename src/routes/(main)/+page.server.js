@@ -26,7 +26,7 @@ export const load = async ({ url, params, locals }) => {
 
   // This produces huge waiting time in production. Only meant to be here while developing new features, because of a critical bug when products hasn't been fetched yet.
   // Comment again before merging to build production.
-  await fetchItems();
+  // await fetchItems();
   return {
     products: products['blox-fruits'].products.filter((item) =>
       ['Portal', 'Rumble'].includes(item.title)
