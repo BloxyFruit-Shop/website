@@ -4,8 +4,10 @@
   import Button from "$lib/components/Button.svelte"
   import Input from "$lib/components/Input.svelte"
   import { Close } from "$lib/icons"
+  import { toast } from "$lib/svoast"
 
   export let open = false
+  export let order = {}
 
   // Local state
   let username = ""
@@ -22,7 +24,7 @@
     }
     loading = true
     try {
-      // Use the new server endpoint to search for the Roblox user
+      // Use our server endpoint to search for the Roblox user
       const res = await fetch("/api/roblox", {
         method: "POST",
         headers: {
@@ -34,7 +36,7 @@
       const data = await res.json()
 
       if (!res.ok || data.error) {
-        error = data.error || "An error occurred."
+        error = data.error || "An error occurred. Try again later."
         return
       }
 
@@ -48,9 +50,44 @@
   }
 
   // Called when confirm button is pressed
-  function confirmAccount() {
-    // TODO: Add the roblox account info to the order
-    open = false;
+  async function confirmAccount() {
+    // Ensure that there is a valid userResult
+    if (!userResult) {
+      error = "No Roblox user selected.";
+      return;
+    }
+    loading = true;
+    error = "";
+    try {
+      // POST the updated reciever info to endpoint
+      const res = await fetch('/api/orders/reciever', {
+        method: 'POST',
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          orderId : order?.id,
+          reciever: {
+            username: userResult.username,
+            displayName: userResult.displayName,
+            id: userResult.userId,
+            thumbnail: userResult.thumbnail
+          }
+        })
+      });
+      
+      const data = await res.json();
+      if (!res.ok) {
+        error = data.error || "Failed to update order with Roblox account.";
+        return;
+      }
+      
+      toast["success"]("Reciever updated successfully.", {duration: 3_000})
+      open = false;
+    } catch (err) {
+      error = "Failed to update order due to a network error.";
+      console.error(err);
+    } finally {
+      loading = false;
+    }
   }
 </script>
 
@@ -106,12 +143,18 @@
               If this is your account, click confirm. Otherwise, you can go back and search again.
             </p>
           </div>
+          {#if error}
+            <p class="text-sm text-red-500">{error}</p>
+          {/if}
           <div class="flex justify-between">
-            <Button color="gray" onClick={() => {userResult = null}}>
+            <Button color="gray" onClick={() => {
+              userResult = null;
+              error = "";
+              }}>
               Back
             </Button>
-            <Button variant="gradient" color="accent" onClick={() => confirmAccount()}>
-              Confirm
+            <Button variant="gradient" color="accent" onClick={confirmAccount} disabled={loading}>
+              {loading ? "Updating..." : "Confirm"}
             </Button>
           </div>
         </div>

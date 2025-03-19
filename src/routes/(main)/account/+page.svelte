@@ -20,7 +20,7 @@
   };
 
   function openOrderDetails(order) {
-    if (!order?.receiver?.username) {
+    if (!order?.reciever?.username) {
       toast["error"]("You need to add a reciever before claiming your order.", {duration: 3_000})
       return
     }
@@ -28,7 +28,9 @@
     orderDetailsOpen = true;
   }
 
-  function openRobloxAccountModal() {
+  function openRobloxAccountModal(order) {
+    if (order.status !== "pending") return;
+    selectedOrder = order;
     robloxAccountModalOpen = true;
   }
 </script>
@@ -118,15 +120,27 @@
                     {order.status}
                   </span>
                 </td>
-                <td class="pr-4 w-[120px]">
-                  <Button
-                    variant="gradient"
-                    color="accent"
-                    class="w-[120px]"
-                    onClick={() => openRobloxAccountModal()}
-                  >
-                    Test
-                  </Button>
+                <td class="pr-4 max-w-[200px]">
+                    <Button
+                      variant="bordered"
+                      color="user"
+                      size="small"
+                      disabled={order.status !== "pending"}
+                      onClick={() => openRobloxAccountModal(order)}
+                    >
+                      {#if order.reciever && order.reciever.displayName}
+                        <div class="flex items-center gap-2 pr-2">
+                          <img
+                            src={order.reciever.thumbnail}
+                            alt={order.reciever.displayName}
+                            class="object-cover w-8 h-8 rounded-full"
+                          />
+                          <span class="text-sm font-medium max-w-[150px] truncate">{order.reciever.displayName}</span>
+                        </div>
+                      {:else}
+                        <span> Add reciever </span>
+                      {/if}
+                    </Button>
                 </td>
                 <td class="pr-4 w-[120px] rounded-r-lg">
                   <Button
@@ -152,4 +166,4 @@
   bind:order={selectedOrder}
 />
 
-<RobloxAccount bind:open={robloxAccountModalOpen} />
+<RobloxAccount bind:open={robloxAccountModalOpen} bind:order={selectedOrder} />

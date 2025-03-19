@@ -10,7 +10,7 @@
       }
     },
     outlined: {
-
+      
     },
     text: {
       white: {
@@ -38,6 +38,10 @@
       game: {
         normal: "p-2.5 border-2 border-[#1B1F36] rounded-xl",
         disabled: "p-2.5 opacity-40 border-2 border-[#1B1F36] rounded-xl"
+      },
+      user: {
+        normal: "p-2 py-1 border-2 border-[#1B1F36] bg-slate-100/5 hover:bg-slate-100/10 rounded-xl",
+        disabled: "p-2 py-1 border-2 border-[#1B1F36] bg-slate-100/5 rounded-xl"
       }
     },
     gradient: {
