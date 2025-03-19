@@ -2,6 +2,7 @@
   import { Account, History } from "$lib/icons";
   import { format } from "date-fns";
   import { bgBlur } from "$lib/utils";
+  import { toast } from "$lib/svoast"
   import Button from "$lib/components/Button.svelte";
   import OrderDetails from "$lib/modals/general/order-details.svelte";
   import RobloxAccount from "$lib/modals/general/roblox-account.svelte";
@@ -19,6 +20,10 @@
   };
 
   function openOrderDetails(order) {
+    if (!order?.receiver?.username) {
+      toast["error"]("You need to add a reciever before claiming your order.", {duration: 3_000})
+      return
+    }
     selectedOrder = order;
     orderDetailsOpen = true;
   }
@@ -78,7 +83,7 @@
               <th class="text-[#809BB5] font-medium pb-3">Items</th>
               <th class="text-[#809BB5] font-medium pb-3">Total</th>
               <th class="text-[#809BB5] font-medium pb-3">Status</th>
-              <th class="text-[#809BB5] font-medium pb-3">Receiver</th>
+              <th class="text-[#809BB5] font-medium pb-3">Reciever</th>
               <th class="text-[#809BB5] font-medium pb-3"></th>
             </tr>
           </thead>

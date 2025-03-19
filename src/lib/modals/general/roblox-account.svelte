@@ -49,8 +49,8 @@
 
   // Called when confirm button is pressed
   function confirmAccount() {
-    open = false;
     // TODO: Add the roblox account info to the order
+    open = false;
   }
 </script>
 
@@ -59,7 +59,7 @@
     <Dialog.Overlay class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[110]" />
     <Dialog.Content class="
       fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 max-w-xl w-full bg-[#131620] rounded-lg shadow-xl p-6 z-[110]
-      duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out
+      duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%]
     ">
       <div class="flex items-center justify-between mb-6">
         <h2 class="text-xl font-semibold">Search Roblox Account</h2>
