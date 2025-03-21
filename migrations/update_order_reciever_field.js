@@ -29,7 +29,7 @@ async function runMigration() {
   try {
     // Connect to the MongoDB
     await connect(
-      process.env.MONGODB_URI || "mongodb+srv://bloxyadmin:bloxypassword@test-cluster.sgs7n.mongodb.net/bloxyfruit"
+      process.env.MONGODB_URI
     );
 
     console.log('Connected to database. Starting migration...');

@@ -138,7 +138,7 @@
                           <span class="text-sm font-medium max-w-[150px] truncate">{order.reciever.displayName}</span>
                         </div>
                       {:else}
-                        <span> Add reciever </span>
+                        <span> {order.status === "pending" ? "Add reciever" : "No data"} </span>
                       {/if}
                     </Button>
                 </td>
