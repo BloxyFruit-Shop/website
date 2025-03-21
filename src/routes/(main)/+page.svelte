@@ -28,13 +28,13 @@
       ready: true,
     },
     {
-      title: "Pets Go!",
-      name: "pets-go",
-      description: "Get the best items and collect more pets and gems than ever!",
-      logo: "/assets/games/pets-go-logo.webp",
-      image: "/assets/games/pets-go.webp", 
-      gradient: "41, 58, 35",
-      ready: true
+      title: "Blue Lock: Rivals",
+      name: "blue-lock",
+      description: "Get the best styles and passes to dominate the field!",
+      logo: "/assets/games/blue-lock-logo.webp",
+      image: "/assets/games/blue-lock.webp", 
+      gradient: "37, 40, 60",
+      ready: true,
     },
     {
       title: "Anime Vanguards",
@@ -55,14 +55,41 @@
       ready: true
     },
     {
+      title: "Anime Adventures",
+      name: "anime-adventures",
+      description: "Get powerful units and exclusive gamepasses to dominate battles!",
+      logo: "/assets/games/anime-adventures-logo.webp",
+      image: "/assets/games/anime-adventures.webp",
+      gradient: "30, 70, 25",
+      ready: true
+    },
+    {
+      title: "Pets Go!",
+      name: "pets-go",
+      description: "Get the best items and collect more pets and gems than ever!",
+      logo: "/assets/games/pets-go-logo.webp",
+      image: "/assets/games/pets-go.webp", 
+      gradient: "41, 58, 35",
+      ready: true
+    },
+    {
       title: "Murder Mystery 2",
       description: "Find cool weapons and gear to help you win every round!",
-      logo: "/assets/games/mm2-logo.webp",
-      image: "/assets/games/mm2.webp", 
-      gradient: "58, 35, 35"
+      logo: "/assets/games/murder-mystery-2-logo.webp",
+      image: "/assets/games/murder-mystery-2.webp", 
+      gradient: "58, 35, 35",
+      ready: true
+    },
+    {
+      title: "Coming Soon!",
+      description: "",
+      logo: "/assets/games/coming-soon-logo.webp",
+      image: "/assets/games/coming-soon.webp", 
+      gradient: "48, 25, 45",
+      ready: false
     },
   ]
-
+  
   const youtubers = [
     { name: "GatoGod", tag: "@gatogod", link: "https://www.youtube.com/@GatoGod", icon: "/assets/youtubers/GatoGod.jpg", subs: "562k" },
     { name: "Gnoren Dog", tag: "@GnorenDog", link: "https://www.youtube.com/@GnorenDog", icon: "/assets/youtubers/GnorenDog.jpg", subs: "204k" },
@@ -89,7 +116,7 @@
   <meta property="twitter:author" content="@xTheAlex14" />
   <meta property="twitter:image" content="/assets/banner.webp" />
   <link rel="canonical" href="https://bloxyfruit.com/" />
-  <meta name="keywords" content="blox fruits, cheap blox fruits, blox fruits items, buy blox fruits, fast blox fruits delivery, anime defenders, anime defenders items, cheap anime defenders, buy anime defenders, the strongest battlegrounds, battlegrounds gamepasses, cheap gamepasses, Roblox items, buy Roblox items, fast delivery Roblox, online Roblox shop, game items, cheap game items, Roblox gamepasses, buy gamepasses, murder mystery 2, anime vanguards, adopt me" />
+  <meta name="keywords" content="blox fruits, cheap blox fruits, blox fruits items, buy blox fruits, fast blox fruits delivery, anime defenders, anime defenders items, cheap anime defenders, buy anime defenders, the strongest battlegrounds, battlegrounds gamepasses, cheap gamepasses, Roblox items, buy Roblox items, fast delivery Roblox, online Roblox shop, game items, cheap game items, Roblox gamepasses, buy gamepasses, murder mystery 2, anime vanguards, adopt me, blue lock rivals, buy blue lock, buy anime adventures, buy rolls, lucky rolls, cheap lucky rolls" />
 </svelte:head>
 
 <div class="flex flex-col items-center pt-[80px]">

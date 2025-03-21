@@ -27,11 +27,11 @@ export default {
     ],
     products: []
   },
-  "pets-go": {
-    shortName: "PG",
-    name: "Pets Go",
-    internalName: "pets-go",
-    order: ["Gems", "Pet"],
+  "blue-lock": {
+    shortName: "BL",
+    name: "Blue Lock: Rivals",
+    internalName: "blue-lock",
+    order: ["Gamepass", "Rolls", "Lucky Rolls", "Limited"],
     rarities: [
       { name: "Common", color: "green" },
       { name: "Uncommon", color: "lightBlue" },
@@ -68,5 +68,47 @@ export default {
       { name: "Mythical", color: "red" }
     ],
     products: []
-  }
+  },
+  "anime-adventures": {
+    shortName: "AA",
+    name: "Anime Adventures",
+    internalName: "anime-adventures",
+    order: ["Gamepass", "Bundle", "Unit"],
+    rarities: [
+      { name: "Common", color: "green" },
+      { name: "Uncommon", color: "lightBlue" },
+      { name: "Rare", color: "purple"  },
+      { name: "Legendary", color: "orange" },
+      { name: "Mythical", color: "red" }
+    ],
+    products: []
+  },
+  "pets-go": {
+    shortName: "PG",
+    name: "Pets Go",
+    internalName: "pets-go",
+    order: ["Gems", "Pet"],
+    rarities: [
+      { name: "Common", color: "green" },
+      { name: "Uncommon", color: "lightBlue" },
+      { name: "Rare", color: "purple"  },
+      { name: "Legendary", color: "orange" },
+      { name: "Mythical", color: "red" }
+    ],
+    products: []
+  },
+  "murder-mystery-2": {
+    shortName: "MM2",
+    name: "Murder Mystery 2",
+    internalName: "murder-mystery-2",
+    order: ["Gamepass"],
+    rarities: [
+      { name: "Common", color: "green" },
+      { name: "Uncommon", color: "lightBlue" },
+      { name: "Rare", color: "purple"  },
+      { name: "Legendary", color: "orange" },
+      { name: "Mythical", color: "red" }
+    ],
+    products: []
+  },
 }
