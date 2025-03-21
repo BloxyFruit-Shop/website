@@ -44,6 +44,7 @@ This document is intended for new developers joining the project and serves as a
 - [Database & Schema Changes](#database--schema-changes)
 - [Product Display and New Components](#product-display-and-new-components)
 - [How the Frontend Configuration Affects Product Display](#how-the-frontend-configuration-affects-product-display)
+- [Understanding the Checkout Process](#understanding-the-checkout-process)
 - [Example: Extending Games, Categories, and Rarities](#example-extending-games-categories-and-rarities)
 
 8. [Potential Pitfalls and Best Practices](#potential-pitfalls-and-best-practices)
@@ -266,6 +267,29 @@ This section offers a detailed guide on how new products are integrated and how 
   - Update or add color schemes to ensure new rarities are displayed correctly.
 - **Validation (schemes.js):**
   - Adapt form validation when new product information or metadata needs to be captured from users.
+
+### Understanding the Checkout Process
+
+1. Checkout
+	- The customer shops without logging in. Their selected products are stored locally (in a “cart”) and when they hit “Checkout,” the frontend sends the order information to the backend.
+	- The server creates the checkout session with Shopify. The customer is redirected to Shopify, where payment is processed securely.
+2. Shopify Redirect with Claim Parameters
+	- After successful payment, Shopify redirects the customer back to the site. Importantly, the URL now includes query string parameters ``claimOrder={{id}}&email={{email}}``
+	- In the app, the load function in ``src/routes/(main)/+page.server.js`` detects that claimOrder parameter. However, if the customer is not logged in (there is no localUser), nothing happens on this page except that the normal page content is returned. (If the user *was* logged in, it immediately redirects to ``/account``)
+3. The Login/Register Modal
+	- Separately, the user-section component (in ``src/lib/elements/user-section.svelte``) runs its onMount logic. It checks the URL for “claimOrder” and, upon detecting it (even if the user is not logged in), it sets the flag to open the authentication modal (with the ``authModalOpen`` var)
+	- This modal is controlled by the component in ``src/lib/modals/auth/index.svelte`` and its subcomponents (for register and login forms).
+	- More importantly, in the global layout (``src/routes/+layout.server.js``), when the claimOrder parameter is present, it pre-fills the temporary registration form with an email (derived from the claimOrder context by splitting the email string). This is to ensure that when the user eventually registers, the email they use is consistent with the order data.
+4. Authentication (Register/Login)
+	- The user is thus prompted (via the modal) to create an account or log in. If they register, the registration form is already pre-populated with the email, thanks to the processing in ``+layout.server.js``
+	- When the user completes registration or logs in, they become a “localUser” in the app.
+	- At this point, when the user lands on (or is redirected to) the main page, the load function in ``src/routes/(main)/+page.server.js`` will see that both the claimOrder parameter exists and that localUser is present. It then immediately redirects the user to the account page (``/account``).
+5. Associating the Order with the User Account
+	- On the account page (handled by ``src/routes/(main)/account/+page.server.js``), the server-side load function queries the orders collection in the database.  
+	- It finds orders by matching the “email” field of the order with the localUser’s email. (Recall that when the order was originally created as a guest purchase, it was only tied to the provided email.)  
+	- As a result, any orders placed earlier (with the “claimOrder” id) automatically appear in the user’s account once they register or log in, because the email used matches the order’s email.
+
+> There isn’t a separate “claim” action that updates the order record to associate it with the new user's id. Instead, the system “claims” the order by ensuring that the order’s email now corresponds to a logged-in user’s email. This is why the account page simply fetches any orders where order.email === localUser.email.
 
 ### Example: Extending Games, Categories, and Rarities
 

@@ -10,7 +10,7 @@
       }
     },
     outlined: {
-
+      
     },
     text: {
       white: {
@@ -38,6 +38,10 @@
       game: {
         normal: "p-2.5 border-2 border-[#1B1F36] rounded-xl",
         disabled: "p-2.5 opacity-40 border-2 border-[#1B1F36] rounded-xl"
+      },
+      user: {
+        normal: "p-2 py-1 border-2 border-[#1B1F36] bg-slate-100/5 hover:bg-slate-100/10 rounded-xl",
+        disabled: "p-2 py-1 border-2 border-[#1B1F36] bg-slate-100/5 rounded-xl"
       }
     },
     gradient: {
@@ -114,7 +118,7 @@
       use:ripple={{ duration: 0.4 }}
     >
       {#if loading}
-        <svg class="animate-spin h-5 w-5 absolute" viewBox="0 0 24 24">
+        <svg class="absolute w-5 h-5 animate-spin" viewBox="0 0 24 24">
           <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" fill="none" stroke-width="4"/>
           <path class="opacity-90" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
         </svg>
@@ -149,7 +153,7 @@
       on:mouseleave={mouseLeave}
     >
       {#if loading}
-        <svg class="animate-spin h-5 w-5 absolute" viewBox="0 0 24 24">
+        <svg class="absolute w-5 h-5 animate-spin" viewBox="0 0 24 24">
           <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" fill="none" stroke-width="4"/>
           <path class="opacity-90" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
         </svg>

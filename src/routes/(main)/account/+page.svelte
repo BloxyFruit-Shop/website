@@ -1,24 +1,37 @@
 <script>
-  import { Account, History } from "$lib/icons"
-  import { format } from "date-fns"
-  import { bgBlur } from "$lib/utils"
-  import Button from "$lib/components/Button.svelte"
-  import OrderDetails from "$lib/modals/general/order-details.svelte"
+  import { Account, History } from "$lib/icons";
+  import { format } from "date-fns";
+  import { bgBlur } from "$lib/utils";
+  import { toast } from "$lib/svoast"
+  import Button from "$lib/components/Button.svelte";
+  import OrderDetails from "$lib/modals/general/order-details.svelte";
+  import RobloxAccount from "$lib/modals/general/roblox-account.svelte";
 
-  export let data
+  export let data;
 
-  let selectedOrder = null
-  let orderDetailsOpen = false
+  let selectedOrder = null;
+  let orderDetailsOpen = false;
+  let robloxAccountModalOpen = false;
 
   const statusColors = {
     pending: "bg-[#dd8231]",
     completed: "bg-[#2fc462]",
     cancelled: "bg-[#C42F30]"
-  }
+  };
 
   function openOrderDetails(order) {
-    selectedOrder = order
-    orderDetailsOpen = true
+    if (!order?.reciever?.username) {
+      toast["error"]("You need to add a reciever before claiming your order.", {duration: 3_000})
+      return
+    }
+    selectedOrder = order;
+    orderDetailsOpen = true;
+  }
+
+  function openRobloxAccountModal(order) {
+    if (order.status !== "pending") return;
+    selectedOrder = order;
+    robloxAccountModalOpen = true;
   }
 </script>
 
@@ -29,8 +42,8 @@
   <!-- <div class="absolute top-[900px] left-[-250px] size-[220px] bg-[#3BA4F0]/50 blur-[200px]"></div> -->
 
   <div class="max-w-[1440px] w-full mx-auto mt-[104px] flex flex-col lg:flex-row gap-6">
-    <div class="rounded-lg p-6 w-full lg:w-4/12 h-fit" style="{bgBlur({ color: "#111A28", blur: 6, opacity: 0.9 })}">
-      <div class="flex gap-2 items-center">
+    <div class="w-full p-6 rounded-lg lg:w-4/12 h-fit" style="{bgBlur({ color: '#111A28', blur: 6, opacity: 0.9 })}">
+      <div class="flex items-center gap-2">
         <Account class="w-9 h-9" />
         <p class="text-2xl font-bold">Your Details</p>
       </div>
@@ -53,9 +66,9 @@
       </div>
     </div>
 
-    <div class="rounded-lg p-6 w-full lg:w-8/12" style="{bgBlur({ color: "#111A28", blur: 6, opacity: 0.9 })}">
-      <div class="flex justify-between items-center">
-        <div class="flex gap-2 items-center">
+    <div class="w-full p-6 rounded-lg lg:w-8/12" style="{bgBlur({ color: '#111A28', blur: 6, opacity: 0.9 })}">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
           <History class="w-8 h-8" />
           <p class="text-2xl font-bold">Order History</p>
         </div>
@@ -72,6 +85,7 @@
               <th class="text-[#809BB5] font-medium pb-3">Items</th>
               <th class="text-[#809BB5] font-medium pb-3">Total</th>
               <th class="text-[#809BB5] font-medium pb-3">Status</th>
+              <th class="text-[#809BB5] font-medium pb-3">Reciever</th>
               <th class="text-[#809BB5] font-medium pb-3"></th>
             </tr>
           </thead>
@@ -89,7 +103,7 @@
                     <div class="flex -space-x-2">
                       {#each order.items.slice(0, 3) as item}
                         <div class="size-8 rounded-full bg-[#131620] ring-2 ring-[#1D2535] relative">
-                          <img src={item.image} alt={item.title} class="size-full object-contain p-1" />
+                          <img src={item.image} alt={item.title} class="object-contain p-1 size-full" />
                         </div>
                       {/each}
                     </div>
@@ -105,6 +119,28 @@
                   <span class="px-[11px] py-[5px] rounded-full capitalize text-sm font-medium {statusColors[order.status]}">
                     {order.status}
                   </span>
+                </td>
+                <td class="pr-4 max-w-[200px]">
+                    <Button
+                      variant="bordered"
+                      color="user"
+                      size="small"
+                      disabled={order.status !== "pending"}
+                      onClick={() => openRobloxAccountModal(order)}
+                    >
+                      {#if order.reciever && order.reciever.displayName}
+                        <div class="flex items-center gap-2 pr-2">
+                          <img
+                            src={order.reciever.thumbnail}
+                            alt={order.reciever.displayName}
+                            class="object-cover w-8 h-8 rounded-full"
+                          />
+                          <span class="text-sm font-medium max-w-[150px] truncate">{order.reciever.displayName}</span>
+                        </div>
+                      {:else}
+                        <span> {order.status === "pending" ? "Add reciever" : "No data"} </span>
+                      {/if}
+                    </Button>
                 </td>
                 <td class="pr-4 w-[120px] rounded-r-lg">
                   <Button
@@ -129,3 +165,5 @@
   bind:open={orderDetailsOpen}
   bind:order={selectedOrder}
 />
+
+<RobloxAccount bind:open={robloxAccountModalOpen} bind:order={selectedOrder} />
