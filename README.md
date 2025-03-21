@@ -292,6 +292,8 @@ Since products along with metadata are all derived from Shopify, we just need to
      - Ensure that UI components correctly display updated information.
      - Confirm that form validations in `schemes.js` continue to enforce the expected rules.
 
+> Be sure to follow the naming conventions with your assets. Else, the game logo could not get rendered on the store.
+
 Using these guidelines, basically anyone can extend product functionality effectively while ensuring consistency across both frontend displays and backend integrations.
 
 > If you end up adding new game support, please check the Discord Bot's code to ensure that it is also able to support tickets for new games as well.
