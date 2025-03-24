@@ -101,13 +101,16 @@ export default {
     shortName: "MM2",
     name: "Murder Mystery 2",
     internalName: "murder-mystery-2",
-    order: ["Gamepass"],
+    order: ["Bundle", "Knive", "Gun", "Pet"],
     rarities: [
-      { name: "Common", color: "green" },
+      { name: "Common", color: "gray" },
       { name: "Uncommon", color: "lightBlue" },
-      { name: "Rare", color: "purple"  },
-      { name: "Legendary", color: "orange" },
-      { name: "Mythical", color: "red" }
+      { name: "Rare", color: "green"  },
+      { name: "Legendary", color: "pink" },
+      { name: "Vintage", color: "red" },
+      { name: "Unique", color: "purple" },
+      { name: "Ancient", color: "yellow" },
+      { name: "Godly", color: "orange" },
     ],
     products: []
   },
