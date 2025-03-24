@@ -116,7 +116,7 @@
   <meta property="twitter:author" content="@xTheAlex14" />
   <meta property="twitter:image" content="/assets/banner.webp" />
   <link rel="canonical" href="https://bloxyfruit.com/" />
-  <meta name="keywords" content="blox fruits, cheap blox fruits, blox fruits items, buy blox fruits, fast blox fruits delivery, anime defenders, anime defenders items, cheap anime defenders, buy anime defenders, the strongest battlegrounds, battlegrounds gamepasses, cheap gamepasses, Roblox items, buy Roblox items, fast delivery Roblox, online Roblox shop, game items, cheap game items, Roblox gamepasses, buy gamepasses, murder mystery 2, anime vanguards, adopt me, blue lock rivals, buy blue lock, buy anime adventures, buy rolls, lucky rolls, cheap lucky rolls" />
+  <meta name="keywords" content="blox fruits, cheap blox fruits, blox fruits items, buy blox fruits, fast blox fruits delivery, anime defenders, anime defenders items, cheap anime defenders, buy anime defenders, the strongest battlegrounds, battlegrounds gamepasses, cheap gamepasses, Roblox items, buy Roblox items, fast delivery Roblox, online Roblox shop, game items, cheap game items, Roblox gamepasses, buy gamepasses, murder mystery 2, anime vanguards, adopt me, blue lock rivals, buy blue lock, buy anime adventures, buy rolls, lucky rolls, cheap lucky rolls, anime adventures, knives, guns, units, blue lock styles, buy styles, flows" />
 </svelte:head>
 
 <div class="flex flex-col items-center pt-[80px]">
