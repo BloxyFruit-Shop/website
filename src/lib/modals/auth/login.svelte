@@ -31,7 +31,7 @@
   })
 </script>
 
-<h1 class="font-semibold text-xl">Welcome Back!</h1>
+<h1 class="text-xl font-semibold">Welcome Back!</h1>
 <p class="text-[#809BB5] font-medium">
   Don't have an account?&nbsp;
   <button 
@@ -42,7 +42,7 @@
   </button>
 </p>
 
-<form method="POST" class="flex flex-col mt-6 w-full flex-1" action="/actions?/login" use:loginEnhance>
+<form method="POST" class="flex flex-col flex-1 w-full mt-6" action="/actions?/login" use:loginEnhance>
   <Input 
     name="identifier"
     label="Username/Email" 
