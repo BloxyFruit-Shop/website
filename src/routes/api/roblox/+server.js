@@ -1,6 +1,10 @@
 import { json } from '@sveltejs/kit';
 
-export async function POST({ request }) {
+export async function POST({ request, locals }) {
+  const localUser = locals.localUser;
+  if (!localUser) {
+    return json({ error: 'Unauthorized' }, { status: 401 });
+  }
   try {
     // Parse the request body
     const { username } = await request.json();
