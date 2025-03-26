@@ -1,5 +1,5 @@
 <script>
-  import { Account, History } from "$lib/icons";
+  import { Account, History, Pencil } from "$lib/icons";
   import { format } from "date-fns";
   import { bgBlur } from "$lib/utils";
   import { toast } from "$lib/svoast"
@@ -120,12 +120,13 @@
                     {order.status}
                   </span>
                 </td>
-                <td class="pr-4 max-w-[200px]">
+                <td class="pr-4 max-w-[180px]">
                     <Button
                       variant="bordered"
                       color="user"
                       size="small"
                       disabled={order.status !== "pending"}
+                      class="mx-auto"
                       onClick={() => openRobloxAccountModal(order)}
                     >
                       {#if order.reciever && order.reciever.displayName}
@@ -135,10 +136,14 @@
                             alt={order.reciever.displayName}
                             class="object-cover w-8 h-8 rounded-full"
                           />
-                          <span class="text-sm font-medium max-w-[150px] truncate">{order.reciever.displayName}</span>
+                          <span class="text-sm font-medium max-w-[110px] truncate">{order.reciever.displayName}</span>
                         </div>
                       {:else}
-                        <span> {order.status === "pending" ? "Add reciever" : "No data"} </span>
+                        {#if order.status === "pending"}
+                          <span class="flex gap-2"> <Pencil class="size-4" /> Add reciever</span>
+                        {:else}
+                          No data
+                        {/if}
                       {/if}
                     </Button>
                 </td>
