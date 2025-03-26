@@ -34,6 +34,7 @@ export { default as Search } from "./search.svelte"
 export { default as Account } from "./account.svelte"
 export { default as History } from "./history.svelte"
 export { default as Password } from "./password.svelte"
+export { default as Pencil } from "./pencil.svelte"
 
 // Payment method icons
 export { default as Amex } from './payment-methods/amex.svelte'
