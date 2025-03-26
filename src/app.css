@@ -23,7 +23,7 @@ body {
 }
   
 ::-webkit-scrollbar-thumb {
-  @apply bg-[#1D2535] rounded-md
+  @apply bg-[#344059] rounded-md
 }
 
 ::-webkit-scrollbar-corner {

@@ -93,8 +93,8 @@
       sideOffset={8}
     >
       {#each [
-        { value: "EN", label: "English", video: "jijKD1a4GY8" },
-        { value: "ES", label: "Español", video: "G6Gl5LOjKeY" }
+        { value: "EN", label: "English", video: "5T7m6wJkM2Y" },
+        { value: "ES", label: "Español", video: "8RHDSvYC-ic" }
       ] as language}
         <a href={`https://www.youtube.com/watch?v=${language.video}`} target="_blank" class="flex h-10 w-full text-sm select-none items-center rounded-button py-1.5 px-2.5 outline-none transition-all duration-75 hover:bg-white/10 rounded-md">
           <div class="size-6 mr-1.5">

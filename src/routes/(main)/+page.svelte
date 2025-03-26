@@ -106,9 +106,9 @@
 	<title>BloxyFruit - The Most Trusted, Affordable Roblox Items Store with Fast Delivery!</title>
   <meta property="og:title" content="BloxyFruit - The Most Trusted, Affordable Roblox Items Store with Fast Delivery!" />
   <meta property="twitter:title" content="BloxyFruit - The Most Trusted, Affordable Roblox Items Store with Fast Delivery!" />
-  <meta name="description" content="Discover unbeatable deals on Roblox items at BloxyFruit! From the cheapest Blox Fruits to rare Anime Vanguards, Rivals, and Pets Go items, we offer fast delivery and trusted service. Get your dream items at the best prices today!" />
-  <meta property="og:description" content="Discover unbeatable deals on Roblox items at BloxyFruit! From the cheapest Blox Fruits to rare Anime Vanguards, Rivals, and Pets Go items, we offer fast delivery and trusted service. Get your dream items at the best prices today!" />
-  <meta property="twitter:description" content="Discover unbeatable deals on Roblox items at BloxyFruit! From the cheapest Blox Fruits to rare Anime Vanguards, Rivals, and Pets Go items, we offer fast delivery and trusted service. Get your dream items at the best prices today!" />
+  <meta name="description" content="Discover unbeatable deals on Roblox items at BloxyFruit! From the cheapest Blox Fruits to rare Anime Vanguards, Rivals, Blue Lock, Murder Mystery and Pets Go items, we offer fast delivery and trusted service. Get your dream items at the best prices today!" />
+  <meta property="og:description" content="Discover unbeatable deals on Roblox items at BloxyFruit! From the cheapest Blox Fruits to rare Anime Vanguards, Rivals, Blue Lock, Murder Mystery and Pets Go items, we offer fast delivery and trusted service. Get your dream items at the best prices today!" />
+  <meta property="twitter:description" content="Discover unbeatable deals on Roblox items at BloxyFruit! From the cheapest Blox Fruits to rare Anime Vanguards, Rivals, Blue Lock, Murder Mystery and Pets Go items, we offer fast delivery and trusted service. Get your dream items at the best prices today!" />
   
   <meta property="og:image:width" content="1400" />
   <meta property="og:image:height" content="430" />
