@@ -74,6 +74,7 @@
     },
     {
       title: "Murder Mystery 2",
+      name: "murder-mystery-2",
       description: "Find cool weapons and gear to help you win every round!",
       logo: "/assets/games/murder-mystery-2-logo.webp",
       image: "/assets/games/murder-mystery-2.webp", 
@@ -272,7 +273,7 @@
     </div>
   
     <div class="flex flex-col gap-6 mt-4">
-      {#each ourGames.filter(game => game.ready) as game, i}
+      {#each ourGames.filter(game => (game.ready && data.productsCount[game.name] && data.productsCount[game.name] > 0)) as game, i}
         <div class="flex max-sm:flex-col {i % 2 == 1 ? "md:flex-row-reverse" : ""} gap-6">
           <div 
             class="shrink-0 p-5 min-w-[260px] rounded-xl flex flex-col justify-between overflow-hidden relative"
