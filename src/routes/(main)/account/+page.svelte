@@ -20,7 +20,7 @@
   };
 
   function openOrderDetails(order) {
-    if (!order?.reciever?.username) {
+    if (!order?.reciever?.username && order.status === "pending") {
       toast["error"]("You need to add a reciever before claiming your order.", {duration: 3_000})
       return
     }
