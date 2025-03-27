@@ -6,7 +6,7 @@ export const load = async ({ locals }) => {
   const localUser = locals.localUser
   if (!localUser) return redirect(303, "/")
 
-  const orderList = await orders.find({ email: localUser.email }).limit(20).lean()
+  const orderList = await orders.find({ email: localUser.email }).limit(40).lean()
 
   const serializedOrders = []
   for (const order of orderList) {

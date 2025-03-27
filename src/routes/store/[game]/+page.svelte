@@ -25,7 +25,7 @@
 
   export let data
 
-  let priceRange = [0, 100]
+  let priceRange = [0, 500]
 
   $: rarities = games[data.game.internalName].rarities.map(rarity => ({
     name: rarity.name,
@@ -477,7 +477,7 @@
                 color: rarity.color,
                 enabled: true
               }))
-              priceRange = [0, 100]
+              priceRange = [0, 500]
             }}
           >
             Reset
@@ -506,6 +506,8 @@
          <Slider.Root
             bind:value={priceRange}
             let:thumbs
+            min={0}
+            max={500}
             class="relative flex items-center w-full mt-1 select-none touch-none"
           >
             <span
