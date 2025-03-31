@@ -19,6 +19,7 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@paralleldrive/cuid2": "^2.2.2",
 		"@shopify/shopify-api": "^11.6.0",
 		"@sveltejs/adapter-node": "^5.2.2",
 		"@tailwindcss/container-queries": "^0.1.1",
