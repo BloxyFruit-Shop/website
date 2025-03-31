@@ -35,6 +35,9 @@ export { default as Account } from "./account.svelte"
 export { default as History } from "./history.svelte"
 export { default as Password } from "./password.svelte"
 export { default as Pencil } from "./pencil.svelte"
+export { default as Copy } from "./copy.svelte"
+export { default as EmptyCircleInfo } from "./empty-circle-info.svelte"
+export { default as Robux } from "./robux.svelte"
 
 // Payment method icons
 export { default as Amex } from './payment-methods/amex.svelte'
