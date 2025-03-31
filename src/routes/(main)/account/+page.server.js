@@ -1,4 +1,4 @@
-import { orders } from "$server/mongo"
+import { orders, users } from "$server/mongo"
 import { getInventoryItemById } from "$server/cache"
 import { redirect } from "@sveltejs/kit"
 
@@ -35,8 +35,12 @@ export const load = async ({ locals }) => {
     })
   }
 
+  const user = await users.findOne({ _id: localUser._id }).lean();
+  
+
   return {
     localUser,
+    robuxAmount: user.robux ?? 0,
     orders: serializedOrders
   }
 }
