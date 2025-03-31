@@ -79,6 +79,7 @@ export const productsSchema = new Schema({
   comparePrice: Number,
   category: String,
   rarity: String,
+  robux: {type: Number, default: 0},
   game: String,
   deliveryType: {
     type: String,
