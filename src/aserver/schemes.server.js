@@ -1,4 +1,9 @@
 import { Schema } from 'mongoose';
+import { init } from '@paralleldrive/cuid2';
+
+const createCode = init({
+  length: 10
+});
 
 const sessionSchema = new Schema(
   {
@@ -42,7 +47,9 @@ export const usersSchema = new Schema({
   password: String,
   status: statusSchema,
   role: Number,
-  session: sessionSchema
+  session: sessionSchema,
+  robux: { type: Number, default: 0 },
+  referralCode: { type: String, default: createCode },
 });
 
 export const verificationsSchema = new Schema({
