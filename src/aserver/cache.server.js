@@ -31,6 +31,7 @@ export const getUserBySession = async(session) => {
   cacheUserBySession(session, dbUser._id, {
     username: dbUser.username,
     email: dbUser.email,
+    referralCode: dbUser.referralCode,
     status: dbUser.status,
   })
 
