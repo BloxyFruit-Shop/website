@@ -1,5 +1,6 @@
 import { products, shopify, shopifySession } from "$server/api"
 import { redirect } from "@sveltejs/kit"
+import { SHOPIFY_CHECKOUT_URL } from '$env/static/private';
 import { getProductStock } from "$server/cache"
 
 export const load = async ({ url, params }) => {
@@ -72,7 +73,7 @@ export const actions = {
     const link = response?.data?.cartCreate?.cart?.id?.match(/gid:\/\/shopify\/Cart\/(.+)/)?.[1] 
 
     // May want to update this link when in dev mode.
-    return link ? redirect(301,`https://checkout.bloxyfruit.com/checkouts/cn/${link}`) : { error: true }
+    return link ? redirect(301,`https://${SHOPIFY_CHECKOUT_URL}/checkouts/cn/${link}&note=refer-123456789`) : { error: true }
   }
 }
 
