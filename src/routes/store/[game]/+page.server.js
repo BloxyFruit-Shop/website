@@ -3,7 +3,7 @@ import { redirect } from "@sveltejs/kit"
 import { SHOPIFY_CHECKOUT_URL } from '$env/static/private';
 import { getProductStock } from "$server/cache"
 
-export const load = async ({ url, params }) => {
+export const load = async ({ url, cookies, params }) => {
   if (!Object.keys(products).includes(params.game))
     return redirect(303, "/store/blox-fruits")
 
@@ -18,7 +18,9 @@ export const load = async ({ url, params }) => {
     }))
   }
 
-  return { game }
+  const ref = cookies.get("ref") ?? '';
+
+  return { game, ref }
 }
 
 export const actions = {
