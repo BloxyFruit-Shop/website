@@ -8,10 +8,16 @@ import { currencyRates } from "$server/api"
 export const load = async ({ url, cookies, locals }) => {
   const lang = (cookies.get("lang") || "EN")
   const curr = (cookies.get("curr") || (currencies?.[countryToCurrency?.[locals.country]] && countryToCurrency?.[locals.country]) || "USD")
+  const ref = url.searchParams.get("ref") ?? ''
 
   if (!cookies.get("lang") || !cookies.get("curr")) {
     cookies.set("lang", lang, { path: '/', sameSite: 'Strict', httpOnly: false, maxAge: 9e5, secure: false });
     cookies.set("curr", curr, { path: '/', sameSite: 'Strict', httpOnly: false, maxAge: 9e5, secure: false });
+    cookies.set("ref", ref, { path: '/', sameSite: 'Strict', httpOnly: false, maxAge: 60 * 60 * 24, secure: false });
+  }
+
+  if (!cookies.get("ref") || (ref && cookies.get("ref") !== ref)) {
+    cookies.set("ref", ref, { path: '/', sameSite: 'Strict', httpOnly: false, maxAge: 60 * 60 * 24, secure: false });
   }
 
   const temporaryRegisterForm = await superValidate(valibot(registerSchema, { abortPipeEarly: true }))
