@@ -1,8 +1,9 @@
 <script>
-  import { Account, History, Pencil, Copy, EmptyCircleInfo, Robux } from "$lib/icons";
+  import { Account, History, Pencil, Copy, EmptyCircleInfo, Robux, Eye, EyeOff, Crown } from "$lib/icons";
   import { format } from "date-fns";
   import { bgBlur } from "$lib/utils";
   import { toast } from "$lib/svoast"
+  import CensoredText from '$lib/components/CensoredText.svelte';
   import Button from "$lib/components/Button.svelte";
   import OrderDetails from "$lib/modals/general/order-details.svelte";
   import RobloxAccount from "$lib/modals/general/roblox-account.svelte";
@@ -12,6 +13,7 @@
   let selectedOrder = null;
   let orderDetailsOpen = false;
   let robloxAccountModalOpen = false;
+  let censored = true;
 
   const statusColors = {
     pending: "bg-[#dd8231]",
@@ -53,62 +55,93 @@
   <!-- <div class="absolute top-[900px] left-[-250px] size-[220px] bg-[#3BA4F0]/50 blur-[200px]"></div> -->
 
   <div class="max-w-[1440px] w-full mx-auto mt-[104px] flex flex-col lg:flex-row gap-6">
-    <div class="w-full p-6 rounded-lg lg:w-4/12 h-fit" style="{bgBlur({ color: '#111A28', blur: 6, opacity: 0.9 })}">
-      <div class="flex items-center gap-2">
-        <Account class="w-9 h-9" />
-        <p class="text-2xl font-bold">Your Details</p>
-      </div>
-
-      <div class="w-full h-[3px] bg-[#1D2535] my-5 rounded-full"></div>
-
-      <div class="flex flex-col gap-3 mb-5">
-        <div class="flex items-center gap-2 text-lg font-medium">
-          <p class="text-[#809BB5]">Username:</p>
-          <p class="text-white">{data.localUser.username}</p>
-        </div>
-        <div class="flex items-center gap-2 text-lg font-medium">
-          <p class="text-[#809BB5]">Email:</p>
-          <p class="text-white">{data.localUser.email}</p>
-        </div>
-        <div class="flex items-center gap-2 text-lg font-medium">
-          <p class="text-[#809BB5]">Password:</p>
-          <p class="text-white">********</p>
-        </div>
-        <div class="grid">
-          <div class="flex items-center gap-2 text-lg font-medium">
-            <p class="text-[#809BB5]">Referral:</p>
-            <div class="flex items-center gap-1">
-              <p class="text-white">{data.localUser.referralCode ?? "You may need to log back in to see this."}</p>
-              {#if data.localUser.referralCode}
-              <Button
-              variant="bordered"
-              color="user"
-              onClick={copyReferralCode}
-              title="Copy referral code"
-              >
-              <Copy class="text-white size-3" />
-            </Button>
+    <div class="flex flex-col w-full gap-6 lg:w-4/12 h-fit">
+      <div class="w-full p-6 rounded-lg" style="{bgBlur({ color: '#111A28', blur: 6, opacity: 0.9 })}">
+        <div class="flex items-center justify-between gap-2">
+          <p class="flex items-center gap-2">
+            <Account class="w-9 h-9" />
+            <span class="text-2xl font-bold">Your Details</span>
+          </p>
+          
+          <Button
+            variant="bordered"
+            color="user"
+            class="p-2"
+            onClick={() => {censored = !censored}}
+          >
+            {#if censored}
+            <EyeOff class="size-4" />
+            {:else}
+            <Eye class="size-4" />
             {/if}
-          </div>
-          </div>
-          <div class="grid grid-cols-[auto_1fr] gap-1 text-[#809BB5]">
-            <EmptyCircleInfo class="size-3 mt-0.5" />
-            <p class="text-sm">Recieve robux everytime anyone buys using your code!</p>
-          </div>
+          </Button>
         </div>
-        <div class="flex items-center gap-2 text-lg font-medium">
-          <p class="text-[#809BB5]">Collected Robux:</p>
-          <p class="flex items-center gap-1 text-white"><Robux class="size-4" />{data.robuxAmount}</p>
+  
+        <div class="w-full h-[3px] bg-[#1D2535] my-5 rounded-full"></div>
+  
+        <div class="flex flex-col gap-3 mb-5">
+          <div class="flex items-center gap-2 text-lg font-medium">
+            <p class="text-[#809BB5]">Username:</p>
+            <CensoredText text={data.localUser.username} censor={censored} />
+          </div>
+          <div class="flex items-center gap-2 text-lg font-medium">
+            <p class="text-[#809BB5]">Email:</p>
+            <CensoredText text={data.localUser.email} censor={censored} />
+          </div>
+          <div class="flex items-center gap-2 text-lg font-medium">
+            <p class="text-[#809BB5]">Password:</p>
+            <p class="text-white">********</p>
+          </div>
         </div>
       </div>
-      <Button
-        variant="gradient"
-        color="accent"
-        disabled={data.robuxAmount === 0}
-        class="w-full"
-      >
-        Claim Robux
-      </Button>
+      
+      <div class="w-full p-6 rounded-lg" style="{bgBlur({ color: '#111A28', blur: 6, opacity: 0.9 })}">
+        <div class="flex items-center justify-between gap-2">
+          <p class="flex items-center gap-2">
+            <Crown class="p-1.5 size-9" />
+            <span class="text-2xl font-bold">Affiliate panel</span>
+          </p>
+        </div>
+  
+        <div class="w-full h-[3px] bg-[#1D2535] my-5 rounded-full"></div>
+  
+        <div class="flex flex-col gap-3 mb-5">
+          <div class="grid">
+            <div class="flex items-center gap-2 text-lg font-medium">
+              <p class="text-[#809BB5]">Referral:</p>
+              <div class="flex items-center gap-1">
+                <p class="text-white">{data.localUser.referralCode ?? "You may need to log back in to see this."}</p>
+                {#if data.localUser.referralCode}
+                <Button
+                variant="bordered"
+                color="user"
+                onClick={copyReferralCode}
+                title="Copy referral code"
+                >
+                <Copy class="text-white size-3" />
+              </Button>
+              {/if}
+            </div>
+            </div>
+            <div class="grid grid-cols-[auto_1fr] gap-1 text-[#809BB5]">
+              <EmptyCircleInfo class="size-3 mt-0.5" />
+              <p class="text-sm">Recieve robux everytime anyone buys using your code!</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 text-lg font-medium">
+            <p class="text-[#809BB5]">Collected Robux:</p>
+            <p class="flex items-center gap-1 text-white"><Robux class="size-4" />{data.robuxAmount}</p>
+          </div>
+        </div>
+        <Button
+          variant="gradient"
+          color="accent"
+          disabled={data.robuxAmount === 0}
+          class="w-full"
+        >
+          Claim Robux
+        </Button>
+      </div>
     </div>
 
     <div class="w-full p-6 rounded-lg lg:w-8/12" style="{bgBlur({ color: '#111A28', blur: 6, opacity: 0.9 })}">
@@ -137,8 +170,8 @@
           <tbody>
             {#each data.orders as order}
               <tr class="bg-[#1D2535]/30 hover:bg-[#1D2535]/50 transition-colors">
-                <td class="py-4 pl-4 rounded-l-lg">
-                  #{order.id}
+                <td class="py-4 pl-4 rounded-l-lg min-w-[160px]">
+                  <CensoredText text={`#${order.id}`} censor={censored} />
                 </td>
                 <td>
                   {format(new Date(order.createdAt), "MMM dd, yyyy HH:mm")}
