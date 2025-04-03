@@ -1,5 +1,5 @@
 <script>
-  import { Search, Options, Basket, Check, Filters, ArrowDown, Games, Close, ArrowRight, OptionsFill, Tag, PriceTag, ShoppingCart, Mastercard, Maestro, Paypal, Visa, CirlceIlustration, Logo, Fire } from "$icons"
+  import { Search, Options, Basket, Check, Filters, ArrowDown, Games, Close, ArrowRight, OptionsFill, Tag, PriceTag, ShoppingCart, Mastercard, Maestro, Paypal, Visa, CirlceIlustration, Logo, Fire, Pencil } from "$icons"
   import Button from "$components/Button.svelte"
   import WholeItem from "$components/WholeItem.svelte"
   import { page } from "$app/stores"
@@ -24,6 +24,11 @@
   import SortBySelector from "$lib/elements/sort-by-selector.svelte"
 
   export let data
+
+  let currentRef = data.ref || "";
+  let editableRef = currentRef;
+  let isEditingRef = false;
+  let refError = "";
 
   let priceRange = [0, 500]
 
@@ -150,6 +155,35 @@
 
     categorySelector.style.transform = `translateX(${translateX}px)`
     categorySelector.style.width = `${newWidth}px`
+  }
+
+  const setCookie = (name, value, days) => {
+    let expires = "";
+    if (days) {
+      const date = new Date();
+      date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+      expires = "; expires=" + date.toUTCString();
+    }
+    // Ensure it's set for the whole domain path
+    document.cookie = name + "=" + (value || "") + expires + "; path=/";
+  }
+
+  const handleConfirmRef = () => {
+    if (editableRef.length !== 0 && editableRef.length !== 10) {
+      refError = "Code must be 10 characters long.";
+      return;
+    }
+
+    refError = "";
+    currentRef = editableRef;
+    setCookie("ref", currentRef, 1);
+    isEditingRef = false;
+  }
+
+  const handleCancelRef = () => {
+    editableRef = currentRef;
+    refError = "";
+    isEditingRef = false;
   }
 
   activeCategory.subscribe(repositionCategorySelector)
@@ -708,7 +742,7 @@
     <div class="w-full h-[3px] bg-[#1D2535] mt-4 rounded-full"></div>
 
     <div class="pointer-events-none absolute top-[79px] left-0 right-1.5 bg-gradient-to-b from-[#121620] to-transparent z-10 transition-[opacity,height] {cartIsAtTop ? "opacity-0 h-0" : "opacity-100 h-12"}"></div>
-    <div class="pointer-events-none absolute bottom-[318px] md:bottom-[246px] left-0 right-1.5 bg-gradient-to-b from-transparent to-[#121620] z-10 transition-[opacity,height] {cartIsAtBottom ? "opacity-0 h-0" : "opacity-100 h-12"}"></div>
+    <div class="pointer-events-none absolute bottom-[335px] md:bottom-[275px] left-0 right-1.5 bg-gradient-to-b from-transparent to-[#121620] z-10 transition-[opacity,height] {cartIsAtBottom ? "opacity-0 h-0" : "opacity-100 h-12"}"></div>
 
     <div class="relative flex-1 py-4 overflow-hidden">
       {#if cartProducts?.length == 0}
@@ -770,6 +804,38 @@
       <p>{formatCurrency(cartPrice * $currencyRateStore, $currencyStore)}</p>
     </div>
 
+    <div class="mt-1 text-sm text-[#809BB5] font-semibold text-center">
+      {#if isEditingRef}
+        <div class="flex flex-col items-center gap-1">
+           <div class="flex items-center gap-1">
+              <label for="refCodeInput" class="shrink-0">Referral Code:</label>
+              <input
+                type="text"
+                id="refCodeInput"
+                bind:value={editableRef}
+                maxlength="10"
+                class="bg-[#1D2535] text-white px-2 py-1 rounded border border-[#3a4a69] focus:border-[#3BA4F0] focus:ring-1 focus:ring-[#3BA4F0] outline-none w-[120px]"
+                placeholder="10 chars"
+              />
+              <button on:click={handleConfirmRef} class="p-1 text-green-400 rounded hover:bg-white/10">
+                <Check class="size-5" />
+              </button>
+              <button on:click={handleCancelRef} class="p-1 text-red-400 rounded hover:bg-white/10">
+                 <Close class="size-5" />
+              </button>
+           </div>
+           {#if refError}
+              <p class="mt-1 text-xs text-red-400">{refError}</p>
+           {/if}
+        </div>
+      {:else}
+        <button on:click={() => { isEditingRef = true; editableRef = currentRef; refError = ''; }} class="text-[#809BB5] hover:text-[#5bc0ff] flex items-center justify-center gap-1 w-full">
+          <span>{currentRef ? `Referral Code: ${currentRef}` : "Add Referral Code" }</span>
+          <Pencil class="size-3.5" />
+        </button>
+      {/if}
+    </div>
+
     <form
       action="?/buy"
       method="POST"
@@ -778,7 +844,8 @@
       }}
     >
       <input type="hidden" aria-hidden="true" value={JSON.stringify($cart.products)} name="cart" />
-      <Button type="submit" color="accent" variant="gradient" class="w-full mt-3 text-base" disabled={$cart?.products?.length == 0} loading={submittingCheckout}>
+      <input type="hidden" aria-hidden="true" value={currentRef} name="refCode" />
+      <Button type="submit" color="accent" variant="gradient" class="w-full mt-2 text-base" disabled={$cart?.products?.length == 0} loading={submittingCheckout}>
         Checkout
       </Button>
     </form>

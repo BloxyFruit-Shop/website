@@ -28,8 +28,11 @@ export const actions = {
     const data = await request.formData()
 
     const cart = JSON.parse(data.get("cart"))
+    const refCode = data.get("refCode")?.toString() ?? "";
 
-    // TODO: Get affiliate code from formData. For now remains static for testing.
+    const isValidRef = refCode.length === 10;
+    const note = isValidRef ? `affiliate-${refCode}` : '';
+
     const queryString = `
       mutation {
         cartCreate(
@@ -40,7 +43,7 @@ export const actions = {
                 merchandiseId: "gid://shopify/ProductVariant/${item.variantId}"
               }`).join(',\n')}
             ],
-            note: "affiliate-12345678",
+            note: "${note}",
             discountCodes: ["discount10"]
           }
         ) {
