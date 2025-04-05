@@ -1,4 +1,5 @@
 import { json } from '@sveltejs/kit';
+import { getRobloxUserByUsername, cacheRobloxUser } from '$server/cache';
 
 export async function POST({ request, locals }) {
   const localUser = locals.localUser;
@@ -12,6 +13,15 @@ export async function POST({ request, locals }) {
     if (!username) {
       return json({ error: 'Please provide a username.' }, { status: 400 });
     }
+
+    // Check cache first
+    const cachedUser = getRobloxUserByUsername(username);
+    if (cachedUser) {
+      console.log(`[Cache Hit] Roblox user: ${username}`);
+      return json(cachedUser);
+    }
+
+    console.log(`[Cache Miss] Roblox user: ${username}. Fetching from API...`);
 
     // Make the first API call to search for the username
     const searchResponse = await fetch(
@@ -66,6 +76,10 @@ export async function POST({ request, locals }) {
       thumbnail:
         thumbData.data && thumbData.data[0] ? thumbData.data[0].imageUrl : ''
     };
+
+    // Cache the result using the input username
+    cacheRobloxUser(username, result);
+    console.log(`[Cache Set] Roblox user: ${username}`);
 
     return json(result);
   } catch (error) {
