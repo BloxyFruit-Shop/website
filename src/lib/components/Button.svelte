@@ -10,7 +10,10 @@
       }
     },
     outlined: {
-      
+      accent: {
+        normal: "bg-[#1D2535AA] border-accent-500/20 rounded-full hover:bg-[#1D2535] hover:border-accent-500/40 transition-all duration-200",
+        disabled: "opacity-80 bg-[#1D2535AA] border-accent-500/20 rounded-full cursor-not-allowed"
+      }
     },
     text: {
       white: {
