@@ -39,6 +39,7 @@ export { default as Copy } from "./copy.svelte"
 export { default as EmptyCircleInfo } from "./empty-circle-info.svelte"
 export { default as Robux } from "./robux.svelte"
 export { default as Crown } from "./crown.svelte"
+export { default as Tickets } from "./tickets.svelte"
 
 // Payment method icons
 export { default as Amex } from './payment-methods/amex.svelte'
