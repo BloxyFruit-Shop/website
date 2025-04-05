@@ -257,4 +257,4 @@
 
 <RobloxAccount bind:open={robloxAccountModalOpen} bind:order={selectedOrder} />
 
-<ClaimModal bind:open={claimModalOpen} />
+<ClaimModal bind:open={claimModalOpen} bind:robuxAmount={data.robuxAmount} />
