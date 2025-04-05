@@ -2,6 +2,8 @@
   import { createEventDispatcher } from 'svelte';
   import Button from '$lib/components/Button.svelte';
   import Input from '$lib/components/Input.svelte';
+  import { fade, fly } from 'svelte/transition';
+  import { quintOut } from 'svelte/easing';
 
   const dispatch = createEventDispatcher();
 
@@ -23,7 +25,7 @@
     }
     loading = true;
     try {
-      const res = await fetch("/api/roblox", {
+      const res = await fetch("/api/roblox/user", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -60,20 +62,25 @@
 </script>
 
 {#if !userResult}
-  <div class="flex flex-col gap-4">
-    <Input label="Roblox Username" bind:value={username} placeholder="Enter username" />
+  <div class="flex flex-col gap-6" in:fade={{ duration: 300 }}>
+    <div in:fly={{ y: 20, duration: 100, easing: quintOut }}>
+      <Input label="Roblox Username" bind:value={username} placeholder="Enter username" />
+    </div>
     {#if error}
-      <p class="text-sm text-red-500">{error}</p>
+      <p class="text-sm text-red-500" in:fly={{ y: 20, duration: 100, easing: quintOut }}>{error}</p>
     {/if}
-    <div class="flex justify-end">
+    <div class="flex justify-end" in:fly={{ y: 20, duration: 100, delay: 150, easing: quintOut }}>
       <Button variant="gradient" color="accent" onClick={searchRobloxUser} disabled={loading}>
         {loading ? "Searching..." : "Search"}
       </Button>
     </div>
   </div>
 {:else}
-  <div class="flex flex-col gap-4">
-    <div class="p-6 transition-all duration-300 border bg-gradient-to-br from-slate-800/20 to-transparent rounded-xl backdrop-blur-sm border-white/10 hover:border-white/20">
+  <div class="flex flex-col gap-4" in:fade={{ duration: 300 }}>
+    <div 
+      class="p-6 transition-all duration-300 border bg-gradient-to-br from-slate-800/20 to-transparent rounded-xl backdrop-blur-sm border-white/10 hover:border-white/20"
+      in:fly={{ y: 20, duration: 400, delay: 300, easing: quintOut }}
+    >
       <div class="flex items-center gap-6">
         <div class="relative group">
           <div class="absolute inset-0 transition-all duration-300 rounded-full bg-blue-500/20 blur-xl group-hover:bg-blue-500/30"></div>
@@ -98,9 +105,9 @@
       </p>
     </div>
     {#if error}
-      <p class="text-sm text-red-500">{error}</p>
+      <p class="text-sm text-red-500" in:fly={{ y: 20, duration: 400, easing: quintOut }}>{error}</p>
     {/if}
-    <div class="flex justify-between">
+    <div class="flex justify-between" in:fly={{ y: 20, duration: 400, delay: 200, easing: quintOut }}>
       <Button color="gray" onClick={clearResult}>
         Back
       </Button>
