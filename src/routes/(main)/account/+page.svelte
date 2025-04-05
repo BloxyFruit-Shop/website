@@ -7,12 +7,14 @@
   import Button from "$lib/components/Button.svelte";
   import OrderDetails from "$lib/modals/general/order-details.svelte";
   import RobloxAccount from "$lib/modals/general/roblox-account.svelte";
+  import ClaimModal from "$lib/modals/claim/claim-modal-container.svelte";
 
   export let data;
 
   let selectedOrder = null;
   let orderDetailsOpen = false;
   let robloxAccountModalOpen = false;
+  let claimModalOpen = false;
   let censored = true;
 
   const statusColors = {
@@ -136,8 +138,12 @@
         <Button
           variant="gradient"
           color="accent"
-          disabled={data.robuxAmount === 0}
+          disabled={data.robuxAmount < 100}
           class="w-full"
+          onClick={() => {
+            if (data.robuxAmount < 100) return;
+            claimModalOpen = true;
+          }}
         >
           Claim Robux
         </Button>
@@ -250,3 +256,5 @@
 />
 
 <RobloxAccount bind:open={robloxAccountModalOpen} bind:order={selectedOrder} />
+
+<ClaimModal bind:open={claimModalOpen} />
