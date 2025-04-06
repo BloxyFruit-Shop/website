@@ -2,6 +2,7 @@
   import { Dialog } from "bits-ui"
   import { Close } from "$lib/icons"
   import { toast } from "$lib/svoast"
+  import { invalidateAll } from '$app/navigation';
   import RobloxUserSearch from "$lib/components/RobloxUserSearch.svelte"
 
   export let open = false
@@ -36,9 +37,9 @@
         error = data.error || "Failed to update order with Roblox account.";
         return;
       }
-      
-      toast["success"]("Reciever updated successfully.", {duration: 3000})
       open = false;
+      invalidateAll()
+      toast["success"]("Reciever updated successfully.", {duration: 3000})
     } catch (err) {
       error = "Failed to update order due to a network error.";
       console.error(err);
