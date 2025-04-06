@@ -48,6 +48,11 @@
       toast.error("Failed to copy referral code", { duration: 2000 });
     }
   }
+
+  function claimSuccess(event) {
+    const message = `You have successfully claimed ${event.detail.amount} Robux!\nThis will take 5-7 days for Roblox to register it.`;
+    toast.success(message, {duration: 4000})
+  }
 </script>
 
 <div class="h-full absolute top-0 left-0 right-[var(--scrollbar-width,0px)] bg-[linear-gradient(to_bottom,#0c0e16e0,#0c0e16),url(/assets/landing-background.webp)] bg-no-repeat bg-cover bg-center z-[-1]"></div>
@@ -257,4 +262,4 @@
 
 <RobloxAccount bind:open={robloxAccountModalOpen} bind:order={selectedOrder} />
 
-<ClaimModal bind:open={claimModalOpen} bind:robuxAmount={data.robuxAmount} />
+<ClaimModal bind:open={claimModalOpen} bind:robuxAmount={data.robuxAmount} on:claim-success={claimSuccess} />

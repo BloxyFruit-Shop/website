@@ -12,7 +12,7 @@
 	}
 </script>
 
-<div class="step-a space-y-4">
+<div class="w-full space-y-4">
 	<div class="space-y-2">
 		<h2 class="text-xl font-semibold text-transparent bg-gradient-to-r from-white to-white/70 bg-clip-text">
 			Link Your Roblox Account
@@ -26,9 +26,3 @@
 		<RobloxUserSearch on:userSelected={handleUserSelected} />
 	</div>
 </div>
-
-<style>
-	.step-a {
-		width: 100%;
-	}
-</style>

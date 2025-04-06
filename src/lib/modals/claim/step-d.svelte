@@ -118,9 +118,9 @@
     </div>
 
     {#if error}
-      <p class="text-sm text-red-500" in:fly={{ y: 20, duration: 400, easing: quintOut }}>
+      <div class="w-full p-2 mb-2 text-sm text-center text-red-400 rounded-md bg-red-500/10" transition:fade>
         {error}
-      </p>
+      </div>
     {/if}
 
     <div class="flex justify-end" in:fly={{ y: 20, duration: 400, delay: 500, easing: quintOut }}>

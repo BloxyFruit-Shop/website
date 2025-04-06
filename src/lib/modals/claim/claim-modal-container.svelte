@@ -48,6 +48,7 @@
   }
   
   function handleStepEFinish() {
+      dispatch('claim-success', { amount: stepData.robuxAmount });
       open = false;
   }
 

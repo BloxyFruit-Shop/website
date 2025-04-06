@@ -72,12 +72,9 @@
       <div class="w-8 h-8 border-4 rounded-full border-t-blue-500 border-blue-500/30 animate-spin"></div>
     </div>
   {:else if error}
-    <p 
-      class="text-sm text-red-500"
-      in:fly={{ y: 20, duration: 400, delay: 300, easing: quintOut }}
-    >
-      {error}
-    </p>
+  <div class="w-full p-2 mb-2 text-sm text-center text-red-400 rounded-md bg-red-500/10" transition:fade>
+    {error}
+  </div>
   {:else if games.length > 0}
     <div 
       class="relative"
