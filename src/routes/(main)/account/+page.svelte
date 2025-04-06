@@ -8,6 +8,9 @@
   import OrderDetails from "$lib/modals/general/order-details.svelte";
   import RobloxAccount from "$lib/modals/general/roblox-account.svelte";
   import ClaimModal from "$lib/modals/claim/claim-modal-container.svelte";
+  import { goto } from '$app/navigation';
+  import { page } from '$app/stores';
+  import { invalidateAll } from '$app/navigation';
 
   export let data;
 
@@ -16,6 +19,8 @@
   let robloxAccountModalOpen = false;
   let claimModalOpen = false;
   let censored = true;
+
+  $: ({ currentPage, totalPages } = data.pagination || { currentPage: 1, totalPages: 1 }); // Add default fallback
 
   const statusColors = {
     pending: "bg-[#dd8231]",
@@ -39,10 +44,10 @@
   }
 
   async function copyReferralCode() {
-    if (!data.localUser.referralCode) return;
+    if (!data.referral) return;
     
     try {
-      await navigator.clipboard.writeText(data.localUser.referralCode);
+      await navigator.clipboard.writeText(data.referral);
       toast.success("Referral code copied to clipboard!", { duration: 2000 });
     } catch (err) {
       toast.error("Failed to copy referral code", { duration: 2000 });
@@ -50,15 +55,34 @@
   }
 
   function claimSuccess(event) {
-    const message = `You have successfully claimed ${event.detail.amount} Robux!\nThis will take 5-7 days for Roblox to register it.`;
+    const message = `You have successfully claimed ${event.detail.amount} Robux! This will take 5-7 days for Roblox to register it.`;
+    invalidateAll();
     toast.success(message, {duration: 4000})
+  }
+
+  function goToPage(newPage) {
+    if (newPage < 1 || newPage > totalPages || newPage === currentPage) {
+      return; // Don't navigate if page is invalid or the same
+    }
+
+    const searchParams = new URLSearchParams($page.url.search);
+    searchParams.set('page', newPage.toString());
+    goto(`?${searchParams.toString()}`, { keepFocus: true, noScroll: true, replaceState: true });
+  }
+
+  function goToPreviousPage() {
+    goToPage(currentPage - 1);
+  }
+
+  function goToNextPage() {
+    goToPage(currentPage + 1);
   }
 </script>
 
 <div class="h-full absolute top-0 left-0 right-[var(--scrollbar-width,0px)] bg-[linear-gradient(to_bottom,#0c0e16e0,#0c0e16),url(/assets/landing-background.webp)] bg-no-repeat bg-cover bg-center z-[-1]"></div>
 <div class="h-full absolute top-0 left-0 right-[var(--scrollbar-width,0px)] bg-[linear-gradient(to_bottom,#0c0e16e0,#0c0e16),url(/assets/background-glow.webp)] opacity-[0.05] bg-no-repeat bg-cover bg-center z-[-1]"></div>
 
-<div class="px-6 min-h-[calc(100dvh-178px-104px)]">
+<div class="px-6 min-h-[calc(100dvh-178px-104px)] pb-10">
   <!-- <div class="absolute top-[900px] left-[-250px] size-[220px] bg-[#3BA4F0]/50 blur-[200px]"></div> -->
 
   <div class="max-w-[1440px] w-full mx-auto mt-[104px] flex flex-col lg:flex-row gap-6">
@@ -117,20 +141,23 @@
             <div class="flex items-center gap-2 text-lg font-medium">
               <p class="text-[#809BB5]">Referral:</p>
               <div class="flex items-center gap-1">
-                <p class="text-white">{data.localUser.referralCode ?? "You may need to log back in to see this."}</p>
-                {#if data.localUser.referralCode}
-                <Button
-                variant="bordered"
-                color="user"
-                onClick={copyReferralCode}
-                title="Copy referral code"
-                >
-                <Copy class="text-white size-3" />
-              </Button>
-              {/if}
+                {#if data.referral}
+                  <p class="text-white">{data.referral}</p>
+                  <Button
+                    variant="bordered"
+                    color="user"
+                    onClick={copyReferralCode}
+                    title="Copy referral code"
+                    class="p-1"
+                  >
+                    <Copy class="text-white size-3" />
+                  </Button>
+                {:else}
+                   <p class="text-sm text-gray-400">Not available. Try logging in again.</p>
+                {/if}
+              </div>
             </div>
-            </div>
-            <div class="grid grid-cols-[auto_1fr] gap-1 text-[#809BB5]">
+            <div class="grid grid-cols-[auto_1fr] gap-1 text-[#809BB5] mt-1">
               <EmptyCircleInfo class="size-3 mt-0.5" />
               <p class="text-sm">Recieve robux everytime anyone buys using your code!</p>
             </div>
@@ -146,116 +173,167 @@
           disabled={data.robuxAmount < 100}
           class="w-full"
           onClick={() => {
-            if (data.robuxAmount < 100) return;
+            if (data.robuxAmount < 100) {
+                 toast.info("You need at least 100 Robux to claim.", { duration: 3000 });
+                 return;
+            }
             claimModalOpen = true;
           }}
         >
-          Claim Robux
+          Claim Robux {data.robuxAmount < 100 ? '(Need 100+)' : ''}
         </Button>
       </div>
     </div>
 
-    <div class="w-full p-6 rounded-lg lg:w-8/12" style="{bgBlur({ color: '#111A28', blur: 6, opacity: 0.9 })}">
-      <div class="flex items-center justify-between">
-        <div class="flex items-center gap-2">
-          <History class="w-8 h-8" />
-          <p class="text-2xl font-bold">Order History</p>
+    <div class="flex flex-col w-full p-6 rounded-lg lg:w-8/12" style="{bgBlur({ color: '#111A28', blur: 6, opacity: 0.9 })}">
+      <div class="shrink-0">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div class="flex items-center gap-2">
+            <History class="w-8 h-8" />
+            <p class="text-2xl font-bold">Order History</p>
+          </div>
+          {#if data.pagination && data.pagination.totalOrders > 0}
+            <p class="text-sm text-[#809BB5]">
+              Showing {(currentPage - 1) * data.pagination.limit + 1}-{(currentPage - 1) * data.pagination.limit + data.orders.length} of {data.pagination.totalOrders} orders
+            </p>
+          {/if}
         </div>
+
+        <div class="w-full h-[3px] bg-[#1D2535] my-5 rounded-full" />
       </div>
 
-      <div class="w-full h-[3px] bg-[#1D2535] my-5 rounded-full" />
-
-      <div class="overflow-x-auto">
-        <table class="w-full border-separate border-spacing-y-2 min-w-[830px]">
-          <thead>
-            <tr class="text-left">
-              <th class="text-[#809BB5] font-medium pb-3">Order ID</th>
-              <th class="text-[#809BB5] font-medium pb-3">Date</th>
-              <th class="text-[#809BB5] font-medium pb-3">Items</th>
-              <th class="text-[#809BB5] font-medium pb-3">Total</th>
-              <th class="text-[#809BB5] font-medium pb-3">Status</th>
-              <th class="text-[#809BB5] font-medium pb-3">Reciever</th>
-              <th class="text-[#809BB5] font-medium pb-3"></th>
-            </tr>
-          </thead>
-          <tbody>
-            {#each data.orders as order}
-              <tr class="bg-[#1D2535]/30 hover:bg-[#1D2535]/50 transition-colors">
-                <td class="py-4 pl-4 rounded-l-lg min-w-[160px]">
-                  <CensoredText text={`#${order.id}`} censor={censored} />
-                </td>
-                <td>
-                  {format(new Date(order.createdAt), "MMM dd, yyyy HH:mm")}
-                </td>
-                <td>
-                  <div class="flex items-center gap-2">
-                    <div class="flex -space-x-2">
-                      {#each order.items.slice(0, 3) as item}
-                        <div class="size-8 rounded-full bg-[#131620] ring-2 ring-[#1D2535] relative">
-                          <img src={item.image} alt={item.title} class="object-contain p-1 size-full" />
-                        </div>
-                      {/each}
-                    </div>
-                    {#if order.items.length > 3}
-                      <span class="text-sm text-[#809BB5]">+{order.items.length - 3}</span>
-                    {/if}
-                  </div>
-                </td>
-                <td class="font-medium">
-                  ${order.totalAmount}
-                </td>
-                <td>
-                  <span class="px-[11px] py-[5px] rounded-full capitalize text-sm font-medium {statusColors[order.status]}">
-                    {order.status}
-                  </span>
-                </td>
-                <td class="pr-4 max-w-[180px]">
-                    <Button
-                      variant="bordered"
-                      color="user"
-                      size="small"
-                      disabled={order.status !== "pending"}
-                      class="mx-auto"
-                      onClick={() => openRobloxAccountModal(order)}
-                    >
-                      {#if order.reciever && order.reciever.displayName}
-                        <div class="flex items-center gap-2 pr-2">
-                          <img
-                            src={order.reciever.thumbnail}
-                            alt={order.reciever.displayName}
-                            class="object-cover w-8 h-8 rounded-full"
-                          />
-                          <span class="text-sm font-medium max-w-[110px] truncate">{order.reciever.displayName}</span>
-                        </div>
-                      {:else}
-                        {#if order.status === "pending"}
-                          <span class="flex gap-2"> <Pencil class="size-4" /> Add reciever</span>
-                        {:else}
-                          No data
-                        {/if}
-                      {/if}
-                    </Button>
-                </td>
-                <td class="pr-4 w-[120px] rounded-r-lg">
-                  <Button
-                    variant="gradient"
-                    color="accent"
-                    class="w-[120px]"
-                    onClick={() => openOrderDetails(order)}
-                  >
-                    {order.status === 'ready' ? 'Claim' : 'Details'}
-                  </Button>
-                </td>
+      <div class="flex flex-col flex-grow min-h-0">
+        {#if data.orders && data.orders.length > 0}
+          <div class="flex-grow overflow-x-auto">
+            <table class="w-full border-separate border-spacing-y-2 min-w-[830px]">
+            <thead>
+              <tr class="text-left">
+                <th class="text-[#809BB5] font-medium pb-3 pl-4">Order ID</th> 
+                <th class="text-[#809BB5] font-medium pb-3">Date</th>
+                <th class="text-[#809BB5] font-medium pb-3">Items</th>
+                <th class="text-[#809BB5] font-medium pb-3">Total</th>
+                <th class="text-[#809BB5] font-medium pb-3">Status</th>
+                <th class="text-[#809BB5] font-medium pb-3">Reciever</th>
+                <th class="text-[#809BB5] font-medium pb-3 pr-4"></th> 
               </tr>
-            {/each}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {#each data.orders as order (order._id)} 
+                <tr class="bg-[#1D2535]/30 hover:bg-[#1D2535]/50 transition-colors">
+                  <td class="py-4 pl-4 rounded-l-lg min-w-[160px]">
+                    <CensoredText text={`#${order.id}`} censor={censored} />
+                  </td>
+                  <td>
+                    {format(new Date(order.createdAt), "MMM dd, yyyy HH:mm")}
+                  </td>
+                  <td>
+                    <div class="flex items-center gap-2">
+                      <div class="flex -space-x-2">
+                        {#each order.items.slice(0, 3) as item (item._id || Math.random())}
+                          <div class="size-8 rounded-full bg-[#131620] ring-2 ring-[#1D2535] relative flex items-center justify-center"> 
+                            {#if item.image}
+                              <img src={item.image} alt={item.title ?? 'Item'} class="object-contain p-1 size-full" />
+                            {:else}
+                              <span class="text-xs text-gray-400">?</span> 
+                            {/if}
+                          </div>
+                        {/each}
+                      </div>
+                      {#if order.items.length > 3}
+                        <span class="text-sm text-[#809BB5]">+{order.items.length - 3}</span>
+                      {/if}
+                    </div>
+                  </td>
+                  <td class="font-medium">
+                    ${order.totalAmount?.toFixed(2) ?? 'N/A'}
+                  </td>
+                  <td>
+                    <span class="px-[11px] py-[5px] rounded-full capitalize text-sm font-medium {statusColors[order.status] ?? 'bg-gray-500'}">
+                      {order.status}
+                    </span>
+                  </td>
+                  <td class="pr-4 max-w-[180px]">
+                      <Button
+                        variant="bordered"
+                        color="user"
+                        size="small"
+                        disabled={order.status !== "pending"}
+                        class="mx-auto"
+                        title={order.status === 'pending' ? 'Add or Edit Roblox Account' : 'Roblox account cannot be changed'}
+                        onClick={() => openRobloxAccountModal(order)}
+                      >
+                        {#if order.reciever && order.reciever.displayName}
+                          <div class="flex items-center gap-2 pr-2">
+                            {#if order.reciever.thumbnail}
+                              <img
+                                src={order.reciever.thumbnail}
+                                alt={order.reciever.displayName}
+                                class="object-cover w-8 h-8 rounded-full"
+                              />
+                            {/if}
+                            <span class="text-sm font-medium max-w-[110px] truncate">{order.reciever.displayName}</span>
+                          </div>
+                        {:else}
+                          {#if order.status === "pending"}
+                            <span class="flex items-center gap-2"> <Pencil class="size-4" /> Add reciever</span>
+                          {:else}
+                            <span class="text-sm text-gray-400">No data</span>
+                          {/if}
+                        {/if}
+                      </Button>
+                  </td>
+                  <td class="pr-4 w-[120px] rounded-r-lg">
+                    <Button
+                      variant="gradient"
+                      color="accent"
+                      class="w-[120px]"
+                      onClick={() => openOrderDetails(order)}
+                    >
+                      {order.status === 'ready' ? 'Claim' : 'Details'}
+                    </Button>
+                  </td>
+                </tr>
+              {/each}
+            </tbody>
+          </table>
+          </div>
+
+          {#if totalPages > 1}
+            <div class="flex items-center justify-center gap-4 mt-6 shrink-0">
+              <Button
+                variant="contained"
+                color="gray"
+                size="small"
+                disabled={currentPage <= 1}
+                onClick={goToPreviousPage}
+              >
+                Previous
+              </Button>
+              <span class="text-sm text-[#809BB5]">
+                Page {currentPage} of {totalPages}
+              </span>
+              <Button
+                variant="contained"
+                color="gray"
+                size="small"
+                disabled={currentPage >= totalPages}
+                onClick={goToNextPage}
+              >
+                Next
+              </Button>
+            </div>
+          {/if}
+        {:else}
+          <div class="flex items-center justify-center flex-grow">
+            <p class="text-center text-[#809BB5]">You have no order history yet.</p>
+          </div>
+        {/if}
       </div>
     </div>
   </div>
 </div>
 
-<OrderDetails 
+<OrderDetails
   bind:open={orderDetailsOpen}
   bind:order={selectedOrder}
 />
