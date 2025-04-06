@@ -129,7 +129,7 @@
       <div class="w-full p-6 rounded-lg" style="{bgBlur({ color: '#111A28', blur: 6, opacity: 0.9 })}">
         <div class="flex items-center justify-between gap-2">
           <p class="flex items-center gap-2">
-            <Crown class="p-1.5 size-9" />
+            <Crown class="pb-1.5 px-1 size-9" />
             <span class="text-2xl font-bold">Affiliate panel</span>
           </p>
         </div>
