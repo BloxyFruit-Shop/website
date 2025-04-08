@@ -1,5 +1,5 @@
 <script>
-  import { Account, History, Pencil, Copy, EmptyCircleInfo, Robux, Eye, EyeOff, Crown } from "$lib/icons";
+  import { Account, History, Pencil, Copy, EmptyCircleInfo, Robux, Eye, EyeOff, Crown, Discord } from "$lib/icons";
   import { format } from "date-fns";
   import { bgBlur } from "$lib/utils";
   import { toast } from "$lib/svoast"
@@ -126,7 +126,7 @@
         </div>
       </div>
       
-      <div class="w-full p-6 rounded-lg" style="{bgBlur({ color: '#111A28', blur: 6, opacity: 0.9 })}">
+      <div class="w-full p-6 pb-2 rounded-lg" style="{bgBlur({ color: '#111A28', blur: 6, opacity: 0.9 })}">
         <div class="flex items-center justify-between gap-2">
           <p class="flex items-center gap-2">
             <Crown class="pb-1.5 px-1 size-9" />
@@ -136,7 +136,7 @@
   
         <div class="w-full h-[3px] bg-[#1D2535] my-5 rounded-full"></div>
   
-        <div class="flex flex-col gap-3 mb-5">
+        <div class="flex flex-col gap-3 mb-4">
           <div class="grid">
             <div class="flex items-center gap-2 text-lg font-medium">
               <p class="text-[#809BB5]">Referral:</p>
@@ -170,18 +170,22 @@
         <Button
           variant="gradient"
           color="accent"
-          disabled={data.robuxAmount < 100}
+          disabled={data.robuxAmount < 50}
           class="w-full"
           onClick={() => {
-            if (data.robuxAmount < 100) {
-                 toast.info("You need at least 100 Robux to claim.", { duration: 3000 });
+            if (data.robuxAmount < 50) {
+                 toast.info("You need at least 50 Robux to claim.", { duration: 3000 });
                  return;
             }
             claimModalOpen = true;
           }}
         >
-          Claim Robux {data.robuxAmount < 100 ? '(Need 100+)' : ''}
+          Claim Robux {data.robuxAmount < 50 ? '(Need 50+)' : ''}
         </Button>
+        <a href="https://discord.gg/efzkFH5mxc" target="_blank" class="flex items-center justify-center w-fit mx-auto my-2 gap-2 p-2 text-[#809BB5] hover:text-white transition-colors rounded-lg">
+          <Discord class="size-8"/>
+          <span>Join our affiliate Discord Server</span>
+        </a>
       </div>
     </div>
 

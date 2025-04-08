@@ -23,7 +23,7 @@ export const load = async ({ locals, url }) => {
   if (page > totalPages && totalPages > 0) {
     page = totalPages
   }
-  
+
   const skip = (page - 1) * limit
   
   // Fetch the paginated list of orders
@@ -62,13 +62,6 @@ export const load = async ({ locals, url }) => {
   }
 
   const user = await users.findOne({ _id: localUser._id }).lean();
-  
-  console.table({
-    currentPage: page,
-    totalPages: totalPages,
-    limit: limit,
-    totalOrders: totalOrders
-  })
 
   return {
     localUser,
