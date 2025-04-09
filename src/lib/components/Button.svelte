@@ -51,6 +51,10 @@
       accent: {
         normal: "px-6 bg-gradient-to-r from-[#3BA4F0] to-[#1B92E9] hover:from-[#1B92E9] hover:to-[#3BA4F0] transition-colors",
         disabled: "px-6 opacity-40 bg-gradient-to-r from-[#3BA4F0] to-[#1B92E9]"
+      },
+      success: {
+        normal: "px-6 bg-gradient-to-r from-[#4CAF50] to-[#45A049] hover:from-[#45A049] hover:to-[#4CAF50] transition-colors",
+        disabled: "px-6 opacity-40 bg-gradient-to-r from-[#4CAF50] to-[#45A049]"
       }
     }
   }
