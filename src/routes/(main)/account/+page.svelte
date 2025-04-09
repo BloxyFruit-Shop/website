@@ -1,9 +1,10 @@
 <script>
-  import { Account, History, Pencil, Copy, EmptyCircleInfo, Robux, Eye, EyeOff, Crown, Discord } from "$lib/icons";
+  import { Account, History, Pencil, Copy, EmptyCircleInfo, Robux, Eye, EyeOff, Crown, Discord, Link } from "$lib/icons";
   import { format } from "date-fns";
   import { bgBlur } from "$lib/utils";
   import { toast } from "$lib/svoast"
   import CensoredText from '$lib/components/CensoredText.svelte';
+  import ClipboardCopy from '$lib/components/ClipboardCopy.svelte';
   import Button from "$lib/components/Button.svelte";
   import OrderDetails from "$lib/modals/general/order-details.svelte";
   import RobloxAccount from "$lib/modals/general/roblox-account.svelte";
@@ -41,17 +42,6 @@
     if (order.status !== "pending") return;
     selectedOrder = order;
     robloxAccountModalOpen = true;
-  }
-
-  async function copyReferralCode() {
-    if (!data.referral) return;
-    
-    try {
-      await navigator.clipboard.writeText(data.referral);
-      toast.success("Referral code copied to clipboard!", { duration: 2000 });
-    } catch (err) {
-      toast.error("Failed to copy referral code", { duration: 2000 });
-    }
   }
 
   function claimSuccess(event) {
@@ -142,16 +132,9 @@
               <p class="text-[#809BB5]">Referral:</p>
               <div class="flex items-center gap-1">
                 {#if data.referral}
-                  <p class="text-white">{data.referral}</p>
-                  <Button
-                    variant="bordered"
-                    color="user"
-                    onClick={copyReferralCode}
-                    title="Copy referral code"
-                    class="p-1"
-                  >
-                    <Copy class="text-white size-3" />
-                  </Button>
+                  <ClipboardCopy class="underline" copy={data.referral} successMessage="Referral code copied to clipboard">{data.referral}<Link class="size-3"/></ClipboardCopy>
+                  <span class="text-[#809BB5]"> or </span>
+                  <ClipboardCopy class="underline" copy={`https://bloxyfruit.com/?ref=${data.referral}`} successMessage="Referral link copied to clipboard">Share your Link <Link class="size-3"/></ClipboardCopy>
                 {:else}
                    <p class="text-sm text-gray-400">Not available. Try logging in again.</p>
                 {/if}
@@ -184,7 +167,7 @@
         </Button>
         <a href="https://discord.gg/efzkFH5mxc" target="_blank" class="flex items-center justify-center w-fit mx-auto my-2 gap-2 p-2 text-[#809BB5] hover:text-white transition-colors rounded-lg">
           <Discord class="size-8"/>
-          <span>Join our affiliate Discord Server</span>
+          <span>Join our affiliates Discord Server</span>
         </a>
       </div>
     </div>
