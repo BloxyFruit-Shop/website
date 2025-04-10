@@ -1,4 +1,3 @@
-
 <script>
   import { goto, invalidate } from '$app/navigation';
   import { page } from '$app/stores';
@@ -7,6 +6,9 @@
   import { bgBlur } from "$lib/utils";
   import { enhance } from '$app/forms';
   import { toast } from '$lib/svoast';
+  import { fade, fly, scale, slide } from 'svelte/transition';
+  import { flip } from 'svelte/animate';
+  import { quintOut } from 'svelte/easing';
 
   export let data;
 
@@ -18,6 +20,7 @@
   let editingUserId = null;
   let editRobuxValue = 0;
 
+  // Rest of your existing functions remain the same
   function startEditing(user) {
     editingUserId = user._id;
     editRobuxValue = user.robux;
@@ -73,15 +76,21 @@
   }
 </script>
 
-<div class="max-w-[1440px] h-full w-full mx-auto">
-  <div class="w-full h-full p-6 rounded-lg" style="{bgBlur({ color: '#111A28', blur: 6, opacity: 0.9 })}">
-    <div class="flex items-center justify-between gap-2 flex-wrap">
+<div class="max-w-[1440px] h-full w-full mx-auto" 
+     in:slide={{ y:20, duration: 300 }}>
+  <div class="w-full h-full p-6 rounded-lg" 
+       style="{bgBlur({ color: '#111A28', blur: 6, opacity: 0.9 })}"
+       in:fly={{ y: 20, duration: 300 }}>
+    
+    <div class="flex flex-wrap items-center justify-between gap-2"
+         in:slide={{ duration: 300 }}>
       <div class="flex items-center gap-2">
         <Users class="w-8 h-8" />
         <h1 class="text-2xl font-bold">Affiliates Management</h1>
       </div>
       {#if pagination && pagination.totalUsers > 0}
-        <p class="text-sm text-[#809BB5]">
+        <p class="text-sm text-[#809BB5]"
+           in:fade={{ duration: 200, delay: 300 }}>
           Showing {(currentPage - 1) * pagination.limit + 1}-{Math.min((currentPage - 1) * pagination.limit + affiliates.length, pagination.totalUsers)} of {pagination.totalUsers} affiliates
         </p>
       {/if}
@@ -89,7 +98,7 @@
 
     <div class="w-full h-[3px] bg-[#1D2535] my-5 rounded-full"></div>
 
-    <div class="mb-6 max-w-md">
+    <div class="max-w-md mb-6">
       <div class="flex items-center gap-2">
         <input
           type="search"
@@ -99,21 +108,30 @@
           class="flex-grow px-3 py-2 bg-[#1D2535]/50 border border-transparent focus:border-[#3BA4F0] rounded-md text-white placeholder-[#809BB5] focus:outline-none focus:ring-1 focus:ring-[#3BA4F0] transition"
         />
         <Button variant="gradient" color="accent" onClick={handleSearch}>
-          <Search class="size-5 mr-1" /> Search
+          <Search class="mr-1 size-5" /> Search
         </Button>
       </div>
     </div>
 
     {#if affiliates && affiliates.length > 0}
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-        {#each affiliates as user (user._id)}
-          <div class="rounded-lg flex flex-col items-center p-4 text-center bg-[#1D2535]/30 hover:bg-[#1D2535]/50 transition-colors">
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+        {#each affiliates as user, i (user._id)}
+          <div class="rounded-lg flex flex-col items-center p-4 text-center bg-[#1D2535]/30 hover:bg-[#1D2535]/50 transition-colors"
+               in:fly|local={{ 
+                 y: 20,
+                 x: 20,
+                 duration: 400, 
+                 delay: 100 + (i * 100),
+                 easing: quintOut 
+               }}
+               animate:flip={{ duration: 300 }}
+               out:fade|local={{ duration: 200 }}>
             <img
               src="/assets/bacon-headshot.webp"
               alt="{user.username}'s avatar"
               class="size-20 rounded-full mb-3 object-cover border-2 border-[#3BA4F0]/50"
             />
-            <p class="font-semibold text-white text-lg truncate w-full mb-1" title={user.username}>{user.username}</p>
+            <p class="w-full mb-1 text-lg font-semibold text-white truncate" title={user.username}>{user.username}</p>
 
             {#if editingUserId === user._id}
               <form
@@ -137,7 +155,8 @@
                     }
                   };
                 }}
-                class="w-full flex flex-col items-center gap-2 mt-1"
+                class="flex flex-col items-center w-full gap-2 mt-1"
+                in:scale={{ duration: 200 }}
               >
                 <input type="hidden" name="userId" value={user._id} />
                 <input
@@ -170,7 +189,7 @@
               >
                 <Robux class="size-4" />
                 {user.robux}
-                <Pencil class="size-3 ml-1 opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity" />
+                <Pencil class="ml-1 transition-opacity opacity-0 size-3 group-hover:opacity-100 group-focus:opacity-100" />
               </button>
             {/if}
           </div>
@@ -203,8 +222,10 @@
         </div>
       {/if}
     {:else}
-      <div class="flex items-center justify-center h-64">
-        <p class="text-center text-[#809BB5]">
+      <div class="flex items-center justify-center h-64"
+           in:scale={{ duration: 300, delay: 400, start: 0.9 }}>
+        <p class="text-center text-[#809BB5]"
+           in:fade={{ duration: 200, delay: 500 }}>
           {#if initialSearchTerm}
             No users found matching "{initialSearchTerm}".
           {:else}
@@ -215,4 +236,3 @@
     {/if}
   </div>
 </div>
-

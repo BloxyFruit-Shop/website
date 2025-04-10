@@ -10,6 +10,9 @@
   import { flyAndScale } from "$lib/utils"
   import { Robux, ArrowDown, Check } from '$lib/icons';
   import { Select } from "bits-ui";
+  import { fade, fly, scale, slide } from 'svelte/transition';
+  import { flip } from 'svelte/animate';
+  import { quintOut } from 'svelte/easing';
 
   export let data;
 
@@ -88,14 +91,20 @@
   }
 </script>
 
-<div class="max-w-[1440px] h-full w-full mx-auto">
-  <div class="w-full h-full p-6 rounded-lg" style="{bgBlur({ color: '#111A28', blur: 6, opacity: 0.9 })}">
-    <div class="flex flex-wrap items-center justify-between gap-2">
+<div class="max-w-[1440px] h-full w-full mx-auto" 
+     in:slide={{ y:20, duration: 300 }}>
+  <div class="w-full h-full p-6 rounded-lg" 
+       style="{bgBlur({ color: '#111A28', blur: 6, opacity: 0.9 })}"
+       in:fly={{ y: 20, duration: 300 }}>
+    
+    <div class="flex flex-wrap items-center justify-between gap-2"
+         in:slide={{ duration: 300 }}>
       <div class="flex items-center gap-2">
         <h1 class="text-2xl font-bold">Robux Claims Management</h1>
       </div>
       {#if totalClaims > 0}
-        <p class="text-sm text-[#809BB5]">
+        <p class="text-sm text-[#809BB5]" 
+           in:fade={{ duration: 200, delay: 300 }}>
           Showing {(currentPage - 1) * limit + 1}-{Math.min((currentPage - 1) * limit + claims.length, totalClaims)} of {totalClaims} claims
         </p>
       {/if}
@@ -182,8 +191,17 @@
 
     {#if claims && claims.length > 0}
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
-      {#each claims as claim (claim._id)}
-        <div class="bg-gradient-to-br from-[#1D2535]/80 to-[#1D2535]/30 rounded-lg overflow-hidden backdrop-blur-sm border border-[#3BA4F0]/10 transition-all duration-200 hover:border-[#3BA4F0]/30">
+      {#each claims as claim, i (claim._id)}
+        <div class="bg-gradient-to-br from-[#1D2535]/80 to-[#1D2535]/30 rounded-lg overflow-hidden backdrop-blur-sm border border-[#3BA4F0]/10 transition-all duration-200 hover:border-[#3BA4F0]/30"
+        in:fly|local={{ 
+          y: 20,
+          x: 20,
+          duration: 400, 
+          delay: 100 + (i * 100),
+          easing: quintOut 
+        }}
+        animate:flip={{ duration: 300 }}
+        out:fade|local={{ duration: 200 }}>
           <!-- Header Section -->
           <div class="p-4 border-b border-[#3BA4F0]/10">
             <div class="flex items-start gap-4">
@@ -276,9 +294,11 @@
           </Button>
         </div>
       {/if}
-    {:else}
-      <div class="flex items-center justify-center h-64">
-        <p class="text-center text-[#809BB5]">
+      {:else}
+      <div class="flex items-center justify-center h-64"
+           in:scale={{ duration: 300, delay: 400, start: 0.9 }}>
+        <p class="text-center text-[#809BB5]"
+           in:fade={{ duration: 200, delay: 500 }}>
           {#if initialSearchTerm}
             No claims found matching "{initialSearchTerm}".
           {:else}
