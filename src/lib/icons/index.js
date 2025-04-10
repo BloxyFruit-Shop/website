@@ -43,6 +43,7 @@ export { default as Tickets } from "./tickets.svelte"
 export { default as Link } from "./link.svelte"
 export { default as Users } from "./users.svelte"
 export { default as Hammer } from "./hammer.svelte"
+export { default as Hamburger } from "./hamburger.svelte"
 
 // Payment method icons
 export { default as Amex } from './payment-methods/amex.svelte'

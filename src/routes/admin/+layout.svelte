@@ -1,18 +1,27 @@
 <script>
   import { page } from '$app/stores';
   import { bgBlur } from "$lib/utils";
-  import { Games, Users } from "$lib/icons";
+  import { fade } from "svelte/transition";
+  import { Games, Users, Robux, Hamburger, Close } from "$lib/icons";
   import Logo from "$icons/logo.svelte"
   import UserSection from "$elements/user-section.svelte"
 
   export let data
 
+  let isMobileMenuOpen = false;
+
   const navItems = [
     { href: "/admin", icon: Games, label: "Dashboard" },
     { href: "/admin/affiliates", icon: Users, label: "Affiliates" },
+    { href: "/admin/claims", icon: Robux, label: "Claims" },
   ];
 
   $: currentPath = $page.url.pathname;
+
+  // Close mobile menu when route changes
+  $: if ($page) {
+    isMobileMenuOpen = false;
+  }
 </script>
 
 <div class="h-full absolute top-0 left-0 right-[var(--scrollbar-width,0px)] bg-[linear-gradient(to_bottom,#0c0e16e0,#0c0e16),url(/assets/landing-background.webp)] bg-no-repeat bg-cover bg-center z-[-1]"></div>
@@ -28,13 +37,26 @@
 
     <div class="flex items-center gap-4">
       <UserSection data={data} />
+      <!-- Mobile menu button -->
+      <button
+        class="lg:hidden p-2 rounded-lg hover:bg-[#1D2535]/50 transition-colors"
+        on:click={() => isMobileMenuOpen = !isMobileMenuOpen}
+        aria-label="Toggle menu"
+      >
+        {#if isMobileMenuOpen}
+          <Close class="size-6" />
+        {:else}
+          <Hamburger class="size-6" />
+        {/if}
+      </button>
     </div>
   </div>
 </header>
 
 <div class="flex min-h-[calc(100dvh-80px)] text-white mt-[80px]">
+  <!-- Desktop Sidebar -->
   <aside 
-    class="fixed w-64 top-[80px] bottom-0 overflow-y-auto z-10 [--admin-header-height:80px]"
+    class="fixed hidden lg:block w-64 top-[80px] bottom-0 overflow-y-auto z-10 [--admin-header-height:80px]"
     style="{bgBlur({ color: '#111A28', blur: 6, opacity: 0.95 })}"
   >
     <div class="sticky top-0 p-6 flex flex-col min-h-[calc(100dvh-80px)]">
@@ -49,7 +71,7 @@
             <li>
               <a
                 {href}
-                class="flex items-center gap-3 px-4 py-3 rounded-lg transition-colors relative group"
+                class="relative flex items-center gap-3 px-4 py-3 transition-colors rounded-lg group"
                 class:active={isActive}
               >
                 <svelte:component this={icon} class="size-5 shrink-0" />
@@ -73,7 +95,57 @@
     </div>
   </aside>
 
-  <main class="flex-1 ml-64 p-6 min-h-[calc(100dvh-80px)]">
+  <!-- Mobile Navigation Overlay -->
+  {#if isMobileMenuOpen}
+    <div
+      class="fixed inset-0 z-40 bg-black/50 lg:hidden"
+      on:click={() => isMobileMenuOpen = false}
+      transition:fade
+    ></div>
+  {/if}
+
+  <!-- Mobile Navigation Menu -->
+  <aside
+    class="fixed lg:hidden {isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'} top-[80px] bottom-0 w-64 z-50 transition-transform duration-300 ease-in-out"
+    style="{bgBlur({ color: '#111A28', blur: 6, opacity: 0.95 })}"
+  >
+    <div class="flex flex-col h-full p-6">
+      <div class="flex items-center gap-2 mb-8">
+        <h2 class="text-2xl font-bold">Admin Panel</h2>
+      </div>
+
+      <nav class="flex-grow">
+        <ul class="space-y-2">
+          {#each navItems as { href, icon, label }}
+            {@const isActive = currentPath === href || (href !== '/admin' && currentPath.startsWith(href))}
+            <li>
+              <a
+                {href}
+                class="relative flex items-center gap-3 px-4 py-3 transition-colors rounded-lg group"
+                class:active={isActive}
+              >
+                <svelte:component this={icon} class="size-5 shrink-0" />
+                <span class="font-medium">{label}</span>
+                
+                {#if isActive}
+                  <div class="absolute inset-0 bg-[#3BA4F0]/10 rounded-lg"></div>
+                  <div class="absolute left-0 top-0 bottom-0 w-1 bg-[#3BA4F0] rounded-r"></div>
+                {:else}
+                  <div class="absolute inset-0 bg-[#1D2535]/0 group-hover:bg-[#1D2535]/50 rounded-lg transition-colors"></div>
+                {/if}
+              </a>
+            </li>
+          {/each}
+        </ul>
+      </nav>
+
+      <div class="pt-4 mt-auto border-t border-[#1D2535]">
+        <p class="text-sm text-[#809BB5] px-4">Admin v1.0.0</p>
+      </div>
+    </div>
+  </aside>
+
+  <main class="flex-1 lg:ml-64 p-6 min-h-[calc(100dvh-80px)]">
     <slot />
   </main>
 </div>
