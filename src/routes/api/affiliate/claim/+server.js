@@ -1,5 +1,5 @@
 import { json } from '@sveltejs/kit';
-import { users } from '$server/mongo';
+import { users, robuxClaims } from '$server/mongo';
 import { DISCORD_AFFILIATE_CLAIM_WEBHOOK } from '$env/static/private';
 
 /**
@@ -61,13 +61,31 @@ export async function POST({ request, locals }) {
       return json({ error: 'Insufficient Robux balance.' }, { status: 400 });
     }
 
-    users.updateOne({
+    await users.updateOne({
       _id: dbUser._id
     }, {
       $inc: {
         robux: -robuxAmount
       }
     });
+
+    await robuxClaims.create({
+      user: {
+        id: dbUser._id,
+        username: requestUser.username,
+        displayName: requestUser.displayName,
+      },
+      robuxAmount: robuxAmount,
+      game: {
+        id: game.id,
+        name: game.name
+      },
+      gamepass: {
+        id: gamepass.id,
+        displayName: gamepass.displayName,
+        price: gamepass.price
+      }
+    })
 
     await fetch(DISCORD_AFFILIATE_CLAIM_WEBHOOK, {
       method: 'POST',
