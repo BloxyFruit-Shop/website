@@ -37,6 +37,7 @@ export const load = async ({ locals, url }) => {
   }
 
   const searchTerm = url.searchParams.get('search') || '';
+  const sortParam = url.searchParams.get('sort') || 'newest';
   const limit = CLAIMS_PER_PAGE;
 
   const filter = {};
@@ -46,6 +47,24 @@ export const load = async ({ locals, url }) => {
       '\\$&'
     );
     filter["user.username"] = { $regex: escapedSearchTerm, $options: 'i' };
+  }
+
+  // Determine sort criteria based on sortParam
+  let sortCriteria = {};
+  switch (sortParam) {
+    case 'oldest':
+      sortCriteria = { createdAt: 1 };
+      break;
+    case 'amount_desc':
+      sortCriteria = { robuxAmount: -1 };
+      break;
+    case 'amount_asc':
+      sortCriteria = { robuxAmount: 1 };
+      break;
+    case 'newest':
+    default:
+      sortCriteria = { createdAt: -1 };
+      break;
   }
 
   const totalClaims = await robuxClaims.countDocuments(filter);
@@ -59,7 +78,7 @@ export const load = async ({ locals, url }) => {
 
   const claimsList = await robuxClaims
     .find(filter)
-    .sort({ createdAt: -1 })
+    .sort(sortCriteria)
     .skip(skip)
     .limit(limit)
     .lean();
@@ -78,7 +97,8 @@ export const load = async ({ locals, url }) => {
       limit: limit,
       totalClaims: totalClaims
     },
-    searchTerm: searchTerm
+    searchTerm: searchTerm,
+    sort: sortParam
   };
 };
 
@@ -120,6 +140,30 @@ export const actions = {
           message: 'Claim not found or already fulfilled.'
         };
       }
+    } catch (error) {
+      return { success: false, message: error.message };
+    }
+  },
+
+  clearFulfilledClaims: async ({ request, locals }) => {
+    const session = locals.session;
+    if (!session) {
+      // Not logged in, redirect to home
+      throw redirect(302, '/');
+    }
+
+    const user = await users.findOne({ 'session.id': session }).lean();
+    if (!user || !user.role || user.role < roleEnums.Admin) {
+      console.warn(
+        `Unauthorized admin access attempt by user: ${user.username}`
+      );
+      throw redirect(303, '/');
+    }
+
+    try {
+      // Delete all claims that are already fulfilled
+      const result = await robuxClaims.deleteMany({ resolved: true });
+      return { success: true, deletedCount: result.deletedCount };
     } catch (error) {
       return { success: false, message: error.message };
     }

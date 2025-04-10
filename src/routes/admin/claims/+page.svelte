@@ -7,7 +7,9 @@
   import { bgBlur } from '$lib/utils';
   import { enhance } from '$app/forms';
   import { toast } from '$lib/svoast';
-  import { Robux } from '$lib/icons';
+  import { flyAndScale } from "$lib/utils"
+  import { Robux, ArrowDown, Check } from '$lib/icons';
+  import { Select } from "bits-ui";
 
   export let data;
 
@@ -16,6 +18,32 @@
   $: ({ currentPage, totalPages, totalClaims, limit } = pagination || { currentPage: 1, totalPages: 1, totalClaims: 0, limit: 12 });
 
   let searchTerm = initialSearchTerm || '';
+  let sortOptions = [
+    { label: 'Newest First', value: 'newest' },
+    { label: 'Oldest First', value: 'oldest' },
+    { label: 'Highest Amount', value: 'amount_desc' },
+    { label: 'Lowest Amount', value: 'amount_asc' }
+  ];
+  
+  let currentSort = 'newest';
+
+  let sortBy = {
+    value: "newest",
+    label: "Newest First"
+  };
+
+  $: {
+    const searchParams = new URLSearchParams($page.url.search);
+    searchParams.set('sort', sortBy.value);
+    if (sortBy.value !== currentSort) {
+      currentSort = sortBy.value;
+      goto(`/admin/claims?${searchParams.toString()}`, {
+        keepFocus: false,
+        noScroll: true,
+        replaceState: true
+      });
+    }
+  }
 
   function handleSearch() {
     const searchParams = new URLSearchParams($page.url.search);
@@ -75,18 +103,80 @@
 
     <div class="w-full h-[3px] bg-[#1D2535] my-5 rounded-full"></div>
 
-    <div class="max-w-md mb-6">
+    <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+      <div class="flex-1 max-w-md">
+        <div class="flex items-center gap-2">
+          <input
+            type="search"
+            bind:value={searchTerm}
+            on:keydown={handleSearchInputKeydown}
+            placeholder="Search by username..."
+            class="flex-grow px-3 py-2 bg-[#1D2535]/50 border border-transparent focus:border-[#3BA4F0] rounded-md text-white placeholder-[#809BB5] focus:outline-none focus:ring-1 focus:ring-[#3BA4F0] transition"
+          />
+          <Button variant="gradient" color="accent" onClick={handleSearch}>
+            <Search class="mr-1 size-5" /> Search
+          </Button>
+        </div>
+      </div>
+    
       <div class="flex items-center gap-2">
-        <input
-          type="search"
-          bind:value={searchTerm}
-          on:keydown={handleSearchInputKeydown}
-          placeholder="Search by username..."
-          class="flex-grow px-3 py-2 bg-[#1D2535]/50 border border-transparent focus:border-[#3BA4F0] rounded-md text-white placeholder-[#809BB5] focus:outline-none focus:ring-1 focus:ring-[#3BA4F0] transition"
-        />
-        <Button variant="gradient" color="accent" onClick={handleSearch}>
-          <Search class="mr-1 size-5" /> Search
-        </Button>
+        <Select.Root 
+          items={sortOptions} 
+          bind:selected={sortBy}
+        >
+          <Select.Trigger
+            class="bg-[#1D2535] rounded-lg flex items-center px-2.5 font-semibold text-sm h-[46px] group"
+          >
+            <p class="ml-2 font-semibold pointer-events-none">{sortBy.label}</p>
+            <ArrowDown class="ml-1 transition-transform size-5 group-aria-expanded:rotate-180" strokeWidth={2} />
+          </Select.Trigger>
+          <Select.Content
+            class="!w-[190px] rounded-lg bg-[#1D2535] px-0.5 py-[3px] shadow-popover outline-none z-50"
+            transition={flyAndScale}
+            align="end"
+            sideOffset={8}
+          >
+            <div class="px-1 py-1 max-h-[calc(min(100dvh-160px,300px))] overflow-y-auto">
+              {#each sortOptions as option}
+                <Select.Item
+                  class="flex h-10 w-full text-sm select-none items-center rounded-button outline-none transition-all duration-75 data-[highlighted]:bg-white/10 rounded-md"
+                  value={option.value}
+                  label={option.label}
+                >
+                  <div class="flex items-center justify-between w-full py-1.5 px-2.5">
+                    <p class="font-semibold">{option.label}</p>
+                    <Select.ItemIndicator class="ml-auto">
+                      <Check class="size-4" strokeWidth={2.5}/>
+                    </Select.ItemIndicator>
+                  </div>
+                </Select.Item>
+              {/each}
+            </div>
+          </Select.Content>
+        </Select.Root>
+      
+        <form
+          method="POST"
+          action="?/clearFulfilledClaims"
+          use:enhance={() => {
+            return async ({ result }) => {
+              if (result.type === 'success') {
+                toast.success('Fulfilled claims cleared successfully');
+                await invalidateAll();
+              } else {
+                toast.error('Failed to clear fulfilled claims');
+              }
+            };
+          }}
+        >
+          <Button
+            variant="outlined"
+            color="red"
+            type="submit"
+          >
+            Clear Fulfilled
+          </Button>
+        </form>
       </div>
     </div>
 

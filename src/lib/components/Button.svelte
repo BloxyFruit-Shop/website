@@ -13,6 +13,10 @@
       accent: {
         normal: "bg-[#1D2535AA] border-accent-500/20 rounded-full hover:bg-[#1D2535] hover:border-accent-500/40 transition-all duration-200",
         disabled: "opacity-80 bg-[#1D2535AA] border-accent-500/20 rounded-full cursor-not-allowed"
+      },
+      red: {
+        normal: "px-6 py-3 text-red-500 border-red-500/50 hover:border-red-500 bg-red-500/5 hover:bg-red-500/10 border transition-colors duration-200 rounded-lg",
+        disabled: "px-6 opacity-40 text-red-400 border-red-400/30 bg-transparent rounded-lg"
       }
     },
     text: {
