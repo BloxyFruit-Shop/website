@@ -142,3 +142,24 @@ export const globalSettingsSchema = new Schema({
   lastOrdersCursor: String,
   updatedAt: { type: Date, default: Date.now }
 });
+
+export const robuxClaimsSchema = new Schema({
+  user: {
+    id: String,
+    username: String,
+    displayName: String,
+  },
+  resolved: { type: Boolean, default: false },
+  resolvedAt: { type: Date, default: null },
+  robuxAmount: { type: Number, default: 0 },
+  game: {
+    id: String,
+    name: String
+  },
+  gamepass: {
+    id: String,
+    displayName: String,
+    price: Number
+  },
+  createdAt: { type: Date, default: Date.now }
+});
