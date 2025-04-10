@@ -20,7 +20,7 @@
   
   function handleTutorial() {
     hasClickedTutorial = true;
-    window.open(`https://create.roblox.com/dashboard/creations/experiences/${data.game.id}/monetization/passes`, '_blank');
+    toast.error("We're still working on a tutorial for this.", { duration: 2000 })
   }
 
   function handleContinue() {
