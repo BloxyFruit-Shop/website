@@ -118,6 +118,11 @@
     <div
       class="fixed inset-0 z-40 bg-black/50 lg:hidden"
       on:click={() => isMobileMenuOpen = false}
+      on:keydown={(event) => {
+        if (event.key === 'Enter') {
+          isMobileMenuOpen = false;
+        }
+      }}
       transition:fade={{ duration: 200 }}
     ></div>
   {/if}
@@ -163,7 +168,7 @@
     </div>
   </aside>
 
-  <main class="flex-1 lg:ml-64 p-6 min-h-[calc(100dvh-80px)]">
+  <main class="flex-1 lg:ml-64 sm:p-6 min-h-[calc(100dvh-80px)]">
     <slot />
   </main>
 </div>

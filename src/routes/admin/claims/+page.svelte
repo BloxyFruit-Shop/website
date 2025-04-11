@@ -114,7 +114,7 @@
 
     <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
       <div class="flex-1 max-w-md">
-        <div class="flex items-center gap-2">
+        <div class="flex flex-wrap items-center gap-2">
           <input
             type="search"
             bind:value={searchTerm}
@@ -201,7 +201,7 @@
           easing: quintOut 
         }}
         animate:flip={{ duration: 300 }}
-        out:fade|local={{ duration: 200 }}>
+        >
           <!-- Header Section -->
           <div class="p-4 border-b border-[#3BA4F0]/10">
             <div class="flex items-start gap-4">
@@ -283,13 +283,13 @@
 
       {#if totalPages > 1}
         <div class="flex items-center justify-center gap-4 mt-8">
-          <Button variant="contained" color="gray" size="small" disabled={currentPage <= 1} on:click={goToPreviousPage}>
+          <Button variant="contained" color="gray" size="small" disabled={currentPage <= 1} onClick={goToPreviousPage}>
             Previous
           </Button>
           <span class="text-sm text-[#809BB5]">
             Page {currentPage} of {totalPages}
           </span>
-          <Button variant="contained" color="gray" size="small" disabled={currentPage >= totalPages} on:click={goToNextPage}>
+          <Button variant="contained" color="gray" size="small" disabled={currentPage >= totalPages} onClick={goToNextPage}>
             Next
           </Button>
         </div>

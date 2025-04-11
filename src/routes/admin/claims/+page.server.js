@@ -5,31 +5,6 @@ import { ObjectId } from 'mongodb';
 
 const CLAIMS_PER_PAGE = 12;
 
-
-/*
-robuxClaim Schema
-{
-  user: {
-    id: String,
-    username: String,
-    displayName: String,
-  },
-  resolved: { type: Boolean, default: false },
-  resolvedAt: { type: Date, default: null },
-  robuxAmount: { type: Number, default: 0 },
-  game: {
-    id: String,
-    name: String
-  },
-  gamepass: {
-    id: String,
-    displayName: String,
-    price: Number
-  },
-  createdAt: { type: Date, default: Date.now }
-}
-*/
-
 export const load = async ({ locals, url }) => {
   let page = parseInt(url.searchParams.get('page') || '1', 10);
   if (isNaN(page) || page < 1) {

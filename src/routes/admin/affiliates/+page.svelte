@@ -99,7 +99,7 @@
     <div class="w-full h-[3px] bg-[#1D2535] my-5 rounded-full"></div>
 
     <div class="max-w-md mb-6">
-      <div class="flex items-center gap-2">
+      <div class="flex flex-wrap items-center gap-2">
         <input
           type="search"
           bind:value={searchTerm}
@@ -185,7 +185,7 @@
                 on:click={() => startEditing(user)}
                 class="text-sm text-[#809BB5] hover:text-white flex items-center justify-center gap-1 mt-1 p-1 rounded transition-colors group focus:outline-none focus:ring-1 focus:ring-offset-2 focus:ring-offset-[#111A28] focus:ring-[#3BA4F0]"
                 title="Click to edit Robux"
-                aria-label="Current Robux for {user.username}: {user.robux.toLocaleString()}. Click to edit."
+                aria-label="Current Robux for {user.username}: {user?.robux.toLocaleString() ?? 0}. Click to edit."
               >
                 <Robux class="size-4" />
                 {user.robux}
