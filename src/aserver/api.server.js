@@ -619,7 +619,7 @@ export const fetchItems = async () => {
           });
 
           newProduct.deliveryType = newProduct.deliveryType || 'manual';
-          newProduct.inStock = newProduct.inStock == 'false' ? false : true;
+          newProduct.inStock = newProduct.inStock == 'false' || newProduct.instock == 'false' ? false : true;
 
           try {
             await dbProducts.findOneAndUpdate(
