@@ -36,13 +36,42 @@
       clearTimeout(timeoutId);
     }
   });
-
 </script>
 
 <span
+  class="relative hover-area"
   on:mouseover={handleMouseOver}
   on:mouseout={handleMouseOut}
-  title={censor ? "Hover to reveal" : ""}
 >
-  {isHovered || !censor ? text : censoredText}
+  <span class="relative z-20">
+    {isHovered || !censor ? text : censoredText}
+  </span>
+  {#if censor}
+    <span class="absolute inset-0 hover-zone" />
+  {/if}
 </span>
+
+<style>
+  .hover-area {
+    display: inline-block;
+  }
+
+  .hover-zone {
+    padding: 1rem;
+    margin: -1rem;
+    z-index: 10;
+    pointer-events: none;
+  }
+
+  .hover-area::after {
+    content: '';
+    position: absolute;
+    inset: -1rem;
+    z-index: 1;
+    pointer-events: auto;
+  }
+
+  .hover-area:hover span {
+    pointer-events: auto;
+  }
+</style>

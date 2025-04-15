@@ -1,9 +1,9 @@
 <script>
   import { goto, invalidate } from '$app/navigation';
   import { page } from '$app/stores';
-  import Button from "$lib/components/Button.svelte";
-  import { Robux, Search, Check, Close, Pencil, Users } from "$lib/icons";
-  import { bgBlur } from "$lib/utils";
+  import Button from '$lib/components/Button.svelte';
+  import { Robux, Search, Check, Close, Pencil, Users } from '$lib/icons';
+  import { bgBlur } from '$lib/utils';
   import { enhance } from '$app/forms';
   import { toast } from '$lib/svoast';
   import { fade, fly, scale, slide } from 'svelte/transition';
@@ -14,7 +14,10 @@
 
   // Reactive destructuring of data
   $: ({ affiliates, pagination, searchTerm: initialSearchTerm } = data);
-  $: ({ currentPage, totalPages } = pagination || { currentPage: 1, totalPages: 1 });
+  $: ({ currentPage, totalPages } = pagination || {
+    currentPage: 1,
+    totalPages: 1
+  });
 
   let searchTerm = initialSearchTerm || '';
   let editingUserId = null;
@@ -45,9 +48,9 @@
     }
     searchParams.set('page', '1');
     goto(`/admin/affiliates?${searchParams.toString()}`, {
-        keepFocus: false,
-        noScroll: false,
-        replaceState: true
+      keepFocus: false,
+      noScroll: false,
+      replaceState: true
     });
   }
 
@@ -64,7 +67,11 @@
     }
     const searchParams = new URLSearchParams($page.url.search);
     searchParams.set('page', newPage.toString());
-    goto(`/admin/affiliates?${searchParams.toString()}`, { keepFocus: true, noScroll: true, replaceState: true });
+    goto(`/admin/affiliates?${searchParams.toString()}`, {
+      keepFocus: true,
+      noScroll: true,
+      replaceState: true
+    });
   }
 
   function goToPreviousPage() {
@@ -76,22 +83,42 @@
   }
 </script>
 
-<div class="max-w-[1440px] h-full w-full mx-auto" 
-     in:slide={{ y:20, duration: 300 }}>
-  <div class="w-full h-full p-6 rounded-lg" 
-       style="{bgBlur({ color: '#111A28', blur: 6, opacity: 0.9 })}"
-       in:fly={{ y: 20, duration: 300 }}>
-    
-    <div class="flex flex-wrap items-center justify-between gap-2"
-         in:slide={{ duration: 300 }}>
-      <div class="flex items-center gap-2">
-        <Users class="w-8 h-8" />
-        <h1 class="text-2xl font-bold">Affiliates Management</h1>
+<div
+  class="max-w-[1440px] h-full w-full mx-auto"
+  in:slide={{ y: 20, duration: 300 }}
+>
+  <div
+    class="w-full h-full p-6 rounded-lg"
+    style={bgBlur({ color: '#111A28', blur: 6, opacity: 0.9 })}
+    in:fly={{ y: 20, duration: 300 }}
+  >
+    <div class="flex flex-wrap items-center justify-between gap-2" in:slide={{ duration: 300 }}>
+      <div class="flex items-center gap-3">
+        <div
+          class="p-3 bg-gradient-to-br from-indigo-500/20 to-blue-500/20 rounded-xl"
+        >
+          <Users class="text-indigo-400 size-8" />
+        </div>
+        <div>
+          <h1
+            class="text-2xl font-bold text-transparent bg-gradient-to-r from-indigo-400 to-blue-400 bg-clip-text"
+          >
+            Affiliates Management
+          </h1>
+          <p class="text-sm text-[#809BB5]">
+            Manage and track your affiliate partners
+          </p>
+        </div>
       </div>
       {#if pagination && pagination.totalUsers > 0}
-        <p class="text-sm text-[#809BB5]"
-           in:fade={{ duration: 200, delay: 300 }}>
-          Showing {(currentPage - 1) * pagination.limit + 1}-{Math.min((currentPage - 1) * pagination.limit + affiliates.length, pagination.totalUsers)} of {pagination.totalUsers} affiliates
+        <p
+          class="text-sm text-[#809BB5]"
+          in:fade={{ duration: 200, delay: 300 }}
+        >
+          Showing {(currentPage - 1) * pagination.limit + 1}-{Math.min(
+            (currentPage - 1) * pagination.limit + affiliates.length,
+            pagination.totalUsers
+          )} of {pagination.totalUsers} affiliates
         </p>
       {/if}
     </div>
@@ -114,24 +141,33 @@
     </div>
 
     {#if affiliates && affiliates.length > 0}
-      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+      <div
+        class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
+      >
         {#each affiliates as user, i (user._id)}
-          <div class="rounded-lg flex flex-col items-center p-4 text-center bg-[#1D2535]/30 hover:bg-[#1D2535]/50 transition-colors"
-               in:fly|local={{ 
-                 y: 20,
-                 x: 20,
-                 duration: 400, 
-                 delay: 100 + (i * 100),
-                 easing: quintOut 
-               }}
-               animate:flip={{ duration: 300 }}
-               out:fade|local={{ duration: 200 }}>
+          <div
+            class="rounded-lg flex flex-col items-center p-4 text-center bg-[#1D2535]/30 hover:bg-[#1D2535]/50 transition-colors"
+            in:fly|local={{
+              y: 20,
+              x: 20,
+              duration: 400,
+              delay: 100 + i * 100,
+              easing: quintOut
+            }}
+            animate:flip={{ duration: 300 }}
+            out:fade|local={{ duration: 200 }}
+          >
             <img
               src="/assets/bacon-headshot.webp"
               alt="{user.username}'s avatar"
               class="size-20 rounded-full mb-3 object-cover border-2 border-[#3BA4F0]/50"
             />
-            <p class="w-full mb-1 text-lg font-semibold text-white truncate" title={user.username}>{user.username}</p>
+            <p
+              class="w-full mb-1 text-lg font-semibold text-white truncate"
+              title={user.username}
+            >
+              {user.username}
+            </p>
 
             {#if editingUserId === user._id}
               <form
@@ -140,18 +176,29 @@
                 use:enhance={() => {
                   return async ({ result, update }) => {
                     if (result.type === 'success' && result.data?.success) {
-                      const userIndex = affiliates.findIndex(u => u._id === result.data.userId);
+                      const userIndex = affiliates.findIndex(
+                        (u) => u._id === result.data.userId
+                      );
                       if (userIndex > -1) {
                         affiliates[userIndex].robux = result.data.updatedAmount;
                         affiliates = affiliates;
                       }
                       await invalidate('app:admin/affiliates');
-                      toast.success(`Robux updated successfully for ${user.username}.`, { duration: 2500 });
+                      toast.success(
+                        `Robux updated successfully for ${user.username}.`,
+                        { duration: 2500 }
+                      );
                       cancelEditing();
                     } else if (result.type === 'failure') {
-                      toast.error(result.data?.message || 'Failed to update Robux.', { duration: 3000 });
+                      toast.error(
+                        result.data?.message || 'Failed to update Robux.',
+                        { duration: 3000 }
+                      );
                     } else if (result.type === 'error') {
-                      toast.error(`An unexpected error occurred: ${result.error.message}`, { duration: 3000 });
+                      toast.error(
+                        `An unexpected error occurred: ${result.error.message}`,
+                        { duration: 3000 }
+                      );
                     }
                   };
                 }}
@@ -171,10 +218,16 @@
                   aria-label="Edit Robux amount for {user.username}"
                 />
                 <div class="flex gap-2 mt-1">
-                  <button type="submit" class="p-1 text-green-400 rounded hover:bg-white/10">
+                  <button
+                    type="submit"
+                    class="p-1 text-green-400 rounded hover:bg-white/10"
+                  >
                     <Check class="size-5" />
                   </button>
-                  <button on:click={cancelEditing} class="p-1 text-red-400 rounded hover:bg-white/10">
+                  <button
+                    on:click={cancelEditing}
+                    class="p-1 text-red-400 rounded hover:bg-white/10"
+                  >
                     <Close class="size-5" />
                   </button>
                 </div>
@@ -185,11 +238,14 @@
                 on:click={() => startEditing(user)}
                 class="text-sm text-[#809BB5] hover:text-white flex items-center justify-center gap-1 mt-1 p-1 rounded transition-colors group focus:outline-none focus:ring-1 focus:ring-offset-2 focus:ring-offset-[#111A28] focus:ring-[#3BA4F0]"
                 title="Click to edit Robux"
-                aria-label="Current Robux for {user.username}: {user?.robux.toLocaleString() ?? 0}. Click to edit."
+                aria-label="Current Robux for {user.username}: {user?.robux.toLocaleString() ??
+                  0}. Click to edit."
               >
                 <Robux class="size-4" />
                 {user.robux}
-                <Pencil class="ml-1 transition-opacity opacity-0 size-3 group-hover:opacity-100 group-focus:opacity-100" />
+                <Pencil
+                  class="ml-1 transition-opacity opacity-0 size-3 group-hover:opacity-100 group-focus:opacity-100"
+                />
               </button>
             {/if}
           </div>
@@ -222,10 +278,14 @@
         </div>
       {/if}
     {:else}
-      <div class="flex items-center justify-center h-64"
-           in:scale={{ duration: 300, delay: 400, start: 0.9 }}>
-        <p class="text-center text-[#809BB5]"
-           in:fade={{ duration: 200, delay: 500 }}>
+      <div
+        class="flex items-center justify-center h-64"
+        in:scale={{ duration: 300, delay: 400, start: 0.9 }}
+      >
+        <p
+          class="text-center text-[#809BB5]"
+          in:fade={{ duration: 200, delay: 500 }}
+        >
           {#if initialSearchTerm}
             No users found matching "{initialSearchTerm}".
           {:else}

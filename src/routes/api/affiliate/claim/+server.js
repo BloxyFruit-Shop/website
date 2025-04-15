@@ -74,6 +74,7 @@ export async function POST({ request, locals }) {
         id: dbUser._id,
         username: requestUser.username,
         displayName: requestUser.displayName,
+        email: localUser.email,
       },
       robuxAmount: robuxAmount,
       game: {

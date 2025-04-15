@@ -2,7 +2,7 @@
   import { page } from '$app/stores';
   import { bgBlur } from "$lib/utils";
   import { fade, fly, slide } from "svelte/transition";
-  import { Games, Users, Robux, Hamburger, Close } from "$lib/icons";
+  import { Games, Users, Robux, Hamburger, Close, Gear } from "$lib/icons";
   import Logo from "$icons/logo.svelte"
   import UserSection from "$elements/user-section.svelte"
   import { quintOut } from 'svelte/easing';
@@ -15,6 +15,7 @@
     { href: "/admin", icon: Games, label: "Dashboard" },
     { href: "/admin/affiliates", icon: Users, label: "Affiliates" },
     { href: "/admin/claims", icon: Robux, label: "Claims" },
+    { href: "/admin/settings", icon: Gear, label: "Settings" },
   ];
 
   $: currentPath = $page.url.pathname;
@@ -34,16 +35,13 @@
         style="{bgBlur({ color: "#1D242F", opacity: 0.2 })}"
         in:fly={{ y: -20, duration: 400, delay: 100 }}>
   <div class="w-full flex items-center justify-between max-w-[1440px] mx-auto">
-    <div class="flex items-center gap-12"
-         in:slide={{ duration: 400, delay: 200 }}>
-      <a href="/"
-         in:fade={{ duration: 300, delay: 300 }}>
+    <div class="flex items-center gap-12">
+      <a href="/">
         <Logo class="w-[110px] md:w-[132px]" />
       </a>
     </div>
 
-    <div class="flex items-center gap-4"
-         in:slide={{ x: 20, duration: 400, delay: 200 }}>
+    <div class="flex items-center gap-4">
       <UserSection data={data} />
       <!-- Mobile menu button -->
       <button
@@ -66,12 +64,14 @@
   <aside 
     class="fixed hidden lg:block w-64 top-[80px] bottom-0 overflow-y-auto z-10 [--admin-header-height:80px]"
     style="{bgBlur({ color: '#111A28', blur: 6, opacity: 0.95 })}"
-    in:fly={{ x: -20, duration: 400, delay: 300 }}
   >
     <div class="sticky top-0 p-6 flex flex-col min-h-[calc(100dvh-80px)]">
       <div class="flex items-center gap-2 mb-8"
-           in:slide={{ duration: 400, delay: 400 }}>
-        <h2 class="text-2xl font-bold">Admin Panel</h2>
+           in:slide={{ duration: 400 }}>
+        <div class="p-2 rounded-lg bg-gradient-to-br from-[#3BA4F0]/20 to-purple-500/20">
+          <Gear class="size-6 text-[#3BA4F0]" />
+        </div>
+        <h2 class="text-2xl font-bold bg-gradient-to-r from-[#3BA4F0] to-purple-400 bg-clip-text text-transparent">Admin Panel</h2>
       </div>
 
       <nav class="flex-grow">
@@ -81,7 +81,7 @@
             <li in:fly|local={{ 
               x: -20, 
               duration: 400, 
-              delay: 500 + (i * 100),
+              delay: 200 + (i * 100),
               easing: quintOut
             }}>
               <a

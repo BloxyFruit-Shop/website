@@ -1,5 +1,5 @@
 <script>
-  import { Account, History, Pencil, Copy, EmptyCircleInfo, Robux, Eye, EyeOff, Crown, Discord, Link } from "$lib/icons";
+  import { Account, History, Pencil, Copy, EmptyCircleInfo, Robux, Eye, EyeOff, Crown, Discord, Link, ArrowDown } from "$lib/icons";
   import { format } from "date-fns";
   import { bgBlur } from "$lib/utils";
   import { toast } from "$lib/svoast"
@@ -12,6 +12,10 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import { invalidateAll } from '$app/navigation';
+  import { fly, slide } from 'svelte/transition';
+  import { flip } from 'svelte/animate';
+  import { Collapsible } from "bits-ui";
+  import { quintOut } from 'svelte/easing';
 
   export let data;
 
@@ -45,7 +49,7 @@
   }
 
   function claimSuccess(event) {
-    const message = `You have successfully claimed ${event.detail.amount} Robux! This will take 5-7 days for Roblox to register it.`;
+    const message = `You have successfully claimed ${event.detail.amount} Robux!`;
     invalidateAll();
     toast.success(message, {duration: 4000})
   }
@@ -67,6 +71,8 @@
   function goToNextPage() {
     goToPage(currentPage + 1);
   }
+
+  console.log(data.claims)
 </script>
 
 <div class="h-full absolute top-0 left-0 right-[var(--scrollbar-width,0px)] bg-[linear-gradient(to_bottom,#0c0e16e0,#0c0e16),url(/assets/landing-background.webp)] bg-no-repeat bg-cover bg-center z-[-1]"></div>
@@ -129,20 +135,28 @@
         <div class="flex flex-col gap-3 mb-4">
           <div class="grid">
             <div class="flex items-center gap-2 text-lg font-medium">
-              <p class="text-[#809BB5]">Referral:</p>
+              <p class="text-[#809BB5]">Link:</p>
               <div class="flex items-center gap-1">
                 {#if data.referral}
-                  <ClipboardCopy class="underline" copy={data.referral} successMessage="Referral code copied to clipboard">{data.referral}<Link class="size-3"/></ClipboardCopy>
-                  <span class="text-[#809BB5]"> or </span>
-                  <ClipboardCopy class="underline" copy={`https://bloxyfruit.com/?ref=${data.referral}`} successMessage="Referral link copied to clipboard">Share your Link <Link class="size-3"/></ClipboardCopy>
+                  <ClipboardCopy class="underline" copy={`https://bloxyfruit.com/?ref=${data.referral}`} successMessage="Referral link copied to clipboard">bloxyfruit.com/?ref={data.referral} <Link class="size-3"/></ClipboardCopy>
                 {:else}
                    <p class="text-sm text-gray-400">Not available. Try logging in again.</p>
                 {/if}
               </div>
             </div>
-            <div class="grid grid-cols-[auto_1fr] gap-1 text-[#809BB5] mt-1">
+            <div class="flex items-center gap-2 text-lg font-medium">
+              <p class="text-[#809BB5]">Code:</p>
+              <div class="flex items-center gap-1">
+                {#if data.referral}
+                  <ClipboardCopy class="underline" copy={data.referral} successMessage="Referral code copied to clipboard">{data.referral}<Link class="size-3"/></ClipboardCopy>
+                {:else}
+                   <p class="text-sm text-gray-400">Not available. Try logging in again.</p>
+                {/if}
+              </div>
+            </div>
+            <div class="grid grid-cols-[auto_1fr] gap-1 text-[#809BB5] mt-2">
               <EmptyCircleInfo class="size-3 mt-0.5" />
-              <p class="text-sm">Recieve robux everytime anyone buys using your code!</p>
+              <p class="text-sm">Share your link, recieve robux everytime anyone buys using your code!</p>
             </div>
           </div>
           <div class="flex items-center gap-2 text-lg font-medium">
@@ -150,6 +164,7 @@
             <p class="flex items-center gap-1 text-white"><Robux class="size-4" />{data.robuxAmount}</p>
           </div>
         </div>
+
         <Button
           variant="gradient"
           color="accent"
@@ -170,9 +185,64 @@
           <span>Join our affiliates Discord Server</span>
         </a>
       </div>
+
+      <div class="w-full p-6 rounded-lg" style="{bgBlur({ color: '#111A28', blur: 6, opacity: 0.9 })}">
+        <Collapsible.Root>
+          <Collapsible.Trigger class="w-full flex items-center justify-between p-2 rounded-lg hover:bg-[#1D2535]/30 transition-colors">
+            <div class="flex items-center gap-2">
+              <p class="text-[#809BB5]">View Claims</p>
+              {#if data.claims?.length}
+                <span class="text-sm text-[#809BB5]">({data.claims.length})</span>
+              {/if}
+            </div>
+            <ArrowDown class="size-4 text-[#809BB5] transition-transform duration-200 collapsible-icon" />
+          </Collapsible.Trigger>
+          
+          <Collapsible.Content class="pt-2">
+            <div class="max-h-[300px] overflow-y-auto pr-2 custom-scrollbar" transition:slide={{ duration: 300 }}>
+              {#if data.claims?.length}
+                <div class="space-y-2">
+                  {#each data.claims as claim, i (claim._id)}
+                    <div 
+                      class="p-3 rounded-lg bg-gradient-to-br from-[#1D2535]/80 to-[#1D2535]/30 backdrop-blur-sm border border-[#3BA4F0]/10 transition-all duration-200 hover:border-[#3BA4F0]/30"
+                      in:fly|local={{ 
+                        y: 20,
+                        x: 20,
+                        duration: 400, 
+                        delay: 100 + (i * 100),
+                        easing: quintOut 
+                      }}
+                      animate:flip={{ duration: 300 }}
+                    >
+                      <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                          <Robux class="size-4 text-[#3BA4F0]" />
+                          <span class="font-medium">{claim.robuxAmount}</span>
+                        </div>
+                        <span class={`text-sm px-2 py-1 rounded-full ${claim.resolved ? 'bg-green-500/20 text-green-400' : 'bg-yellow-500/20 text-yellow-400'}`}>
+                          {claim.resolved ? 'Resolved' : 'Pending'}
+                        </span>
+                      </div>
+                      <div class="mt-2 text-sm text-[#809BB5] space-y-1">
+                        <p>Username: {claim.user.username}</p>
+                        <p>Requested: {format(new Date(claim.createdAt), "MMM dd, yyyy HH:mm")}</p>
+                        {#if claim.resolved && claim.resolvedAt}
+                          <p>Bought: {format(new Date(claim.resolvedAt), "MMM dd, yyyy HH:mm")}</p>
+                        {/if}
+                      </div>
+                    </div>
+                  {/each}
+                </div>
+              {:else}
+                <p class="text-sm text-[#809BB5] px-2">No claims history yet.</p>
+              {/if}
+            </div>
+          </Collapsible.Content>
+        </Collapsible.Root>
+      </div>
     </div>
 
-    <div class="flex flex-col w-full p-6 rounded-lg lg:w-8/12" style="{bgBlur({ color: '#111A28', blur: 6, opacity: 0.9 })}">
+    <div class="flex flex-col w-full p-6 rounded-lg lg:w-8/12 flex-shrink-0 h-fit" style="{bgBlur({ color: '#111A28', blur: 6, opacity: 0.9 })}">
       <div class="shrink-0">
         <div class="flex flex-wrap items-center justify-between gap-2">
           <div class="flex items-center gap-2">
@@ -328,3 +398,14 @@
 <RobloxAccount bind:open={robloxAccountModalOpen} bind:order={selectedOrder} />
 
 <ClaimModal bind:open={claimModalOpen} bind:robuxAmount={data.robuxAmount} on:claim-success={claimSuccess} />
+
+<style>
+  :global(.collapsible-icon) {
+    transform: rotate(0deg);
+    transition: transform 0.3s ease;
+  }
+  
+  :global([data-state="open"] .collapsible-icon) {
+    transform: rotate(180deg);
+  }
+</style>

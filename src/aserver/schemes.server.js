@@ -140,6 +140,7 @@ export const ordersSchema = new Schema({
 export const globalSettingsSchema = new Schema({
   _id: { type: String, default: 'settings' }, // Single document identifier
   lastOrdersCursor: String,
+  euroToRobuxRate: { type: Number, default: 10 },
   updatedAt: { type: Date, default: Date.now }
 });
 
@@ -148,6 +149,7 @@ export const robuxClaimsSchema = new Schema({
     id: String,
     username: String,
     displayName: String,
+    email: { type: String, default: '' },
   },
   resolved: { type: Boolean, default: false },
   resolvedAt: { type: Date, default: null },

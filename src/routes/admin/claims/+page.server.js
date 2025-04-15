@@ -21,7 +21,7 @@ export const load = async ({ locals, url }) => {
       /[-\/\\^$*+?.()|[\]{}]/g,
       '\\$&'
     );
-    filter["user.username"] = { $regex: escapedSearchTerm, $options: 'i' };
+    filter['user.username'] = { $regex: escapedSearchTerm, $options: 'i' };
   }
 
   // Determine sort criteria based on sortParam
@@ -119,7 +119,39 @@ export const actions = {
       return { success: false, message: error.message };
     }
   },
+  fulfillAllClaims: async ({ locals }) => {
+    const session = locals.session;
+    if (!session) {
+      // Not logged in, redirect to home
+      throw redirect(302, '/');
+    }
 
+    const user = await users.findOne({ 'session.id': session }).lean();
+    if (!user || !user.role || user.role < roleEnums.Admin) {
+      console.warn(
+        `Unauthorized admin action attempt by user: ${
+          user?.username || 'Unknown'
+        }`
+      );
+      throw redirect(303, '/');
+    }
+
+    try {
+      // Update all claims that are not yet resolved
+      const result = await robuxClaims.updateMany(
+        { resolved: false },
+        { $set: { resolved: true, resolvedAt: new Date() } }
+      );
+
+      return { success: true, updatedCount: result.modifiedCount };
+    } catch (error) {
+      console.error('Error fulfilling all claims:', error);
+      return fail(500, {
+        success: false,
+        message: 'Failed to fulfill all claims due to a server error.'
+      });
+    }
+  },
   clearFulfilledClaims: async ({ request, locals }) => {
     const session = locals.session;
     if (!session) {

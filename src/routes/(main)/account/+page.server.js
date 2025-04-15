@@ -1,4 +1,4 @@
-import { orders, users } from "$server/mongo"
+import { orders, users, robuxClaims } from "$server/mongo"
 import { getInventoryItemById } from "$server/cache"
 import { redirect } from "@sveltejs/kit"
 
@@ -63,11 +63,21 @@ export const load = async ({ locals, url }) => {
 
   const user = await users.findOne({ _id: localUser._id }).lean();
 
+  const claims = await robuxClaims.find({ "user.email": localUser.email }).select({ _id: 1, robuxAmount: 1, "user.username": 1, resolved: 1, resolvedAt: 1, createdAt: 1 }).lean();
+
+  const serializedClaims = claims.map((claim) => ({
+    ...claim,
+    _id: claim._id.toString(),
+    createdAt: new Date(claim.createdAt),
+    resolvedAt: claim.resolvedAt ? new Date(claim.resolvedAt) : null
+  }))
+
   return {
     localUser,
     referral: user.referralCode ?? null,
-    robuxAmount: user?.robux ?? 0, // Use optional chaining for safety
+    robuxAmount: user?.robux ?? 0,
     orders: serializedOrders,
+    claims: serializedClaims,
     pagination: {
       currentPage: page,
       totalPages: totalPages,

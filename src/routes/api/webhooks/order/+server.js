@@ -1,5 +1,5 @@
 import { SHOPIFY_WEBHOOK_SIGNATURE } from '$env/static/private';
-import { products, users } from '$server/mongo';
+import { users, globalSettings } from '$server/mongo';
 import crypto from 'crypto';
 
 export async function POST({ request }) {
@@ -48,8 +48,20 @@ export async function POST({ request }) {
     return acc + (amount * price);
   }, 0);
 
-  // 1 euro = 10 robux
-  const robuxAmount = Math.ceil(total * 10);
+  const settings = await globalSettings.findOne({ _id: 'settings' }).lean();
+  if (!settings) {
+    console.error('Global settings not found in the database.');
+  }
+
+  if (!settings?.euroToRobuxRate) {
+    console.error('Euro to Robux rate not found in the database. Setting up the default value.');
+    await globalSettings.updateOne({ _id: 'settings' }, { $set: { euroToRobuxRate: 10 } });
+    settings.euroToRobuxRate = 10;
+  }
+
+  const euroToRobux = settings.euroToRobuxRate ?? 10;
+
+  const robuxAmount = Math.ceil(total * euroToRobux);
 
   // Update the user's robux balance
   await users.updateOne({ _id: user._id }, { $inc: { robux: robuxAmount } });
