@@ -5,7 +5,8 @@ import {
   ordersSchema,
   productsSchema,
   inventoryItemSchema,
-  globalSettingsSchema
+  globalSettingsSchema,
+  robuxClaimsSchema
 } from './schemes.server';
 import { MONGODB_URI } from '$env/static/private';
 import { building } from '$app/environment';
@@ -24,9 +25,10 @@ const inventory = db
 const globalSettings = db
   ? db.model('globalSettings', globalSettingsSchema)
   : null;
+const robuxClaims = db ? db.model('robuxClaims', robuxClaimsSchema) : null;
 
 export const closeConnection = () => {
   db.close();
 };
 
-export { users, verifications, orders, products, inventory, globalSettings };
+export { users, verifications, orders, products, inventory, globalSettings, robuxClaims };

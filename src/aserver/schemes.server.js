@@ -1,4 +1,9 @@
 import { Schema } from 'mongoose';
+import { init } from '@paralleldrive/cuid2';
+
+const createCode = init({
+  length: 10
+});
 
 const sessionSchema = new Schema(
   {
@@ -42,7 +47,9 @@ export const usersSchema = new Schema({
   password: String,
   status: statusSchema,
   role: Number,
-  session: sessionSchema
+  session: sessionSchema,
+  robux: { type: Number, default: 0 },
+  referralCode: { type: String, default: createCode },
 });
 
 export const verificationsSchema = new Schema({
@@ -133,5 +140,28 @@ export const ordersSchema = new Schema({
 export const globalSettingsSchema = new Schema({
   _id: { type: String, default: 'settings' }, // Single document identifier
   lastOrdersCursor: String,
+  euroToRobuxRate: { type: Number, default: 10 },
   updatedAt: { type: Date, default: Date.now }
+});
+
+export const robuxClaimsSchema = new Schema({
+  user: {
+    id: String,
+    username: String,
+    displayName: String,
+    email: { type: String, default: '' },
+  },
+  resolved: { type: Boolean, default: false },
+  resolvedAt: { type: Date, default: null },
+  robuxAmount: { type: Number, default: 0 },
+  game: {
+    id: String,
+    name: String
+  },
+  gamepass: {
+    id: String,
+    displayName: String,
+    price: Number
+  },
+  createdAt: { type: Date, default: Date.now }
 });

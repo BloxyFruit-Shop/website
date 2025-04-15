@@ -8,6 +8,11 @@ import { cacheUserBySession, usersCache } from "$server/cache"
 import { randomBytes } from "crypto"
 import { timeOffset } from "$server/utils"
 import { confirmAccountEmail, resetPasswordEmail } from "$server/emails"
+import { init } from '@paralleldrive/cuid2';
+
+const createCode = init({
+  length: 10
+});
 
 export const actions = {
   register: async ({ request, cookies }) => {
@@ -47,6 +52,7 @@ export const actions = {
 
     cacheUserBySession(session, createdUser._id, {
       username: form.data.username,
+      referralCode: createdUser.referralCode,
       status: statusEnums.verifying,
       email: form.data.email
     })
@@ -61,7 +67,7 @@ export const actions = {
     
     const user = await users.findOne(
       { [form.data.identifier.includes("@") ? "email" : "username"]: form.data.identifier },
-      { username: 1, password: 1, email: 1, "status.code": 1 }
+      { username: 1, password: 1, email: 1, referralCode: 1, "status.code": 1 }
     )
     if (!user) return message(form, "We couldn't find your account, sorry.", { status: 500 })
 
@@ -73,17 +79,24 @@ export const actions = {
     if(userObject.status.code == statusEnums.banned) return message(form, "Sorry, your account has been banned.", { status: 500 })
 
     const session = randomBytes(24).toString('hex')
+    let refCode = userObject.referralCode;
+
+    if (!refCode) {
+      refCode = createCode();
+    }
 
     await user.updateOne({
       session: {
         id: session,
         date: new Date()
-      }
+      },
+      referralCode: refCode
     })
-
+    
     cacheUserBySession(session, userObject._id, {
       username: userObject.username,
       status: userObject.status.code,
+      referralCode: refCode,
       email: userObject.email
     })
 

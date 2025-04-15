@@ -35,6 +35,17 @@ export { default as Account } from "./account.svelte"
 export { default as History } from "./history.svelte"
 export { default as Password } from "./password.svelte"
 export { default as Pencil } from "./pencil.svelte"
+export { default as Copy } from "./copy.svelte"
+export { default as EmptyCircleInfo } from "./empty-circle-info.svelte"
+export { default as Robux } from "./robux.svelte"
+export { default as Crown } from "./crown.svelte"
+export { default as Tickets } from "./tickets.svelte"
+export { default as Link } from "./link.svelte"
+export { default as Users } from "./users.svelte"
+export { default as Hammer } from "./hammer.svelte"
+export { default as Hamburger } from "./hamburger.svelte"
+export { default as Gear } from "./gear.svelte"
+export { default as Euro } from "./euro.svelte"
 
 // Payment method icons
 export { default as Amex } from './payment-methods/amex.svelte'
