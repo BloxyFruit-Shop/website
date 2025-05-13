@@ -19,13 +19,13 @@
       ready: true
     },
     {
-      title: "Rivals",
-      name: "rivals",
-      description: "Grab awesome gear and show everyone who's boss!",
-      logo: "/assets/games/rivals-logo.webp",
-      image: "/assets/games/rivals.webp", 
-      gradient: "58, 35, 52",
-      ready: true,
+      title: "Grow a Garden",
+      name: "grow-a-garden",
+      description: "Get rare seeds, powerful gear, pets, and more to grow your dream garden!",
+      logo: "/assets/games/grow-a-garden-logo.webp",
+      image: "/assets/games/grow-a-garden.webp", 
+      gradient: "36, 55, 42",
+      ready: true
     },
     {
       title: "Blue Lock: Rivals",
@@ -34,6 +34,15 @@
       logo: "/assets/games/blue-lock-logo.webp",
       image: "/assets/games/blue-lock.webp", 
       gradient: "37, 40, 60",
+      ready: true,
+    },
+    {
+      title: "Rivals",
+      name: "rivals",
+      description: "Grab awesome gear and show everyone who's boss!",
+      logo: "/assets/games/rivals-logo.webp",
+      image: "/assets/games/rivals.webp", 
+      gradient: "58, 35, 52",
       ready: true,
     },
     {
@@ -80,15 +89,7 @@
       image: "/assets/games/murder-mystery-2.webp", 
       gradient: "58, 35, 35",
       ready: true
-    },
-    {
-      title: "Coming Soon!",
-      description: "",
-      logo: "/assets/games/coming-soon-logo.webp",
-      image: "/assets/games/coming-soon.webp", 
-      gradient: "48, 25, 45",
-      ready: false
-    },
+    }
   ]
   
   const youtubers = [
@@ -107,9 +108,9 @@
 	<title>BloxyFruit - The Most Trusted, Affordable Roblox Items Store with Fast Delivery!</title>
   <meta property="og:title" content="BloxyFruit - The Most Trusted, Affordable Roblox Items Store with Fast Delivery!" />
   <meta property="twitter:title" content="BloxyFruit - The Most Trusted, Affordable Roblox Items Store with Fast Delivery!" />
-  <meta name="description" content="Discover unbeatable deals on Roblox items at BloxyFruit! From the cheapest Blox Fruits to rare Anime Vanguards, Rivals, Blue Lock, Murder Mystery and Pets Go items, we offer fast delivery and trusted service. Get your dream items at the best prices today!" />
-  <meta property="og:description" content="Discover unbeatable deals on Roblox items at BloxyFruit! From the cheapest Blox Fruits to rare Anime Vanguards, Rivals, Blue Lock, Murder Mystery and Pets Go items, we offer fast delivery and trusted service. Get your dream items at the best prices today!" />
-  <meta property="twitter:description" content="Discover unbeatable deals on Roblox items at BloxyFruit! From the cheapest Blox Fruits to rare Anime Vanguards, Rivals, Blue Lock, Murder Mystery and Pets Go items, we offer fast delivery and trusted service. Get your dream items at the best prices today!" />
+  <meta name="description" content="Shop the best deals on Roblox items at BloxyFruit! Buy Blox Fruits, Grow a Garden seeds and gear, Blue Lock styles and passes, Anime Vanguards, Rivals, Murder Mystery 2, Pets Go, and more. Fast delivery, trusted service, and unbeatable prices for your favorite Roblox games!" />
+  <meta property="og:description" content="Shop the best deals on Roblox items at BloxyFruit! Buy Blox Fruits, Grow a Garden seeds and gear, Blue Lock styles and passes, Anime Vanguards, Rivals, Murder Mystery 2, Pets Go, and more. Fast delivery, trusted service, and unbeatable prices for your favorite Roblox games!" />
+  <meta property="twitter:description" content="Shop the best deals on Roblox items at BloxyFruit! Buy Blox Fruits, Grow a Garden seeds and gear, Blue Lock styles and passes, Anime Vanguards, Rivals, Murder Mystery 2, Pets Go, and more. Fast delivery, trusted service, and unbeatable prices for your favorite Roblox games!" />
   
   <meta property="og:image:width" content="1400" />
   <meta property="og:image:height" content="430" />
@@ -117,7 +118,7 @@
   <meta property="twitter:author" content="@xTheAlex14" />
   <meta property="twitter:image" content="/assets/banner.webp" />
   <link rel="canonical" href="https://bloxyfruit.com/" />
-  <meta name="keywords" content="blox fruits, cheap blox fruits, blox fruits items, buy blox fruits, fast blox fruits delivery, anime defenders, anime defenders items, cheap anime defenders, buy anime defenders, the strongest battlegrounds, battlegrounds gamepasses, cheap gamepasses, Roblox items, buy Roblox items, fast delivery Roblox, online Roblox shop, game items, cheap game items, Roblox gamepasses, buy gamepasses, murder mystery 2, anime vanguards, adopt me, blue lock rivals, buy blue lock, buy anime adventures, buy rolls, lucky rolls, cheap lucky rolls, anime adventures, knives, guns, units, blue lock styles, buy styles, flows" />
+  <meta name="keywords" content="blox fruits, cheap blox fruits, blox fruits items, buy blox fruits, fast blox fruits delivery, grow a garden, grow a garden roblox, buy grow a garden, grow a garden seeds, grow a garden gear, cheap grow a garden, blue lock, blue lock rivals, blue lock roblox, buy blue lock, blue lock styles, blue lock passes, anime defenders, anime defenders items, cheap anime defenders, buy anime defenders, the strongest battlegrounds, battlegrounds gamepasses, cheap gamepasses, Roblox items, buy Roblox items, fast delivery Roblox, online Roblox shop, game items, cheap game items, Roblox gamepasses, buy gamepasses, murder mystery 2, anime vanguards, adopt me, buy anime adventures, buy rolls, lucky rolls, cheap lucky rolls, anime adventures, knives, guns, units, blue lock styles, buy styles, flows, pets go, pets go roblox, buy pets go, pets go items, rivals, buy rivals, rivals roblox, roblox store, roblox shop, roblox items store, roblox best prices, roblox fast delivery" />
 </svelte:head>
 
 <div class="flex flex-col items-center pt-[80px]">

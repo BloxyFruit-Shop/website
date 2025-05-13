@@ -19,17 +19,25 @@ export default {
     ],
     products: []
   },
-  rivals: {
-    shortName: 'RV',
-    name: 'Rivals',
-    internalName: 'rivals',
-    order: ['Bundle', 'Keys', 'Other'],
+  'grow-a-garden': {
+    shortName: 'GG',
+    name: 'Grow a Garden',
+    internalName: 'grow-a-garden',
+    order: [
+      'Seed',
+      'Gear',
+      'Egg',
+      'Sheckles',
+      'Pet',
+      'Pack'
+    ],
     rarities: [
-      { name: 'Common', color: 'green' },
+      { name: 'Common', color: 'gray' },
       { name: 'Uncommon', color: 'lightBlue' },
       { name: 'Rare', color: 'purple' },
-      { name: 'Legendary', color: 'orange' },
-      { name: 'Mythical', color: 'red' }
+      { name: 'Legendary', color: 'pink' },
+      { name: 'Mythical', color: 'red' },
+      { name: 'Divine', color: 'orange' }
     ],
     products: []
   },
@@ -45,6 +53,20 @@ export default {
       { name: 'Legendary', color: 'orange' },
       { name: 'Mythical', color: 'red' }
     ],
+    rivals: {
+      shortName: 'RV',
+      name: 'Rivals',
+      internalName: 'rivals',
+      order: ['Bundle', 'Keys', 'Other'],
+      rarities: [
+        { name: 'Common', color: 'green' },
+        { name: 'Uncommon', color: 'lightBlue' },
+        { name: 'Rare', color: 'purple' },
+        { name: 'Legendary', color: 'orange' },
+        { name: 'Mythical', color: 'red' }
+      ],
+      products: []
+    },
     products: []
   },
   'anime-vanguards': {
