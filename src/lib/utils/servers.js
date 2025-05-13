@@ -2,6 +2,7 @@ export default {
   rivals: 'https://discord.gg/bloxyrivals',
   'blox-fruits': 'https://discord.gg/bloxyfruit',
   'bloxy-market': 'https://discord.gg/fyTQNnbW7B',
+  'grow-a-garden': 'https://discord.gg/fkmpNAb3',
   'pets-go': 'https://discord.gg/bloxypets',
   'anime-vanguards': 'https://discord.gg/5gwAZZpXSw',
   'king-legacy': 'https://discord.gg/8sjBPzzxwA',
