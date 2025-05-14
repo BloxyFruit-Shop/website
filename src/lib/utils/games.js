@@ -53,20 +53,20 @@ export default {
       { name: 'Legendary', color: 'orange' },
       { name: 'Mythical', color: 'red' }
     ],
-    rivals: {
-      shortName: 'RV',
-      name: 'Rivals',
-      internalName: 'rivals',
-      order: ['Bundle', 'Keys', 'Other'],
-      rarities: [
-        { name: 'Common', color: 'green' },
-        { name: 'Uncommon', color: 'lightBlue' },
-        { name: 'Rare', color: 'purple' },
-        { name: 'Legendary', color: 'orange' },
-        { name: 'Mythical', color: 'red' }
-      ],
-      products: []
-    },
+    products: []
+  },
+  rivals: {
+    shortName: 'RV',
+    name: 'Rivals',
+    internalName: 'rivals',
+    order: ['Bundle', 'Keys', 'Other'],
+    rarities: [
+      { name: 'Common', color: 'green' },
+      { name: 'Uncommon', color: 'lightBlue' },
+      { name: 'Rare', color: 'purple' },
+      { name: 'Legendary', color: 'orange' },
+      { name: 'Mythical', color: 'red' }
+    ],
     products: []
   },
   'anime-vanguards': {
