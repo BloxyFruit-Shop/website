@@ -15,8 +15,11 @@ export const load = async ({ locals, url }) => {
 
   const limit = ORDERS_PER_PAGE
   
-  // Fetch total order count for pagination calculation
-  const totalOrders = await orders.countDocuments({ email: localUser.email })
+  // Prepare a case-insensitive regex for the user's email
+  const emailRegex = new RegExp(`^${localUser.email}$`, "i")
+  
+  // Fetch total order count for pagination calculation (case-insensitive email)
+  const totalOrders = await orders.countDocuments({ email: emailRegex })
   const totalPages = Math.ceil(totalOrders / limit) || 1 // Ensure totalPages is at least 1
   
   // Adjust page if it exceeds totalPages
@@ -26,9 +29,9 @@ export const load = async ({ locals, url }) => {
 
   const skip = (page - 1) * limit
   
-  // Fetch the paginated list of orders
+  // Fetch the paginated list of orders (case-insensitive email)
   const orderList = await orders
-    .find({ email: localUser.email })
+    .find({ email: emailRegex })
     .sort({ createdAt: -1 }) // Make the newest show at the top (It was annoying to scroll down)
     .skip(skip)
     .limit(limit)
@@ -63,7 +66,7 @@ export const load = async ({ locals, url }) => {
 
   const user = await users.findOne({ _id: localUser._id }).lean();
 
-  const claims = await robuxClaims.find({ "user.email": localUser.email }).select({ _id: 1, robuxAmount: 1, "user.username": 1, resolved: 1, resolvedAt: 1, createdAt: 1 }).lean();
+  const claims = await robuxClaims.find({ "user.email": emailRegex }).select({ _id: 1, robuxAmount: 1, "user.username": 1, resolved: 1, resolvedAt: 1, createdAt: 1 }).lean();
 
   const serializedClaims = claims.map((claim) => ({
     ...claim,
