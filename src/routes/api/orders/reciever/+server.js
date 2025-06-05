@@ -22,8 +22,11 @@ export async function POST({ request, locals }) {
   }
 
   try {
+    // Prepare a case-insensitive regex for the user's email
+    const emailRegex = new RegExp(`^${localUser.email}$`, "i")
+
     // Ensure the order belongs to the local user.
-    const order = await orders.findOne({ id: orderId, email: localUser.email });
+    const order = await orders.findOne({ id: orderId, email: emailRegex });
     if (!order) {
       return json({ error: 'Order not found or not authorized.' }, { status: 404 });
     }
