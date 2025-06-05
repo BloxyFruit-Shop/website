@@ -66,7 +66,7 @@ export const actions = {
     if (!form.valid) return fail(400, { form })
     
     const user = await users.findOne(
-      { [form.data.identifier.includes("@") ? "email" : "username"]: form.data.identifier },
+      { [form.data.identifier.includes("@") ? "email" : "username"]: form.data.identifier.toLowerCase() },
       { username: 1, password: 1, email: 1, referralCode: 1, "status.code": 1 }
     )
     if (!user) return message(form, "We couldn't find your account, sorry.", { status: 500 })
