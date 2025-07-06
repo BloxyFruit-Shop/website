@@ -28,6 +28,15 @@
       ready: true
     },
     {
+      title: "Steal a Brainrot",
+      name: "steal-brainrot",
+      description: "Get epic gear, steal Brainrots and troll your way to the top!",
+      logo: "/assets/games/steal-brainrot-logo.webp",
+      image: "/assets/games/steal-brainrot.webp", 
+      gradient: "37, 40, 60",
+      ready: true,
+    },
+    {
       title: "Blue Lock: Rivals",
       name: "blue-lock",
       description: "Get the best styles and passes to dominate the field!",
@@ -64,15 +73,6 @@
       ready: true
     },
     {
-      title: "Anime Adventures",
-      name: "anime-adventures",
-      description: "Get powerful units and exclusive gamepasses to dominate battles!",
-      logo: "/assets/games/anime-adventures-logo.webp",
-      image: "/assets/games/anime-adventures.webp",
-      gradient: "30, 70, 25",
-      ready: true
-    },
-    {
       title: "Pets Go!",
       name: "pets-go",
       description: "Get the best items and collect more pets and gems than ever!",
@@ -106,19 +106,19 @@
 
 <svelte:head>
 	<title>BloxyFruit - The Most Trusted, Affordable Roblox Items Store with Fast Delivery!</title>
-  <meta property="og:title" content="BloxyFruit - The Most Trusted, Affordable Roblox Items Store with Fast Delivery!" />
-  <meta property="twitter:title" content="BloxyFruit - The Most Trusted, Affordable Roblox Items Store with Fast Delivery!" />
-  <meta name="description" content="Shop the best deals on Roblox items at BloxyFruit! Buy Blox Fruits, Grow a Garden seeds and gear, Blue Lock styles and passes, Anime Vanguards, Rivals, Murder Mystery 2, Pets Go, and more. Fast delivery, trusted service, and unbeatable prices for your favorite Roblox games!" />
-  <meta property="og:description" content="Shop the best deals on Roblox items at BloxyFruit! Buy Blox Fruits, Grow a Garden seeds and gear, Blue Lock styles and passes, Anime Vanguards, Rivals, Murder Mystery 2, Pets Go, and more. Fast delivery, trusted service, and unbeatable prices for your favorite Roblox games!" />
-  <meta property="twitter:description" content="Shop the best deals on Roblox items at BloxyFruit! Buy Blox Fruits, Grow a Garden seeds and gear, Blue Lock styles and passes, Anime Vanguards, Rivals, Murder Mystery 2, Pets Go, and more. Fast delivery, trusted service, and unbeatable prices for your favorite Roblox games!" />
-  
-  <meta property="og:image:width" content="1400" />
-  <meta property="og:image:height" content="430" />
-  <meta property="twitter:card" content="summary_large_image" />
-  <meta property="twitter:author" content="@xTheAlex14" />
-  <meta property="twitter:image" content="/assets/banner.webp" />
-  <link rel="canonical" href="https://bloxyfruit.com/" />
-  <meta name="keywords" content="blox fruits, cheap blox fruits, blox fruits items, buy blox fruits, fast blox fruits delivery, grow a garden, grow a garden roblox, buy grow a garden, grow a garden seeds, grow a garden gear, cheap grow a garden, blue lock, blue lock rivals, blue lock roblox, buy blue lock, blue lock styles, blue lock passes, anime defenders, anime defenders items, cheap anime defenders, buy anime defenders, the strongest battlegrounds, battlegrounds gamepasses, cheap gamepasses, Roblox items, buy Roblox items, fast delivery Roblox, online Roblox shop, game items, cheap game items, Roblox gamepasses, buy gamepasses, murder mystery 2, anime vanguards, adopt me, buy anime adventures, buy rolls, lucky rolls, cheap lucky rolls, anime adventures, knives, guns, units, blue lock styles, buy styles, flows, pets go, pets go roblox, buy pets go, pets go items, rivals, buy rivals, rivals roblox, roblox store, roblox shop, roblox items store, roblox best prices, roblox fast delivery" />
+	<meta property="og:title" content="BloxyFruit - The Most Trusted, Affordable Roblox Items Store with Fast Delivery!" />
+	<meta property="twitter:title" content="BloxyFruit - The Most Trusted, Affordable Roblox Items Store with Fast Delivery!" />
+	<meta name="description" content="Shop the best deals on Roblox items at BloxyFruit! Buy Blox Fruits, Grow a Garden seeds and gear, Blue Lock styles and passes, Anime Vanguards, Rivals, Murder Mystery 2, Pets Go, Steal a Brainrot, and more. Fast delivery, trusted service, and unbeatable prices for your favorite Roblox games!" />
+	<meta property="og:description" content="Shop the best deals on Roblox items at BloxyFruit! Buy Blox Fruits, Grow a Garden seeds and gear, Blue Lock styles and passes, Anime Vanguards, Rivals, Murder Mystery 2, Pets Go, Steal a Brainrot, and more. Fast delivery, trusted service, and unbeatable prices for your favorite Roblox games!" />
+	<meta property="twitter:description" content="Shop the best deals on Roblox items at BloxyFruit! Buy Blox Fruits, Grow a Garden seeds and gear, Blue Lock styles and passes, Anime Vanguards, Rivals, Murder Mystery 2, Pets Go, Steal a Brainrot, and more. Fast delivery, trusted service, and unbeatable prices for your favorite Roblox games!" />
+	
+	<meta property="og:image:width" content="1400" />
+	<meta property="og:image:height" content="430" />
+	<meta property="twitter:card" content="summary_large_image" />
+	<meta property="twitter:author" content="@xTheAlex14" />
+	<meta property="twitter:image" content="/assets/banner.webp" />
+	<link rel="canonical" href="https://bloxyfruit.com/" />
+	<meta name="keywords" content="blox fruits, cheap blox fruits, blox fruits items, buy blox fruits, fast blox fruits delivery, grow a garden, grow a garden roblox, buy grow a garden, grow a garden seeds, grow a garden gear, cheap grow a garden, blue lock, blue lock rivals, blue lock roblox, buy blue lock, blue lock styles, blue lock passes, anime defenders, anime defenders items, cheap anime defenders, buy anime defenders, the strongest battlegrounds, battlegrounds gamepasses, cheap gamepasses, Roblox items, buy Roblox items, fast delivery Roblox, online Roblox shop, game items, cheap game items, Roblox gamepasses, buy gamepasses, murder mystery 2, anime vanguards, adopt me, knives, guns, units, blue lock styles, buy styles, flows, pets go, pets go roblox, buy pets go, pets go items, rivals, buy rivals, rivals roblox, steal a brainrot, buy steal a brainrot, steal brainrots, troll gear, roblox store, roblox shop, roblox items store, roblox best prices, roblox fast delivery" />
 </svelte:head>
 
 <div class="flex flex-col items-center pt-[80px]">
