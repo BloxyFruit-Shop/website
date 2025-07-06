@@ -97,11 +97,11 @@ export default {
     ],
     products: []
   },
-  'anime-adventures': {
-    shortName: 'AA',
-    name: 'Anime Adventures',
-    internalName: 'anime-adventures',
-    order: ['Gamepass', 'Bundle', 'Unit'],
+  'steal-brainrot': {
+    shortName: 'SB',
+    name: 'Steal a Brainrot',
+    internalName: 'steal-brainrot',
+    order: ['Gear', 'Gamepass', 'Brainrot'],
     rarities: [
       { name: 'Common', color: 'green' },
       { name: 'Uncommon', color: 'lightBlue' },

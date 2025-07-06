@@ -7,6 +7,6 @@ export default {
   'anime-vanguards': 'https://discord.gg/5gwAZZpXSw',
   'king-legacy': 'https://discord.gg/8sjBPzzxwA',
   'blue-lock': 'https://discord.gg/u53cFFR95H',
-  'anime-adventures': 'https://discord.gg/xhEXNBkS7w',
-  'murder-mystery-2': 'https://discord.gg/WG826HDXbe'
+  'steal-brainrot': 'https://discord.gg/xhEXNBkS7w',
+  'murder-mystery-2': 'https://discord.gg/WG826HDXbe',
 };
