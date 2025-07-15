@@ -41,6 +41,20 @@ export default {
     ],
     products: []
   },
+  'steal-brainrot': {
+    shortName: 'SB',
+    name: 'Steal a Brainrot',
+    internalName: 'steal-brainrot',
+    order: ['Gear', 'Gamepass', 'Brainrot'],
+    rarities: [
+      { name: 'Common', color: 'green' },
+      { name: 'Uncommon', color: 'lightBlue' },
+      { name: 'Rare', color: 'purple' },
+      { name: 'Legendary', color: 'orange' },
+      { name: 'Mythical', color: 'red' }
+    ],
+    products: []
+  },
   'blue-lock': {
     shortName: 'BL',
     name: 'Blue Lock: Rivals',
@@ -88,20 +102,6 @@ export default {
     name: 'King Legacy',
     internalName: 'king-legacy',
     order: ['Permanent Fruit', 'Gamepass', 'Other'],
-    rarities: [
-      { name: 'Common', color: 'green' },
-      { name: 'Uncommon', color: 'lightBlue' },
-      { name: 'Rare', color: 'purple' },
-      { name: 'Legendary', color: 'orange' },
-      { name: 'Mythical', color: 'red' }
-    ],
-    products: []
-  },
-  'steal-brainrot': {
-    shortName: 'SB',
-    name: 'Steal a Brainrot',
-    internalName: 'steal-brainrot',
-    order: ['Gear', 'Gamepass', 'Brainrot'],
     rarities: [
       { name: 'Common', color: 'green' },
       { name: 'Uncommon', color: 'lightBlue' },
