@@ -582,6 +582,20 @@ export const fetchItems = async () => {
         const productsEdges =
           response?.data?.collectionByHandle?.products?.edges;
 
+        if (!Array.isArray(productsEdges)) {
+          console.error(
+            `[fetchItems] ${game}: productsEdges missing or not an array`,
+            {
+              hasData: !!response?.data,
+              collection: !!response?.data?.collectionByHandle,
+              products: !!response?.data?.collectionByHandle?.products,
+              edgesType:
+                typeof response?.data?.collectionByHandle?.products?.edges
+            }
+          );
+          break;
+        }
+
         const rate =
           1 /
           currencyRates[
@@ -658,7 +672,14 @@ export const fetchItems = async () => {
         gameIteration += 1;
       }
 
-      products[game].products = totalProducts;
+      products[game].products = totalProducts.filter(Boolean);
+      const invalidAfter =
+        totalProducts.length -
+        products[game].products.length +
+        products[game].products.filter((p) => !p?.title).length;
+      console.log(
+        `[fetchItems] ${game}: set ${products[game].products.length} products (invalid=${invalidAfter})`
+      );
     } catch (err) {
       console.error(`Error fetching products for ${game}:`, err);
     }
