@@ -1,23 +1,25 @@
-import '@shopify/shopify-api/adapters/node';
-import { shopifyApi, Session } from '@shopify/shopify-api';
-import bcrypt from 'bcrypt';
-import { SendMailClient } from 'zeptomail';
+import "@shopify/shopify-api/adapters/node";
+import { shopifyApi, Session } from "@shopify/shopify-api";
+import bcrypt from "bcrypt";
+import formData from "form-data";
+import Mailgun from "mailgun.js";
 import {
-  ZEPTO_MAIL_TOKEN,
+  MAILGUN_API_KEY,
+  MAILGUN_DOMAIN,
   SHOPIFY_ADMIN_API_KEY,
   SHOPIFY_ADMIN_API_SECRET,
   SHOPIFY_ADMIN_API_TOKEN,
   SHOPIFY_STOREFRONT_TOKEN,
   SHOPIFY_URL,
-  CURRENCYAPI_API_KEY
-} from '$env/static/private';
-import { setIntervalImmediately, modifyProductTags } from '$server/utils';
-import { restResources } from '@shopify/shopify-api/rest/admin/2024-07';
-import games from '$lib/utils/games';
-import { building } from '$app/environment';
-import { orders, products as dbProducts, inventory } from '$server/mongo';
-import { cacheProductById, updateProductStock } from '$server/cache';
-import { globalSettings } from '$server/mongo';
+  CURRENCYAPI_API_KEY,
+} from "$env/static/private";
+import { setIntervalImmediately, modifyProductTags } from "$server/utils";
+import { restResources } from "@shopify/shopify-api/rest/admin/2024-07";
+import games from "$lib/utils/games";
+import { building } from "$app/environment";
+import { orders, products as dbProducts, inventory } from "$server/mongo";
+import { cacheProductById, updateProductStock } from "$server/cache";
+import { globalSettings } from "$server/mongo";
 
 /**
  * Initializes the Shopify API client with required credentials and configurations.
@@ -27,10 +29,10 @@ export const shopify = shopifyApi({
   apiSecretKey: SHOPIFY_ADMIN_API_SECRET,
   adminApiAccessToken: SHOPIFY_ADMIN_API_TOKEN,
   privateAppStorefrontAccessToken: SHOPIFY_STOREFRONT_TOKEN,
-  scopes: ['read_products', 'write_checkouts', 'read_orders', 'write_orders'],
+  scopes: ["read_products", "write_checkouts", "read_orders", "write_orders"],
   hostName: SHOPIFY_URL,
-  hostScheme: 'https',
-  restResources
+  hostScheme: "https",
+  restResources,
 });
 
 /**
@@ -38,66 +40,67 @@ export const shopify = shopifyApi({
  */
 export const shopifySession = new Session({
   accessToken: SHOPIFY_ADMIN_API_TOKEN,
-  shop: SHOPIFY_URL
+  shop: SHOPIFY_URL,
 });
 
 // Unused. Unclear if this was temp, or if it never got implemented
 const currencyArray = [
-  'USD',
-  'EUR',
-  'JPY',
-  'GBP',
-  'AUD',
-  'CAD',
-  'CHF',
-  'CNY',
-  'SEK',
-  'NZD',
-  'MXN',
-  'SGD',
-  'HKD',
-  'NOK',
-  'KRW',
-  'TRY',
-  'RUB',
-  'INR',
-  'BRL',
-  'ZAR',
-  'SAR',
-  'AED',
-  'THB',
-  'MYR',
-  'IDR',
-  'PHP',
-  'ILS',
-  'PLN',
-  'ARS',
-  'CLP',
-  'COP',
-  'EGP',
-  'PKR',
-  'VND',
-  'BDT',
-  'PEN',
-  'NGN',
-  'GHS',
-  'KES',
-  'HUF',
-  'RON'
+  "USD",
+  "EUR",
+  "JPY",
+  "GBP",
+  "AUD",
+  "CAD",
+  "CHF",
+  "CNY",
+  "SEK",
+  "NZD",
+  "MXN",
+  "SGD",
+  "HKD",
+  "NOK",
+  "KRW",
+  "TRY",
+  "RUB",
+  "INR",
+  "BRL",
+  "ZAR",
+  "SAR",
+  "AED",
+  "THB",
+  "MYR",
+  "IDR",
+  "PHP",
+  "ILS",
+  "PLN",
+  "ARS",
+  "CLP",
+  "COP",
+  "EGP",
+  "PKR",
+  "VND",
+  "BDT",
+  "PEN",
+  "NGN",
+  "GHS",
+  "KES",
+  "HUF",
+  "RON",
 ];
 
 export let currencyRates = {};
 
 /**
- * Creates an instance of the ZeptoMail client used for sending emails.
+ * Creates an instance of the Mailgun client used for sending emails.
  */
-const emailClient = new SendMailClient({
-  url: 'api.zeptomail.eu/',
-  token: ZEPTO_MAIL_TOKEN
+const mailgun = new Mailgun(formData);
+const mg = mailgun.client({
+  username: "api",
+  key: MAILGUN_API_KEY,
 });
 
 /**
- * Sends an email using the ZeptoMail client.
+ * Sends an email using the Mailgun client.
  *
  * @param {string} email - Recipient's email address.
  * @param {string} content - HTML content of the email.
@@ -106,32 +109,34 @@ const emailClient = new SendMailClient({
  * The function constructs an email object with the provided parameters and dispatches it.
  */
 export const sendEmail = (email, content, title) => {
-  emailClient.sendMail({
-    from: {
-      address: 'noreply@bloxyfruit.com',
-      name: 'noreply'
-    },
-    to: [
-      {
-        email_address: {
-          address: email
-        }
-      }
-    ],
+  const domain = MAILGUN_DOMAIN;
+
+  const messageData = {
+    from: "noreply <noreply@rbxmm-dev.lat>",
+    to: [email],
     subject: title,
-    htmlbody: content
-  });
+    html: content,
+  };
+
+  const response = mg.messages
+    .create(domain, messageData)
+    .then(() => {
+      console.log("Correo enviado con Mailgun:", response);
+      return response;
+    })
+    .catch((error) => {
+      console.error("Error enviando correo con Mailgun:", error);
+      throw error;
+    });
 };
 
 const cookieOptions = {
-  sameSite: 'lax',
-  path: '/',
+  sameSite: "lax",
+  path: "/",
   httpOnly: true,
   maxAge: 60 * 60 * 24 * 7 * 6, // 6 months
-  secrets: [
-    'Lekd^fPql4VTew#IzI37!6w3mKt#kgQD*DQ0QVZB7y0irh2JzeUV$4zqejHSZw!@OihFGzM6Ns1LpuJ1kxu#fg5uwWnjCuAnDmL'
-  ],
-  secure: process.env.NODE_ENV === 'production'
+  secrets: ["Lekd^fPql4VTew#IzI37!6w3mKt#kgQD*DQ0QVZB7y0irh2JzeUV$4zqejHSZw!@OihFGzM6Ns1LpuJ1kxu#fg5uwWnjCuAnDmL"],
+  secure: process.env.NODE_ENV === "production",
 };
 
 export const products = games;
@@ -144,8 +149,7 @@ export const products = games;
  *
  * This function uses the predefined cookie options to securely store the session.
  */
-export const setSessionCookie = (cookies, session) =>
-  cookies.set('session', session, cookieOptions);
+export const setSessionCookie = (cookies, session) => cookies.set("session", session, cookieOptions);
 
 /**
  * Deletes the session cookie from the user's browser.
@@ -154,8 +158,7 @@ export const setSessionCookie = (cookies, session) =>
  *
  * It removes the session cookie using the predefined cookie options.
  */
-export const deleteSessionCookie = (cookies) =>
-  cookies.delete('session', cookieOptions);
+export const deleteSessionCookie = (cookies) => cookies.delete("session", cookieOptions);
 
 /**
  * Compares a plaintext value with a hashed value using bcrypt.
@@ -191,47 +194,47 @@ let globalConfig = null;
 const loadGlobalSettings = async () => {
   try {
     globalConfig = await globalSettings.findOneAndUpdate(
-      { _id: 'settings' },
+      { _id: "settings" },
       { $setOnInsert: { updatedAt: new Date() } },
-      { upsert: true, new: true }
+      { upsert: true, new: true },
     );
-    console.log('Global settings loaded');
+    console.log("Global settings loaded");
   } catch (err) {
-    console.error('Error loading global settings:', err);
+    console.error("Error loading global settings:", err);
   }
 };
 
 const inventoryItems = {
-  'Angel V4 CDK GOD': [
+  "Angel V4 CDK GOD": [
     // Angel V4 CDK GOD
   ],
-  'Cyborg V4 CDK GOD': [
+  "Cyborg V4 CDK GOD": [
     // Cyborg V4 CDK GOD
   ],
-  'Human V4 CDK GOD': [
+  "Human V4 CDK GOD": [
     // Human V4 CDK GOD
   ],
-  'Mink V4 CDK GOD': [
+  "Mink V4 CDK GOD": [
     // Mink V4 CDK GOD
   ],
-  'Shark V4 CDK GOD': [
+  "Shark V4 CDK GOD": [
     // SHARK V4 CDK GOD
   ],
-  'Ghoul V4 CDK GOD': [
+  "Ghoul V4 CDK GOD": [
     // Ghoul V4 CDK GOD
   ],
-  'OP Leopard': [
+  "OP Leopard": [
     // OP Leopard
   ],
-  'Sanguine Art': [
+  "Sanguine Art": [
     // Sanguine Art
   ],
-  'OP Kitsune': [
+  "OP Kitsune": [
     // OP Kitsune
   ],
   Cheap: [
     // Cheap accounts
-  ]
+  ],
 };
 
 /**
@@ -248,31 +251,29 @@ const inventoryItems = {
  * @returns {Promise<void>}
  */
 async function addInventoryItemsToDatabase() {
-  console.log('Adding inventory items to database...');
+  console.log("Adding inventory items to database...");
   try {
     for (const [title, accounts] of Object.entries(inventoryItems)) {
       const product = await dbProducts.findOne({ title });
       if (!product) continue;
 
       console.log(product);
-      console.log(
-        `Adding ${accounts.length} accounts for product ${product.title}`
-      );
+      console.log(`Adding ${accounts.length} accounts for product ${product.title}`);
 
       const bulkOps = accounts.map((account) => ({
         insertOne: {
           document: {
             productId: product.productId,
-            type: 'account',
+            type: "account",
             data: {
-              username: account.split(':')[0],
-              password: account.split(':')[1]
+              username: account.split(":")[0],
+              password: account.split(":")[1],
             },
-            status: 'available',
+            status: "available",
             claimedBy: null,
-            claimedAt: null
-          }
-        }
+            claimedAt: null,
+          },
+        },
       }));
 
       // Execute bulk operation if there are any items to add
@@ -282,9 +283,9 @@ async function addInventoryItemsToDatabase() {
         // console.log(`Added ${result.insertedCount} accounts for product ${product.title}`)
       }
     }
-    console.log('Finished adding inventory items');
+    console.log("Finished adding inventory items");
   } catch (err) {
-    console.error('Error adding inventory items:', err);
+    console.error("Error adding inventory items:", err);
   }
 }
 
@@ -303,7 +304,7 @@ async function addInventoryItemsToDatabase() {
  * @returns {Promise<void>}
  */
 const fetchOrders = async () => {
-  console.log('Fetching orders...');
+  console.log("Fetching orders...");
   try {
     let lastCursor = globalConfig?.lastOrdersCursor || null;
     let hasNextPage;
@@ -360,7 +361,7 @@ const fetchOrders = async () => {
 
       const client = new shopify.clients.Graphql({ session: shopifySession });
       const response = await client.request(queryString, {
-        variables: { after: lastCursor }
+        variables: { after: lastCursor },
       });
 
       const orderEdges = response?.data?.orders?.edges || [];
@@ -368,9 +369,9 @@ const fetchOrders = async () => {
       for (const order of orderEdges) {
         const orderData = order.node;
         if (!orderData) continue;
-        if (orderData.riskLevel === 'HIGH') continue;
+        if (orderData.riskLevel === "HIGH") continue;
 
-        const orderId = orderData.id.replace('gid://shopify/Order/', '');
+        const orderId = orderData.id.replace("gid://shopify/Order/", "");
 
         const existingOrder = await orders.findOne({ id: orderId });
         console.log(`Order ${orderId} found`);
@@ -379,10 +380,7 @@ const fetchOrders = async () => {
         const orderItems = await Promise.all(
           orderData.lineItems.edges.map(async (edge) => {
             const item = edge.node;
-            const variantId = item.variant.id.replace(
-              'gid://shopify/ProductVariant/',
-              ''
-            );
+            const variantId = item.variant.id.replace("gid://shopify/ProductVariant/", "");
 
             const product = await dbProducts.findOne({ productId: variantId });
 
@@ -400,9 +398,9 @@ const fetchOrders = async () => {
               image: item.variant.image?.src || product.image,
               price: Number(item.originalUnitPriceSet.shopMoney.amount),
               quantity: item.quantity,
-              deliveryType: product.deliveryType || 'manual'
+              deliveryType: product.deliveryType || "manual",
             };
-          })
+          }),
         );
 
         const validOrderItems = orderItems.filter((item) => item !== null);
@@ -412,17 +410,15 @@ const fetchOrders = async () => {
           email: orderData.email,
           totalAmount: Number(orderData.totalPriceSet.shopMoney.amount),
           items: validOrderItems,
-          status: validOrderItems.find((item) => item.deliveryType === 'manual')
-            ? 'pending'
-            : 'completed',
+          status: validOrderItems.find((item) => item.deliveryType === "manual") ? "pending" : "completed",
           game: validOrderItems[0].game,
           createdAt: new Date(orderData.createdAt),
-          updatedAt: new Date(orderData.createdAt)
+          updatedAt: new Date(orderData.createdAt),
         });
 
         // For account delivery types, attempt to reserve inventory items
         for (const item of validOrderItems) {
-          if (item.deliveryType !== 'account') continue;
+          if (item.deliveryType !== "account") continue;
 
           try {
             const inventoryItems = [];
@@ -431,15 +427,15 @@ const fetchOrders = async () => {
               const availableItem = await inventory.findOneAndUpdate(
                 {
                   productId: item.productId,
-                  status: 'available'
+                  status: "available",
                 },
                 {
                   $set: {
-                    status: 'claimed',
-                    claimedBy: orderData.email
-                  }
+                    status: "claimed",
+                    claimedBy: orderData.email,
+                  },
                 },
-                { new: true }
+                { new: true },
               );
 
               if (!availableItem) break;
@@ -449,28 +445,25 @@ const fetchOrders = async () => {
             await updateProductStock(item.productId);
 
             console.log(
-              `Reserved ${inventoryItems.length} inventory items for order ${orderId}, product ${item.productId}`
+              `Reserved ${inventoryItems.length} inventory items for order ${orderId}, product ${item.productId}`,
             );
 
             if (inventoryItems.length > 0) {
               await orders.updateOne(
                 {
                   id: orderId,
-                  'items.productId': item.productId
+                  "items.productId": item.productId,
                 },
                 {
                   $set: {
-                    'items.$.inventoryIds': inventoryItems,
-                    'items.$.status': 'ready'
-                  }
-                }
+                    "items.$.inventoryIds": inventoryItems,
+                    "items.$.status": "ready",
+                  },
+                },
               );
             }
           } catch (err) {
-            console.error(
-              `Error reserving inventory for order ${orderId}, product ${item.productId}:`,
-              err
-            );
+            console.error(`Error reserving inventory for order ${orderId}, product ${item.productId}:`, err);
           }
         }
 
@@ -486,19 +479,19 @@ const fetchOrders = async () => {
 
       globalConfig.lastOrdersCursor = lastCursor;
       await globalSettings.updateOne(
-        { _id: 'settings' },
+        { _id: "settings" },
         {
           $set: {
             lastOrdersCursor: lastCursor,
-            updatedAt: new Date()
-          }
-        }
+            updatedAt: new Date(),
+          },
+        },
       );
 
       if (!hasNextPage) break;
     }
   } catch (err) {
-    console.error('Error fetching orders:', err);
+    console.error("Error fetching orders:", err);
   }
 };
 
@@ -516,7 +509,7 @@ const fetchOrders = async () => {
  * @returns {Promise<void>}
  */
 export const fetchItems = async () => {
-  console.log('Fetching items...');
+  console.log("Fetching items...");
 
   for (const game of Object.keys(products)) {
     let lastCursor;
@@ -529,9 +522,7 @@ export const fetchItems = async () => {
           query {
             collectionByHandle(handle: "${game.toLowerCase()}") {
               id
-              products(first: 250, sortKey: BEST_SELLING${
-                lastCursor ? `, after: "${lastCursor}"` : ''
-              }) {
+              products(first: 250, sortKey: BEST_SELLING${lastCursor ? `, after: "${lastCursor}"` : ""}) {
                 edges {
                   node {
                     id
@@ -579,8 +570,7 @@ export const fetchItems = async () => {
 
         const client = new shopify.clients.Graphql({ session: shopifySession });
         const response = await client.request(queryString);
-        const productsEdges =
-          response?.data?.collectionByHandle?.products?.edges;
+        const productsEdges = response?.data?.collectionByHandle?.products?.edges;
 
         if (!Array.isArray(productsEdges)) {
           console.error(
@@ -605,35 +595,25 @@ export const fetchItems = async () => {
 
         for (const edge of productsEdges) {
           const product = edge.node;
-          const variantId = product.variants.edges[0].node.id.replace(
-            'gid://shopify/ProductVariant/',
-            ''
-          );
+          const variantId = product.variants.edges[0].node.id.replace("gid://shopify/ProductVariant/", "");
 
           const newProduct = modifyProductTags({
             variantId,
             game,
             title: product.title,
             image: product.image.edges[0].node.src || null,
-            price: Number(
-              (product.priceRangeV2.minVariantPrice.amount * rate).toFixed(4)
-            ),
+            price: Number((product.priceRangeV2.minVariantPrice.amount * rate).toFixed(4)),
             comparePrice: product.compareAtPriceRange
-              ? Number(
-                  (
-                    product.compareAtPriceRange.minVariantCompareAtPrice
-                      .amount * rate
-                  ).toFixed(4)
-                )
+              ? Number((product.compareAtPriceRange.minVariantCompareAtPrice.amount * rate).toFixed(4))
               : null,
             popularity: gameIteration * 250 + productsEdges.indexOf(edge),
             description: product.descriptionHtml,
             tags: product.tags,
-            updatedAt: new Date()
+            updatedAt: new Date(),
           });
 
-          newProduct.deliveryType = newProduct.deliveryType || 'manual';
-          newProduct.inStock = newProduct.inStock == 'false' || newProduct.instock == 'false' ? false : true;
+          newProduct.deliveryType = newProduct.deliveryType || "manual";
+          newProduct.inStock = newProduct.inStock == "false" || newProduct.instock == "false" ? false : true;
 
           try {
             await dbProducts.findOneAndUpdate(
@@ -643,13 +623,13 @@ export const fetchItems = async () => {
                 $setOnInsert: {
                   createdAt: new Date(),
                   accounts: [],
-                  manualNotes: ''
-                }
+                  manualNotes: "",
+                },
               },
               {
                 upsert: true,
-                new: true
-              }
+                new: true,
+              },
             );
 
             cacheProductById(variantId, newProduct);
@@ -660,14 +640,8 @@ export const fetchItems = async () => {
           }
         }
 
-        if (
-          !response?.data?.collectionByHandle?.products?.pageInfo
-            ?.hasNextPage ||
-          productsEdges.length === 0
-        )
-          break;
-        lastCursor =
-          response?.data?.collectionByHandle?.products?.pageInfo?.endCursor;
+        if (!response?.data?.collectionByHandle?.products?.pageInfo?.hasNextPage || productsEdges.length === 0) break;
+        lastCursor = response?.data?.collectionByHandle?.products?.pageInfo?.endCursor;
 
         gameIteration += 1;
       }
@@ -685,7 +659,7 @@ export const fetchItems = async () => {
     }
   }
 
-  console.log('Finished fetching items');
+  console.log("Finished fetching items");
 };
 
 /**
@@ -758,11 +732,10 @@ export const fetchItems = async () => {
     TRY: 37.1832685677,
     USD: 1.0832004953,
     VND: 27393.0624194142,
-    ZAR: 19.0987875061
+    ZAR: 19.0987875061,
   };
 
-  if (!fetchItemsInterval)
-    fetchItemsInterval = setIntervalImmediately(fetchItems, 30 * 1000);
+  if (!fetchItemsInterval) fetchItemsInterval = setIntervalImmediately(fetchItems, 30 * 1000);
   //   })
   // }, 8 * 60 * 60 * 1000)
 
