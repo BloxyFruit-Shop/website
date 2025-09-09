@@ -97,6 +97,7 @@ const mailgun = new Mailgun(formData);
 const mg = mailgun.client({
   username: "api",
   key: MAILGUN_API_KEY,
+  url: "https://api.eu.mailgun.net",
 });
 
 /**
@@ -112,7 +113,7 @@ export const sendEmail = (email, content, title) => {
   const domain = MAILGUN_DOMAIN;
 
   const messageData = {
-    from: "noreply <noreply@rbxmm-dev.lat>",
+    from: `noreply <noreply@${domain}>`,
     to: [email],
     subject: title,
     html: content,
@@ -573,25 +574,16 @@ export const fetchItems = async () => {
         const productsEdges = response?.data?.collectionByHandle?.products?.edges;
 
         if (!Array.isArray(productsEdges)) {
-          console.error(
-            `[fetchItems] ${game}: productsEdges missing or not an array`,
-            {
-              hasData: !!response?.data,
-              collection: !!response?.data?.collectionByHandle,
-              products: !!response?.data?.collectionByHandle?.products,
-              edgesType:
-                typeof response?.data?.collectionByHandle?.products?.edges
-            }
-          );
+          console.error(`[fetchItems] ${game}: productsEdges missing or not an array`, {
+            hasData: !!response?.data,
+            collection: !!response?.data?.collectionByHandle,
+            products: !!response?.data?.collectionByHandle?.products,
+            edgesType: typeof response?.data?.collectionByHandle?.products?.edges,
+          });
           break;
         }
 
-        const rate =
-          1 /
-          currencyRates[
-            productsEdges?.[0]?.node?.priceRangeV2?.minVariantPrice
-              ?.currencyCode ?? 'EUR'
-          ];
+        const rate = 1 / currencyRates[productsEdges?.[0]?.node?.priceRangeV2?.minVariantPrice?.currencyCode ?? "EUR"];
 
         for (const edge of productsEdges) {
           const product = edge.node;
@@ -648,12 +640,8 @@ export const fetchItems = async () => {
 
       products[game].products = totalProducts.filter(Boolean);
       const invalidAfter =
-        totalProducts.length -
-        products[game].products.length +
-        products[game].products.filter((p) => !p?.title).length;
-      console.log(
-        `[fetchItems] ${game}: set ${products[game].products.length} products (invalid=${invalidAfter})`
-      );
+        totalProducts.length - products[game].products.length + products[game].products.filter((p) => !p?.title).length;
+      console.log(`[fetchItems] ${game}: set ${products[game].products.length} products (invalid=${invalidAfter})`);
     } catch (err) {
       console.error(`Error fetching products for ${game}:`, err);
     }
