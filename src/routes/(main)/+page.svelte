@@ -45,6 +45,15 @@
       ready: true
     },
     {
+      title: 'Plants Vs Brainrot',
+      name: 'plants-vs-brainrot',
+      description: 'Buy plants & fight brainrots to dominate the game!',
+      logo: '/assets/games/plants-vs-brainrot-logo.webp',
+      image: '/assets/games/plants-vs-brainrot.webp',
+      gradient: '58, 35, 35',
+      ready: true
+    },
+    {
       title: 'Blue Lock: Rivals',
       name: 'blue-lock',
       description: 'Get the best styles and passes to dominate the field!',
@@ -89,15 +98,6 @@
       logo: '/assets/games/pets-go-logo.webp',
       image: '/assets/games/pets-go.webp',
       gradient: '41, 58, 35',
-      ready: true
-    },
-    {
-      title: 'Murder Mystery 2',
-      name: 'murder-mystery-2',
-      description: 'Find cool weapons and gear to help you win every round!',
-      logo: '/assets/games/murder-mystery-2-logo.webp',
-      image: '/assets/games/murder-mystery-2.webp',
-      gradient: '58, 35, 35',
       ready: true
     }
   ];

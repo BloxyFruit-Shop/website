@@ -23,14 +23,7 @@ export default {
     shortName: 'GG',
     name: 'Grow a Garden',
     internalName: 'grow-a-garden',
-    order: [
-      'Seed',
-      'Gear',
-      'Egg',
-      'Sheckles',
-      'Pet',
-      'Pack'
-    ],
+    order: ['Seed', 'Gear', 'Egg', 'Sheckles', 'Pet', 'Pack'],
     rarities: [
       { name: 'Common', color: 'gray' },
       { name: 'Uncommon', color: 'lightBlue' },
@@ -125,20 +118,17 @@ export default {
     ],
     products: []
   },
-  'murder-mystery-2': {
-    shortName: 'MM2',
-    name: 'Murder Mystery 2',
-    internalName: 'murder-mystery-2',
-    order: ['Bundle', 'Knive', 'Gun', 'Pet'],
+  'plants-vs-brainrot': {
+    shortName: 'PVB',
+    name: 'Plants vs Brainrot',
+    internalName: 'plants-vs-brainrot',
+    order: ['Plant', 'Brainrot'],
     rarities: [
       { name: 'Common', color: 'gray' },
       { name: 'Uncommon', color: 'lightBlue' },
       { name: 'Rare', color: 'green' },
       { name: 'Legendary', color: 'pink' },
-      { name: 'Vintage', color: 'red' },
-      { name: 'Unique', color: 'purple' },
-      { name: 'Ancient', color: 'yellow' },
-      { name: 'Godly', color: 'orange' }
+      { name: 'Mythical', color: 'orange' }
     ],
     products: []
   }
