@@ -48,6 +48,20 @@ export default {
     ],
     products: []
   },
+  'plants-vs-brainrot': {
+    shortName: 'PVB',
+    name: 'Plants vs Brainrot',
+    internalName: 'plants-vs-brainrot',
+    order: ['Plant', 'Brainrot', 'Pack'],
+    rarities: [
+      { name: 'Common', color: 'gray' },
+      { name: 'Uncommon', color: 'lightBlue' },
+      { name: 'Rare', color: 'green' },
+      { name: 'Legendary', color: 'pink' },
+      { name: 'Mythical', color: 'orange' }
+    ],
+    products: []
+  },
   'blue-lock': {
     shortName: 'BL',
     name: 'Blue Lock: Rivals',
@@ -115,20 +129,6 @@ export default {
       { name: 'Rare', color: 'purple' },
       { name: 'Legendary', color: 'orange' },
       { name: 'Mythical', color: 'red' }
-    ],
-    products: []
-  },
-  'plants-vs-brainrot': {
-    shortName: 'PVB',
-    name: 'Plants vs Brainrot',
-    internalName: 'plants-vs-brainrot',
-    order: ['Plant', 'Brainrot'],
-    rarities: [
-      { name: 'Common', color: 'gray' },
-      { name: 'Uncommon', color: 'lightBlue' },
-      { name: 'Rare', color: 'green' },
-      { name: 'Legendary', color: 'pink' },
-      { name: 'Mythical', color: 'orange' }
     ],
     products: []
   }
