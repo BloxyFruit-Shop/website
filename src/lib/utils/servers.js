@@ -8,5 +8,5 @@ export default {
   'king-legacy': 'https://discord.gg/8sjBPzzxwA',
   'blue-lock': 'https://discord.gg/u53cFFR95H',
   'steal-brainrot': 'https://discord.gg/xhEXNBkS7w',
-  'plants-vs-brainrot': 'https://discord.gg/u4Pc84kT'
+  'plants-vs-brainrot': 'https://discord.gg/HVPt5ceHan'
 };
