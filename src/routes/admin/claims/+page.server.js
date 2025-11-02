@@ -3,7 +3,7 @@ import { roleEnums } from '$server/schemes';
 import { redirect } from '@sveltejs/kit';
 import { ObjectId } from 'mongodb';
 
-const CLAIMS_PER_PAGE = 12;
+const CLAIMS_PER_PAGE = 20;
 
 export const load = async ({ locals, url }) => {
   let page = parseInt(url.searchParams.get('page') || '1', 10);

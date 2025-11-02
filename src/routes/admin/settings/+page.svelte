@@ -100,7 +100,7 @@
                 slot="endIcon"
                 class="flex items-center gap-2 text-[#809BB5]"
               >
-                <Robux class="size-4" />
+                <Robux class="text-white size-4" />
               </div>
             </Input>
           </div>
@@ -116,6 +116,7 @@
             Save Changes
           </Button>
         </div>
+        <p class="text-center text-sm text-[#809BB5]">This only affects the robux recieved from the affiliate system.</p>
       </form>
 
       <div
@@ -140,7 +141,7 @@
               </div>
               <span class="text-[#809BB5]">=</span>
               <div class="flex items-center gap-2">
-                <Robux class="text-purple-400 size-5" />
+                <Robux class="text-amber-300 size-5" />
                 <span class="text-xl font-semibold">{previewRobux}</span>
               </div>
             </div>

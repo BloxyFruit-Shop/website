@@ -10,8 +10,7 @@
   import { Robux, ArrowDown, Check } from '$lib/icons';
   import { Select } from 'bits-ui';
   import { fade, fly, scale, slide } from 'svelte/transition';
-  import { flip } from 'svelte/animate';
-  import { quintOut } from 'svelte/easing';
+  import { format } from 'date-fns';
 
   export let data;
 
@@ -93,6 +92,11 @@
   function goToNextPage() {
     goToPage(currentPage + 1);
   }
+
+  const statusColors = {
+    resolved: 'bg-green-500/20 text-green-400',
+    pending: 'bg-yellow-500/20 text-yellow-400'
+  };
 </script>
 
 <div
@@ -100,7 +104,7 @@
   in:slide={{ y: 20, duration: 300 }}
 >
   <div
-    class="w-full h-full p-6 rounded-lg"
+    class="flex flex-col w-full h-full p-6 rounded-lg"
     style={bgBlur({ color: '#111A28', blur: 6, opacity: 0.9 })}
     in:fly={{ y: 20, duration: 300 }}
   >
@@ -242,132 +246,127 @@
     </div>
 
     {#if claims && claims.length > 0}
-      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
-        {#each claims as claim, i (claim._id)}
-          <div
-            class="bg-gradient-to-br from-[#1D2535]/80 to-[#1D2535]/30 rounded-lg overflow-hidden backdrop-blur-sm border border-[#3BA4F0]/10 transition-all duration-200 hover:border-[#3BA4F0]/30"
-            in:fly|local={{
-              y: 20,
-              x: 20,
-              duration: 400,
-              delay: 100 + i * 100,
-              easing: quintOut
-            }}
-            animate:flip={{ duration: 300 }}
-          >
-            <!-- Header Section -->
-            <div class="p-4 border-b border-[#3BA4F0]/10">
-              <div class="flex items-start gap-4">
-                <img
-                  src="/assets/bacon-headshot.webp"
-                  alt="{claim.user.username}'s avatar"
-                  class="size-16 rounded-full object-cover border-2 border-[#3BA4F0]/50 shadow-lg shadow-[#3BA4F0]/10"
-                />
-                <div class="flex-1">
-                  <p class="text-lg font-bold text-white truncate">
-                    {claim.user.displayName}
-                    <span class="text-[#809BB5]">@{claim.user.username}</span>
-                  </p>
-                  <div
-                    class="flex items-center gap-1.5 mt-1 bg-[#3BA4F0]/10 rounded-full px-3 py-1 w-fit"
-                  >
-                    <Robux class="size-4 text-[#3BA4F0]" />
-                    <span class="font-semibold text-[#3BA4F0]"
-                      >{claim.robuxAmount}</span
-                    >
+      <div class="flex-grow min-h-0 overflow-x-auto">
+        <table class="w-full border-separate border-spacing-y-2 min-w-[1000px]">
+          <thead>
+            <tr class="text-left">
+              <th class="text-[#809BB5] font-medium pb-3 pl-4">User</th>
+              <th class="text-[#809BB5] font-medium pb-3">Amount</th>
+              <th class="text-[#809BB5] font-medium pb-3">Game</th>
+              <th class="text-[#809BB5] font-medium pb-3">Gamepass</th>
+              <th class="text-[#809BB5] font-medium pb-3">Price</th>
+              <th class="text-[#809BB5] font-medium pb-3">Submitted</th>
+              <th class="text-[#809BB5] font-medium pb-3">Status</th>
+              <th class="text-[#809BB5] font-medium pb-3 pr-4"></th>
+            </tr>
+          </thead>
+          <tbody>
+            {#each claims as claim (claim._id)}
+              <tr class="bg-[#1D2535]/30 hover:bg-[#1D2535]/50 transition-colors" in:fly={{ y: 10, duration: 300 }}>
+                <td class="py-4 pl-4 rounded-l-lg">
+                  <div class="flex items-center gap-2">
+                    <img
+                      src="/assets/bacon-headshot.webp"
+                      alt="{claim.user.username}'s avatar"
+                      class="size-8 rounded-full object-cover border border-[#3BA4F0]/30"
+                    />
+                    <div class="min-w-0">
+                      <p class="text-sm font-medium text-white truncate">
+                        {claim.user.displayName}
+                      </p>
+                      <p class="text-xs text-[#809BB5] truncate">
+                        @{claim.user.username}
+                      </p>
+                    </div>
                   </div>
-                </div>
-              </div>
-            </div>
+                </td>
+                <td class="py-4">
+                  <div class="flex items-center gap-1.5 w-fit">
+                    <Robux class="size-4 text-[#3BA4F0]" />
+                    <span class="font-semibold text-[#3BA4F0]">{claim.robuxAmount}</span>
+                  </div>
+                </td>
+                <td class="py-4 text-sm text-white">
+                  {claim.game.name}
+                </td>
+                <td class="py-4 text-sm text-white max-w-[200px] truncate">
+                  {claim.gamepass.displayName}
+                </td>
+                <td class="py-4 text-sm text-white">
+                  {claim.gamepass.price} Robux
+                </td>
+                <td class="py-4 text-sm text-[#809BB5]">
+                  {format(new Date(claim.createdAt), 'MMM dd, yyyy HH:mm')}
+                </td>
+                <td class="py-4">
+                  <span class="px-3 py-1 rounded-full text-xs font-medium {statusColors[claim.resolved ? 'resolved' : 'pending']}">
+                    {claim.resolved ? 'Fulfilled' : 'Pending'}
+                  </span>
+                </td>
+                <td class="py-4 pr-4 rounded-r-lg">
+                  <div class="flex items-center justify-end gap-2">
+                    <a
+                      href={`https://www.roblox.com/game-pass/${claim.gamepass.id}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <Button variant="contained" color="gray" size="small">
+                        View
+                      </Button>
+                    </a>
 
-            <!-- Content Section -->
-            <div class="p-4 space-y-2">
-              <div class="space-y-1">
-                <p class="text-sm">
-                  <span class="text-[#809BB5]">Game:</span>
-                  <span class="ml-1 font-medium text-white"
-                    >{claim.game.name}</span
-                  >
-                </p>
-                <p class="text-sm">
-                  <span class="text-[#809BB5]">Gamepass:</span>
-                  <span class="ml-1 font-medium text-white"
-                    >{claim.gamepass.displayName}</span
-                  >
-                </p>
-                <p class="text-sm">
-                  <span class="text-[#809BB5]">Price:</span>
-                  <span class="ml-1 font-medium text-white"
-                    >{claim.gamepass.price} Robux</span
-                  >
-                </p>
-                <p class="text-xs text-[#809BB5] mt-2">
-                  Submitted: {new Date(claim.createdAt).toLocaleString()}
-                </p>
-              </div>
-            </div>
-
-            <!-- Actions Section -->
-            <div class="flex items-center justify-end gap-2 p-4 pt-0">
-              <a
-                href={`https://www.roblox.com/game-pass/${claim.gamepass.id}`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Button variant="contained" color="gray" size="small">
-                  View Gamepass
-                </Button>
-              </a>
-
-              {#if claim.resolved}
-                <Button variant="contained" color="gray" size="small" disabled>
-                  Fulfilled
-                </Button>
-              {:else}
-                <form
-                  method="POST"
-                  action="?/fulfillClaim"
-                  class="inline-block"
-                  use:enhance={() => {
-                    return async ({ result, update }) => {
-                      if (result.type === 'success' && result.data?.success) {
-                        toast.success(
-                          `Claim fulfilled successfully for ${claim.user.username}.`,
-                          { duration: 2500 }
-                        );
-                        await invalidateAll();
-                      } else if (result.type === 'failure') {
-                        toast.error(
-                          result.data?.message || 'Failed to fulfill claim.',
-                          { duration: 3000 }
-                        );
-                      } else if (result.type === 'error') {
-                        toast.error(
-                          `An unexpected error occurred: ${result.error.message}`,
-                          { duration: 3000 }
-                        );
-                      }
-                    };
-                  }}
-                >
-                  <input type="hidden" name="claimId" value={claim._id} />
-                  <Button
-                    variant="gradient"
-                    color="accent"
-                    size="small"
-                    type="submit"
-                  >
-                    Fulfill
-                  </Button>
-                </form>
-              {/if}
-            </div>
-          </div>
-        {/each}
+                    {#if claim.resolved}
+                      <Button variant="contained" color="gray" size="small" disabled>
+                        Done
+                      </Button>
+                    {:else}
+                      <form
+                        method="POST"
+                        action="?/fulfillClaim"
+                        class="inline-block"
+                        use:enhance={() => {
+                          return async ({ result, update }) => {
+                            if (result.type === 'success' && result.data?.success) {
+                              toast.success(
+                                `Claim fulfilled successfully for ${claim.user.username}.`,
+                                { duration: 2500 }
+                              );
+                              await invalidateAll();
+                            } else if (result.type === 'failure') {
+                              toast.error(
+                                result.data?.message || 'Failed to fulfill claim.',
+                                { duration: 3000 }
+                              );
+                            } else if (result.type === 'error') {
+                              toast.error(
+                                `An unexpected error occurred: ${result.error.message}`,
+                                { duration: 3000 }
+                              );
+                            }
+                          };
+                        }}
+                      >
+                        <input type="hidden" name="claimId" value={claim._id} />
+                        <Button
+                          variant="gradient"
+                          color="accent"
+                          size="small"
+                          type="submit"
+                        >
+                          Fulfill
+                        </Button>
+                      </form>
+                    {/if}
+                  </div>
+                </td>
+              </tr>
+            {/each}
+          </tbody>
+        </table>
       </div>
 
       {#if totalPages > 1}
-        <div class="flex items-center justify-center gap-4 mt-8">
+        <div class="flex items-center justify-center gap-4 mt-6 shrink-0">
           <Button
             variant="contained"
             color="gray"
@@ -393,7 +392,7 @@
       {/if}
     {:else}
       <div
-        class="flex items-center justify-center h-64"
+        class="flex items-center justify-center flex-grow"
         in:scale={{ duration: 300, delay: 400, start: 0.9 }}
       >
         <p

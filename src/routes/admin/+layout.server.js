@@ -15,4 +15,8 @@ export async function load({ locals, url }) {
     console.warn(`Unauthorized admin access attempt.`);
     throw redirect(303, '/');
   }
+
+  return {
+    title: 'Admin Panel'
+  };
 }

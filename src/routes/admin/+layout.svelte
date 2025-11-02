@@ -24,7 +24,22 @@
   $: if ($page) {
     isMobileMenuOpen = false;
   }
+
+  // Determine page title based on current path
+  $: pageTitle = (() => {
+    if (currentPath === '/admin') return 'Dashboard';
+    if (currentPath === '/admin/affiliates') return 'Affiliates Management';
+    if (currentPath === '/admin/claims') return 'Claims Management';
+    if (currentPath === '/admin/settings') return 'Global Settings';
+    return 'Admin Panel';
+  })();
 </script>
+
+<svelte:head>
+  <title>{pageTitle} - Admin Panel | BloxyFruit</title>
+  <meta name="description" content="Admin panel for managing BloxyFruit operations" />
+  <meta name="robots" content="noindex, nofollow" />
+</svelte:head>
 
 <div class="h-full absolute top-0 left-0 right-[var(--scrollbar-width,0px)] bg-[linear-gradient(to_bottom,#0c0e16e0,#0c0e16),url(/assets/landing-background.webp)] bg-no-repeat bg-cover bg-center z-[-1]"
      in:fade={{ duration: 1000 }}></div>
@@ -163,7 +178,7 @@
       </nav>
 
       <div class="pt-4 mt-auto border-t border-[#1D2535]">
-        <p class="text-sm text-[#809BB5] px-4">Admin v1.0.0</p>
+        <p class="text-sm text-[#809BB5] px-4">Admin v1.2.0</p>
       </div>
     </div>
   </aside>
