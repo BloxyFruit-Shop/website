@@ -24,14 +24,17 @@
 <header class="fixed top-0 left-0 [--padding-x:16px] sm:[--padding-x:24px] md:[--padding-x:40px] flex justify-center items-center w-full h-[80px] border-b-2 border-[#1D2535] z-[100] pl-[var(--padding-x,0px)] pr-[calc(var(--padding-x,0px)+var(--scrollbar-width,0px))]" style="{bgBlur({ color: "#1D242F", opacity: 0.2 })}">
   <div class="w-full flex items-center justify-between max-w-[1440px] mx-auto">
     <div class="flex items-center gap-12">
-      <a href="/">
-        <Logo class="w-[110px] md:w-[132px]" />
+      <a href="/" class="w-[50px] sm:w-auto">
+        <Logo class="w-[200px] sm:w-[180px] md:w-[132px]" />
       </a>
       <NavLinks class="hidden md:flex" />
     </div>
 
     <div class="flex items-center gap-4">
-    
+      <Button variant="gradient" color="slate" to="/robux" class="max-md:px-4 h-[46px] w-[46px] md:w-auto">
+        <Robux class="size-[22px] mr-0 md:mr-2 text-amber-300" />
+        <p class="hidden md:block">Get Robux! 🔥</p>
+      </Button>
       <Button class="bg-[#7289DA]/65 hover:bg-[#7289DA]/75 size-[46px]" to="https://discord.gg/bloxyfruit" target="_blank">
         <Discord class="size-[22px] text-white" />
       </Button>

@@ -4,6 +4,38 @@ export default {
     // Site Reviews
     review: "210+ 5 Star Reviews",
 
+    // Robux Page
+    robuxPage: {
+      metaTitle: 'Buy Robux - BloxyFruit',
+      metaDescription: 'Buy Robux securely on BloxyFruit. Choose an amount and get fast delivery with a trusted process.',
+      heroPowerUp: 'Power up with',
+      robuxWord: 'Robux',
+      heroSubtitle: 'Slide to choose the exact amount or pick a preset. Fast delivery and the best prices!',
+      usd: 'USD',
+      continueCta: 'Continue with',
+      selected: 'Selected',
+      estimated: 'Estimated',
+      howItWorksTitle: 'How it works',
+      howItWorksSubtitle: 'Simple, transparent, and fast delivery.',
+      steps: [
+        'Select your Robux amount using the slider above.',
+        'Proceed to checkout and pay securely.',
+        'Provide your Roblox username and a Gamepass when requested.',
+        'Receive your Robux quickly after payment verification.'
+      ],
+      faqTitle: 'Frequently Asked',
+      faq: {
+        speedTitle: 'How fast is delivery?',
+        speedBody: "Most orders are completed shortly after payment verification. We do our deliveries through Roblox gamepasses, so you'll have to wait between 3 to 7 days for it to get acredited.",
+        safetyTitle: 'Is my account safe?',
+        safetyBody: "Yes. We never ask for your password. We only need your Roblox username and a gamepass to deliver.",
+        paymentsTitle: 'What payment methods do you accept?',
+        paymentsBody: "We support multiple secure payment options. You’ll see all options at checkout.",
+        refundsTitle: 'Can I get a refund?',
+        refundsBody: 'Refunds are handled case-by-case according to our policy. Contact support by joining discord if you have an issue.'
+      }
+    },
+
     // Hero Section
     heroTitle1: "Buy Roblox Items",
     heroTitle2: "Fast, Easy & Safe",
@@ -133,6 +165,38 @@ export default {
   ES: {
     // Site Reviews
     review: "210+ 5 Estrellas",
+
+    // Robux Page
+    robuxPage: {
+      metaTitle: 'Comprar Robux - BloxyFruit',
+      metaDescription: 'Compra Robux de forma segura en BloxyFruit. Elige una cantidad y recibe entrega rápida con un proceso confiable.',
+      heroPowerUp: 'Impulsa tu juego con',
+      robuxWord: 'Robux',
+      heroSubtitle: 'Desliza para elegir la cantidad exacta o elige una cantidad preestablecida. ¡Entrega rápida y los mejores precios!',
+      usd: 'USD',
+      continueCta: 'Continuar con',
+      selected: 'Seleccionado',
+      estimated: 'Estimado',
+      howItWorksTitle: 'Cómo funciona',
+      howItWorksSubtitle: 'Sencillo, transparente y con entrega rápida.',
+      steps: [
+        'Selecciona la cantidad de Robux usando el deslizador de arriba.',
+        'Procede al pago y realiza tu compra de forma segura.',
+        'Proporciona tu nombre de usuario de Roblox y un Gamepass cuando se te solicite.',
+        'Recibe tus Robux rápidamente después de la verificación del pago.'
+      ],
+      faqTitle: 'Preguntas Frecuentes',
+      faq: {
+        speedTitle: '¿Qué tan rápida es la entrega?',
+        speedBody: "La mayoría de los pedidos se completan poco después de verificar el pago. Realizamos entregas a través de gamepasses de Roblox, así que deberás esperar entre 3 y 7 días para que se acredite.",
+        safetyTitle: '¿Mi cuenta está segura?',
+        safetyBody: "Sí. Nunca te pediremos tu contraseña. Solo necesitamos tu nombre de usuario de Roblox y un gamepass para realizar la entrega.",
+        paymentsTitle: '¿Qué métodos de pago aceptan?',
+        paymentsBody: "Aceptamos múltiples opciones de pago seguras. Verás todas las opciones disponibles al momento de pagar.",
+        refundsTitle: '¿Puedo obtener un reembolso?',
+        refundsBody: 'Los reembolsos se gestionan caso por caso según nuestra política. Contacta al soporte uniéndote a Discord si tienes algún inconveniente.'
+      }
+    },
 
     // Hero Section
     heroTitle1: "Obtén artículos de Roblox",
