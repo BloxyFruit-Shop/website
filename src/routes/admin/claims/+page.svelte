@@ -110,13 +110,13 @@
     >
       <div class="flex items-center gap-3">
         <div
-          class="p-3 bg-gradient-to-br from-purple-500/20 to-blue-500/20 rounded-xl"
+          class="p-3 bg-blue-500/20 rounded-xl"
         >
-          <Robux class="text-purple-400 size-8" />
+          <Robux class="text-blue-400 size-8" />
         </div>
         <div>
           <h1
-            class="text-2xl font-bold text-transparent bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text"
+            class="text-2xl font-bold text-blue-400"
           >
             Claims Management
           </h1>

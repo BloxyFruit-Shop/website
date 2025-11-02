@@ -95,13 +95,13 @@
     <div class="flex flex-wrap items-center justify-between gap-2" in:slide={{ duration: 300 }}>
       <div class="flex items-center gap-3">
         <div
-          class="p-3 bg-gradient-to-br from-indigo-500/20 to-blue-500/20 rounded-xl"
+          class="p-3 bg-indigo-500/20 rounded-xl"
         >
           <Users class="text-indigo-400 size-8" />
         </div>
         <div>
           <h1
-            class="text-2xl font-bold text-transparent bg-gradient-to-r from-indigo-400 to-blue-400 bg-clip-text"
+            class="text-2xl font-bold text-blue-400"
           >
             Affiliates Management
           </h1>

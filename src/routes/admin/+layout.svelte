@@ -68,10 +68,10 @@
     <div class="sticky top-0 p-6 flex flex-col min-h-[calc(100dvh-80px)]">
       <div class="flex items-center gap-2 mb-8"
            in:slide={{ duration: 400 }}>
-        <div class="p-2 rounded-lg bg-gradient-to-br from-[#3BA4F0]/20 to-purple-500/20">
+        <div class="p-2 rounded-lg bg-[#3BA4F0]/20">
           <Gear class="size-6 text-[#3BA4F0]" />
         </div>
-        <h2 class="text-2xl font-bold bg-gradient-to-r from-[#3BA4F0] to-purple-400 bg-clip-text text-transparent">Admin Panel</h2>
+        <h2 class="text-2xl font-bold text-[#3BA4F0]">Admin Panel</h2>
       </div>
 
       <nav class="flex-grow">

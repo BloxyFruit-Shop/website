@@ -47,7 +47,7 @@
 <div class="flex flex-col gap-6" in:fade={{ duration: 300, delay: 200 }}>
   <div class="flex items-center gap-2">
     <span
-      class="text-2xl font-bold text-transparent bg-gradient-to-r from-accent-500 to-accent-400 bg-clip-text"
+      class="text-2xl font-bold text-accent-500"
     >
       Create Gamepass
     </span>

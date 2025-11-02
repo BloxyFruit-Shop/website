@@ -28,22 +28,25 @@
   $: previewRobux = previewEuro * euroToRobuxRateInput;
 </script>
 
-<div class="max-w-[1440px] h-full w-full mx-auto" in:slide={{ y:20, duration: 300 }}>
-  <div class="w-full h-full p-8 space-y-8 rounded-lg"
-       style="{bgBlur({ color: '#111A28', blur: 6, opacity: 0.9 })}"
-       in:fly={{ y: 20, duration: 300 }}>
-
-    <div class="flex items-center justify-between"
-         in:slide={{ duration: 300 }}>
+<div
+  class="max-w-[1440px] h-full w-full mx-auto"
+  in:slide={{ y: 20, duration: 300 }}
+>
+  <div
+    class="w-full h-full p-8 space-y-8 rounded-lg"
+    style={bgBlur({ color: '#111A28', blur: 6, opacity: 0.9 })}
+    in:fly={{ y: 20, duration: 300 }}
+  >
+    <div class="flex items-center justify-between" in:slide={{ duration: 300 }}>
       <div class="flex items-center gap-3">
-        <div class="p-3 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-xl">
+        <div class="p-3 bg-blue-500/20 rounded-xl">
           <Gear class="text-blue-400 size-8" />
         </div>
         <div>
-          <h1 class="text-2xl font-bold text-transparent bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text">
-            Global Settings
-          </h1>
-          <p class="text-sm text-[#809BB5]">Manage your application's global configuration</p>
+          <h1 class="text-2xl font-bold text-blue-400">Global Settings</h1>
+          <p class="text-sm text-[#809BB5]">
+            Manage your application's global configuration
+          </p>
         </div>
       </div>
     </div>
@@ -54,7 +57,7 @@
         action="?/updateSettings"
         use:enhance={() => {
           isSubmitting = true;
-          
+
           return async ({ result, update }) => {
             if (result.type === 'success' && result.data?.success) {
               toast.success('Settings updated successfully!');
@@ -62,7 +65,9 @@
             } else if (result.type === 'failure') {
               console.error('Failed to update settings:', result.data?.message);
             } else if (result.type === 'error') {
-              toast.error(`An unexpected error occurred: ${result.error.message}`);
+              toast.error(
+                `An unexpected error occurred: ${result.error.message}`
+              );
             }
             isSubmitting = false;
           };
@@ -87,18 +92,23 @@
               error={form?.errors?.euroToRobuxRate}
               min="0"
               max="1000"
-              helperText={form?.errors?.euroToRobuxRate ? [form.errors.euroToRobuxRate] : undefined}
+              helperText={form?.errors?.euroToRobuxRate
+                ? [form.errors.euroToRobuxRate]
+                : undefined}
             >
-              <div slot="endIcon" class="flex items-center gap-2 text-[#809BB5]">
+              <div
+                slot="endIcon"
+                class="flex items-center gap-2 text-[#809BB5]"
+              >
                 <Robux class="size-4" />
               </div>
             </Input>
           </div>
-    
-          <Button 
-            type="submit" 
-            variant="gradient" 
-            color="accent" 
+
+          <Button
+            type="submit"
+            variant="gradient"
+            color="accent"
             class="w-full"
             loading={isSubmitting}
             disabled={isSubmitting}
@@ -108,7 +118,9 @@
         </div>
       </form>
 
-      <div class="space-y-6 bg-[#1D2535]/30 p-6 rounded-xl border border-white/5">
+      <div
+        class="space-y-6 bg-[#1D2535]/30 p-6 rounded-xl border border-white/5"
+      >
         <div class="flex items-center gap-2 mb-4">
           <div class="p-2 rounded-lg bg-purple-500/10">
             <Robux class="text-purple-400 size-5" />
@@ -117,7 +129,7 @@
         </div>
 
         <div class="space-y-4">
-          <div class="p-4 border rounded-lg bg-gradient-to-br from-blue-500/10 to-purple-500/10 border-white/5">
+          <div class="p-4 border rounded-lg bg-blue-500/10 border-white/5">
             <div class="flex items-center justify-between mb-2">
               <span class="text-sm text-[#809BB5]">Example Conversion</span>
             </div>
@@ -139,9 +151,16 @@
               <span class="text-[#809BB5]">Current Rate:</span>
               <span class="font-medium">1 EUR = {euroToRobuxRateInput} R$</span>
             </div>
-            <div class="w-full bg-[#1D2535]/50 h-1 rounded-full overflow-hidden">
-              <div class="h-full transition-all duration-500 ease-out bg-gradient-to-r from-blue-400 to-purple-400" 
-                   style="width: {Math.min((euroToRobuxRateInput / 100) * 100, 100)}%" />
+            <div
+              class="w-full bg-[#1D2535]/50 h-1 rounded-full overflow-hidden"
+            >
+              <div
+                class="h-full transition-all duration-500 ease-out bg-blue-400"
+                style="width: {Math.min(
+                  (euroToRobuxRateInput / 100) * 100,
+                  100
+                )}%"
+              />
             </div>
           </div>
         </div>
