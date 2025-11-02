@@ -31,14 +31,14 @@
       <Select.Root>
         <Select.Trigger class="h-[46px] px-1.5 flex items-center bg-[#1D2535] rounded-lg group">
           <div class="bg-white/8 p-0.5 rounded-full">
-            <div class="size-8 rounded-full overflow-hidden">
+            <div class="overflow-hidden rounded-full size-8">
               <img src="/assets/bacon-headshot.webp" alt="Avatar" class="size-full" />
             </div>
           </div>
           <div class="flex flex-col gap-0.5 ml-2 text-left max-[600px]:hidden">
-            <p class="text-white font-semibold leading-none">{data.localUser.username}</p>
+            <p class="font-semibold leading-none text-white">{data.localUser.username}</p>
           </div>
-          <ArrowDown class="size-5 text-white ml-1 group-aria-expanded:rotate-180 transition-transform" />
+          <ArrowDown class="ml-1 text-white transition-transform size-5 group-aria-expanded:rotate-180" />
         </Select.Trigger>
         <Select.Content
           class="!w-[170px] rounded-lg bg-[#1D2535] p-2 shadow-popover outline-none z-[160] font-medium"
@@ -46,7 +46,7 @@
           sideOffset={8}
         >
           <Select.Item value="account">
-            <a class="flex items-center text-white font-semibold py-2 px-3 hover:bg-white/5 rounded-md transition-colors" href="/account">
+            <a class="flex items-center px-3 py-2 font-semibold text-white transition-colors rounded-md hover:bg-white/5" href="/account">
               <User class="size-4 mr-2.5" />
               <p>Account</p>
             </a>
@@ -66,8 +66,8 @@
       onClick={() => { authModalOpen = true; authModal = "main"; authModalType = "Register" }}
       class="max-md:px-4 h-[46px]"
     >
-      <p class="max-[430px]:hidden">Get Started!</p>
-      <RoundedArrowRight class="size-4 min-[430px]:ml-1.5" />
+      <p class="hidden sm:block">Get Started!</p>
+      <RoundedArrowRight class="size-4 sm:ml-1.5" />
     </Button>
   {/if}
   

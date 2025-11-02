@@ -59,6 +59,34 @@
       success: {
         normal: "px-6 bg-gradient-to-r from-[#4CAF50] to-[#45A049] hover:from-[#45A049] hover:to-[#4CAF50] transition-colors",
         disabled: "px-6 opacity-40 bg-gradient-to-r from-[#4CAF50] to-[#45A049]"
+      },
+      slate: {
+        normal: "px-6 bg-gradient-to-r from-[#334155] to-[#1F2937] hover:from-[#1F2937] hover:to-[#334155] transition-colors",
+        disabled: "px-6 opacity-40 bg-gradient-to-r from-[#334155] to-[#1F2937]"
+      },
+      blurple: {
+        normal: "px-6 bg-gradient-to-r from-[#6F83D6] to-[#5E73CC] hover:from-[#5E73CC] hover:to-[#6F83D6] transition-colors",
+        disabled: "px-6 opacity-40 bg-gradient-to-r from-[#6F83D6] to-[#5E73CC]"
+      },
+      ocean: {
+        normal: "px-6 bg-gradient-to-r from-[#5BA4C7] to-[#4A8FB3] hover:from-[#4A8FB3] hover:to-[#5BA4C7] transition-colors",
+        disabled: "px-6 opacity-40 bg-gradient-to-r from-[#5BA4C7] to-[#4A8FB3]"
+      },
+      forest: {
+        normal: "px-6 bg-gradient-to-r from-[#5FA271] to-[#4E8C60] hover:from-[#4E8C60] hover:to-[#5FA271] transition-colors",
+        disabled: "px-6 opacity-40 bg-gradient-to-r from-[#5FA271] to-[#4E8C60]"
+      },
+      ember: {
+        normal: "px-6 bg-gradient-to-r from-[#D16C6C] to-[#B95B5B] hover:from-[#B95B5B] hover:to-[#D16C6C] transition-colors",
+        disabled: "px-6 opacity-40 bg-gradient-to-r from-[#D16C6C] to-[#B95B5B]"
+      },
+      amber: {
+        normal: "px-6 bg-gradient-to-r from-[#D6A55A] to-[#C08F49] hover:from-[#C08F49] hover:to-[#D6A55A] transition-colors",
+        disabled: "px-6 opacity-40 bg-gradient-to-r from-[#D6A55A] to-[#C08F49]"
+      },
+      plum: {
+        normal: "px-6 bg-gradient-to-r from-[#9A7ED6] to-[#856CC7] hover:from-[#856CC7] hover:to-[#9A7ED6] transition-colors",
+        disabled: "px-6 opacity-40 bg-gradient-to-r from-[#9A7ED6] to-[#856CC7]"
       }
     }
   }

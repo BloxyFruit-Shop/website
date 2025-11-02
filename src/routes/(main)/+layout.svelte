@@ -3,6 +3,7 @@
   import Mastercard from "$icons/payment-methods/mastercard.svelte"
   import Button from "$components/Button.svelte"
   import Discord from "$icons/discord.svelte"
+  import Robux from "$icons/robux.svelte"
   import Maestro from "$icons/payment-methods/maestro.svelte"
   import Paypal from "$icons/payment-methods/paypal.svelte"
   import Visa from "$icons/payment-methods/visa.svelte"
@@ -51,7 +52,7 @@
 
   <div class="max-w-[1440px] w-full flex flex-col">
     {#if $page.url.pathname == "/"}
-      <div class="flex-col md:flex-row flex items-center md:items-start justify-between gap-6">
+      <div class="flex flex-col items-center justify-between gap-6 md:flex-row md:items-start">
         <div class="flex flex-col gap-3">
           <div class="flex items-center">
             <Logo class="w-[140px]" />
@@ -89,7 +90,7 @@
     {/if}
     
     <div class="h-0.5 w-full bg-[#809BB5]/10 my-6 rounded-full"></div>
-    <div class="flex-col md:flex-row flex items-center md:items-start justify-between gap-3">
+    <div class="flex flex-col items-center justify-between gap-3 md:flex-row md:items-start">
       <p class="text-[#809BB5] font-medium">BloxFruit © 2024, All Rights Reserved</p>
       <div class="flex gap-4">
         <div class="bg-white rounded-lg w-[54px] h-[32px] flex items-center justify-center">
