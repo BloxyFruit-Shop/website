@@ -25,7 +25,7 @@
   <div class="w-full flex items-center justify-between max-w-[1440px] mx-auto">
     <div class="flex items-center gap-12">
       <a href="/" class="w-[50px] sm:w-auto">
-        <Logo class="w-[200px] sm:w-[180px] md:w-[132px]" />
+        <Logo class="w-[200px] sm:w-[180px] md:w-[132px] group" data-role="logo" />
       </a>
       <NavLinks class="hidden md:flex" />
     </div>
