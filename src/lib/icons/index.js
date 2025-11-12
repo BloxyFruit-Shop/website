@@ -46,6 +46,7 @@ export { default as Hammer } from "./hammer.svelte"
 export { default as Hamburger } from "./hamburger.svelte"
 export { default as Gear } from "./gear.svelte"
 export { default as Euro } from "./euro.svelte"
+export { default as Dollar } from "./dollar.svelte"
 
 // Payment method icons
 export { default as Amex } from './payment-methods/amex.svelte'

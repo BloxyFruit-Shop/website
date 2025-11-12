@@ -49,7 +49,13 @@ export const usersSchema = new Schema({
   role: Number,
   session: sessionSchema,
   robux: { type: Number, default: 0 },
+  robuxBreakdown: {
+    purchased: { type: Number, default: 0 },
+    claimed: { type: Number, default: 0 }
+  },
   referralCode: { type: String, default: createCode },
+  lastPurchaseAt: { type: Date, default: null },
+  squareCustomerId: { type: String, default: null }
 });
 
 export const verificationsSchema = new Schema({
@@ -138,10 +144,21 @@ export const ordersSchema = new Schema({
 });
 
 export const globalSettingsSchema = new Schema({
-  _id: { type: String, default: 'settings' }, // Single document identifier
-  lastOrdersCursor: String,
-  euroToRobuxRate: { type: Number, default: 10 },
-  updatedAt: { type: Date, default: Date.now }
+   _id: { type: String, default: 'settings' }, // Single document identifier
+   lastOrdersCursor: String,
+   euroToRobuxRate: { type: Number, default: 10 },
+   // Square Payment Settings
+   usdToRobuxRate: { type: Number, default: 0.00829 },
+   squareWebhookSignatures: {
+      payments: { type: String, default: null },      // For payment.created events
+      disputes: { type: String, default: null }       // For dispute.created events
+   },
+   discordDisputeWebhookUrl: { type: String, default: null },
+   // Purchase Limits
+   maxRobuxPerPurchase: { type: Number, default: 10000 },
+   minRobuxPerPurchase: { type: Number, default: 300 },
+   purchaseLimitHours: { type: Number, default: 6 },
+   updatedAt: { type: Date, default: Date.now }
 });
 
 export const robuxClaimsSchema = new Schema({
@@ -153,6 +170,8 @@ export const robuxClaimsSchema = new Schema({
   },
   resolved: { type: Boolean, default: false },
   resolvedAt: { type: Date, default: null },
+  cancelledDueToDispute: { type: Boolean, default: false },
+  disputeId: { type: String, default: null },
   robuxAmount: { type: Number, default: 0 },
   game: {
     id: String,
@@ -164,4 +183,73 @@ export const robuxClaimsSchema = new Schema({
     price: Number
   },
   createdAt: { type: Date, default: Date.now }
+});
+
+export const squarePaymentsSchema = new Schema({
+   paymentId: String,
+   userId: { type: Schema.Types.ObjectId, ref: 'users' },
+   amount: Number,           // USD cents
+   robuxAmount: Number,
+   status: {
+     type: String,
+     enum: ['pending', 'authorized', 'completed', 'failed', 'disputed'],
+     default: 'pending'
+   },
+   idempotencyKey: String,
+   sourceAmount: Number,     // Original amount before conversion
+   sourceCurrency: String,   // USD
+   createdAt: { type: Date, default: Date.now },
+   authorizedAt: { type: Date, default: null },
+   completedAt: { type: Date, default: null },
+   failureReason: { type: String, default: null },
+   disputeId: { type: String, default: null },
+   receiptUrl: { type: String, default: null }
+});
+
+export const robuxTransactionsSchema = new Schema({
+  userId: { type: Schema.Types.ObjectId, ref: 'users' },
+  type: {
+    type: String,
+    enum: ['purchase', 'claim', 'chargeback_reversal', 'claim_cancellation', 'admin'],
+    required: true
+  },
+  amount: Number,
+  source: {
+    type: String,
+    enum: ['square_payment', 'robux_claim', 'square_dispute', 'admin'],
+    required: true
+  },
+  sourceId: String,         // paymentId, claimId, or disputeId
+  balanceBefore: Number,
+  balanceAfter: Number,
+  metadata: {
+    reason: { type: String, default: null },
+    adminId: { type: Schema.Types.ObjectId, default: null },
+    notes: { type: String, default: null }
+  },
+  createdAt: { type: Date, default: Date.now }
+});
+
+export const squareDisputesSchema = new Schema({
+  disputeId: String,
+  paymentId: String,
+  userId: { type: Schema.Types.ObjectId, ref: 'users' },
+  robuxAmount: Number,
+  status: {
+    type: String,
+    enum: ['created', 'evidence_under_review', 'won', 'lost'],
+    default: 'created'
+  },
+  reason: String,
+  evidence: { type: String, default: null },
+  claimsAffected: [{
+    claimId: { type: Schema.Types.ObjectId, ref: 'robuxClaims' },
+    status: String,         // pending_cancelled, already_claimed
+    action: String          // auto_cancelled, manual_review_required
+  }],
+  reversalProcessed: { type: Boolean, default: false },
+  reversalTransactionId: { type: Schema.Types.ObjectId, ref: 'robuxTransactions', default: null },
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now },
+  resolvedAt: { type: Date, default: null }
 });

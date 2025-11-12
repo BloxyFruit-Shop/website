@@ -67,6 +67,6 @@
   </div>
 
   {#if helperText && helperText != ''}
-    <small class={`transition-colors duration-150 mx-1.5 mt-[3px] text-[13px] font-semibold ${error ? 'text-[#db4747]' : ''}`}>{helperText[0]}</small>
+    <small class={`transition-colors duration-150 mx-1.5 mt-[3px] text-[13px] font-semibold text-[#809BB5]/90 ${error ? 'text-[#db4747]' : ''}`}>{helperText[0]}</small>
   {/if}
 </div>

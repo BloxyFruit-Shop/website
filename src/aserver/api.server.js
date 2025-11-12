@@ -122,7 +122,6 @@ export const sendEmail = (email, content, title) => {
   const response = mg.messages
     .create(domain, messageData)
     .then(() => {
-      console.log("Correo enviado con Mailgun:", response);
       return response;
     })
     .catch((error) => {
@@ -199,7 +198,6 @@ const loadGlobalSettings = async () => {
       { $setOnInsert: { updatedAt: new Date() } },
       { upsert: true, new: true },
     );
-    console.log("Global settings loaded");
   } catch (err) {
     console.error("Error loading global settings:", err);
   }
@@ -252,14 +250,10 @@ const inventoryItems = {
  * @returns {Promise<void>}
  */
 async function addInventoryItemsToDatabase() {
-  console.log("Adding inventory items to database...");
-  try {
-    for (const [title, accounts] of Object.entries(inventoryItems)) {
-      const product = await dbProducts.findOne({ title });
-      if (!product) continue;
-
-      console.log(product);
-      console.log(`Adding ${accounts.length} accounts for product ${product.title}`);
+   try {
+     for (const [title, accounts] of Object.entries(inventoryItems)) {
+       const product = await dbProducts.findOne({ title });
+       if (!product) continue;
 
       const bulkOps = accounts.map((account) => ({
         insertOne: {
@@ -284,7 +278,6 @@ async function addInventoryItemsToDatabase() {
         // console.log(`Added ${result.insertedCount} accounts for product ${product.title}`)
       }
     }
-    console.log("Finished adding inventory items");
   } catch (err) {
     console.error("Error adding inventory items:", err);
   }
@@ -305,8 +298,7 @@ async function addInventoryItemsToDatabase() {
  * @returns {Promise<void>}
  */
 const fetchOrders = async () => {
-  console.log("Fetching orders...");
-  try {
+   try {
     let lastCursor = globalConfig?.lastOrdersCursor || null;
     let hasNextPage;
 
@@ -375,7 +367,6 @@ const fetchOrders = async () => {
         const orderId = orderData.id.replace("gid://shopify/Order/", "");
 
         const existingOrder = await orders.findOne({ id: orderId });
-        console.log(`Order ${orderId} found`);
         if (existingOrder) continue;
 
         const orderItems = await Promise.all(
@@ -445,10 +436,6 @@ const fetchOrders = async () => {
 
             await updateProductStock(item.productId);
 
-            console.log(
-              `Reserved ${inventoryItems.length} inventory items for order ${orderId}, product ${item.productId}`,
-            );
-
             if (inventoryItems.length > 0) {
               await orders.updateOne(
                 {
@@ -467,11 +454,7 @@ const fetchOrders = async () => {
             console.error(`Error reserving inventory for order ${orderId}, product ${item.productId}:`, err);
           }
         }
-
-        console.log(`Added new order: ${orderData.name}`);
       }
-
-      console.log(`${orderEdges.length} orders fetched`);
 
       if (orderEdges.length === 0) break;
 
@@ -510,9 +493,7 @@ const fetchOrders = async () => {
  * @returns {Promise<void>}
  */
 export const fetchItems = async () => {
-  console.log("Fetching items...");
-
-  for (const game of Object.keys(products)) {
+   for (const game of Object.keys(products)) {
     let lastCursor;
     const totalProducts = [];
 
@@ -639,15 +620,10 @@ export const fetchItems = async () => {
       }
 
       products[game].products = totalProducts.filter(Boolean);
-      const invalidAfter =
-        totalProducts.length - products[game].products.length + products[game].products.filter((p) => !p?.title).length;
-      console.log(`[fetchItems] ${game}: set ${products[game].products.length} products (invalid=${invalidAfter})`);
     } catch (err) {
       console.error(`Error fetching products for ${game}:`, err);
     }
   }
-
-  console.log("Finished fetching items");
 };
 
 /**

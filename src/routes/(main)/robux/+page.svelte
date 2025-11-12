@@ -8,6 +8,10 @@
   import { fade, fly, scale, slide } from 'svelte/transition';
   import { flip } from 'svelte/animate';
   import { quintOut } from 'svelte/easing';
+  import { toast } from '$lib/svoast';
+  import SquarePaymentModal from '$lib/modals/payment/square-payment.svelte';
+
+  export let data;
 
   // Presets used across UI
   const robuxPacks = [
@@ -24,10 +28,14 @@
   const MAX = 10000;
   const STEP = 50;
 
-  const USD_PER_ROBUX = 0.00829;
+  let paymentModalOpen = false;
+  let usdToRobuxRate = data.usdToRobuxRate;
+  let rateLimitHours = data.purchaseLimitHours;
+  let hoursUntilNextPurchase = 0;
+
   $: approxPrice = Math.max(
     1,
-    Math.round(amount * USD_PER_ROBUX * 100) / 100
+    Math.round(amount * usdToRobuxRate * 100) / 100
   ).toFixed(2);
 
   // Keep presets in sync with slider when clicking
@@ -43,8 +51,11 @@
   }
 
   function handleBuy() {
-    // Wire this to checkout later
-    console.log('Selected Robux amount:', amount, 'Estimated $', approxPrice);
+    if (hoursUntilNextPurchase > 0) {
+      toast.error(`You can purchase again in ${Math.ceil(hoursUntilNextPurchase)} hours.`);
+      return;
+    }
+    paymentModalOpen = true;
   }
 </script>
 
@@ -118,7 +129,12 @@
           <div
             class="p-4 mt-6 rounded-xl"
             style={bgBlur({ color: '#111A28', blur: 8, opacity: 0.9 })}
-            in:fly|local={{ y: 20, duration: 300, delay: 100, easing: quintOut }}
+            in:fly|local={{
+              y: 20,
+              duration: 300,
+              delay: 100,
+              easing: quintOut
+            }}
           >
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-2">
@@ -154,7 +170,12 @@
                     : 'border-[#3BA4F0]/10 hover:border-[#3BA4F0]/30 hover:bg-[#1D2535]/40'}"
                   on:click={() => selectPack(p.id)}
                   aria-pressed={p.amount === amount}
-                  in:fly|local={{ y: 12, duration: 220, delay: 150 + i * 40, easing: quintOut }}
+                  in:fly|local={{
+                    y: 12,
+                    duration: 220,
+                    delay: 150 + i * 40,
+                    easing: quintOut
+                  }}
                 >
                   {#if p.best}
                     <span
@@ -171,13 +192,24 @@
               color="accent"
               variant="gradient"
               class="w-full mt-4"
-              on:click={handleBuy}
+              onClick={handleBuy}
+              disabled={hoursUntilNextPurchase > 0}
             >
-              {translations[$languageStore].robuxPage?.continueCta ??
-                'Continue with'}
-              {amount} R$ • ${approxPrice}
-              <RoundedArrowRight class="size-4 ml-1.5" />
+              {#if hoursUntilNextPurchase > 0}
+                Can purchase in {Math.ceil(hoursUntilNextPurchase)} hours
+              {:else}
+                {translations[$languageStore].robuxPage?.continueCta ??
+                  'Continue with'}
+                {amount} R$ • ${approxPrice}
+                <RoundedArrowRight class="size-4 ml-1.5" />
+              {/if}
             </Button>
+
+            {#if hoursUntilNextPurchase > 0}
+              <p class="text-xs text-[#809BB5] text-center mt-2">
+                You can only purchase once every {rateLimitHours} hours
+              </p>
+            {/if}
           </div>
         </div>
 
@@ -195,7 +227,12 @@
           <img
             src="/assets/character-ilustration-4.webp"
             class="max-w-none max-xl:w-[465px] max-[1650px]:w-[485px] w-[515px] h-full absolute left-1/2 -translate-x-1/2 object-contain select-none pointer-events-none hidden md:block"
-            in:fly|local={{ x: 40, duration: 400, delay: 100, easing: quintOut }}
+            in:fly|local={{
+              x: 40,
+              duration: 400,
+              delay: 100,
+              easing: quintOut
+            }}
           />
 
           <div
@@ -204,7 +241,13 @@
             <div
               class="size-16 rounded-2xl flex items-center justify-center shadow-[0_10px_25px_0_rgba(59,164,240,0.12)]"
               style={bgBlur({ color: '#1D2535', blur: 12, opacity: 0.75 })}
-              in:fly|local={{ y: 20, x: -20, duration: 300, delay: 200, easing: quintOut }}
+              in:fly|local={{
+                y: 20,
+                x: -20,
+                duration: 300,
+                delay: 200,
+                easing: quintOut
+              }}
             >
               <Robux class="size-9 text-[#3BA4F0]" />
             </div>
@@ -215,7 +258,13 @@
             <div
               class="flex items-center justify-center size-12 rounded-2xl"
               style={bgBlur({ color: '#1D2535', blur: 10, opacity: 0.7 })}
-              in:fly|local={{ y: 20, x: -20, duration: 300, delay: 250, easing: quintOut }}
+              in:fly|local={{
+                y: 20,
+                x: -20,
+                duration: 300,
+                delay: 250,
+                easing: quintOut
+              }}
             >
               <Robux class="size-7 text-[#3BA4F0]" />
             </div>
@@ -226,7 +275,13 @@
             <div
               class="flex items-center justify-center size-14 rounded-2xl"
               style={bgBlur({ color: '#1D2535', blur: 10, opacity: 0.7 })}
-              in:fly|local={{ y: 20, x: 20, duration: 300, delay: 300, easing: quintOut }}
+              in:fly|local={{
+                y: 20,
+                x: 20,
+                duration: 300,
+                delay: 300,
+                easing: quintOut
+              }}
             >
               <Robux class="size-8 text-[#3BA4F0]" />
             </div>
@@ -237,7 +292,13 @@
             <div
               class="flex items-center justify-center size-24 rounded-2xl"
               style={bgBlur({ color: '#1D2535', blur: 14, opacity: 0.7 })}
-              in:fly|local={{ y: 20, x: 20, duration: 300, delay: 350, easing: quintOut }}
+              in:fly|local={{
+                y: 20,
+                x: 20,
+                duration: 300,
+                delay: 350,
+                easing: quintOut
+              }}
             >
               <Robux class="size-12 text-[#3BA4F0]" />
             </div>
@@ -248,7 +309,12 @@
             <div
               class="flex items-center justify-between gap-3 p-4 border border-blue-400/20 rounded-xl"
               style={bgBlur({ color: '#111A28', blur: 8, opacity: 0.9 })}
-              in:fly|local={{ y: 16, duration: 300, delay: 200, easing: quintOut }}
+              in:fly|local={{
+                y: 16,
+                duration: 300,
+                delay: 200,
+                easing: quintOut
+              }}
             >
               <div class="flex items-center gap-3">
                 <div
@@ -347,7 +413,12 @@
         <div class="grid gap-3">
           <div
             class="p-4 rounded-lg border border-[#3BA4F0]/10 bg-[#1D2535]/30"
-            in:fly|local={{ y: 12, duration: 280, delay: 250, easing: quintOut }}
+            in:fly|local={{
+              y: 12,
+              duration: 280,
+              delay: 250,
+              easing: quintOut
+            }}
           >
             <p class="font-semibold">
               {translations[$languageStore].robuxPage?.faq?.speedTitle ??
@@ -360,7 +431,12 @@
           </div>
           <div
             class="p-4 rounded-lg border border-[#3BA4F0]/10 bg-[#1D2535]/30"
-            in:fly|local={{ y: 12, duration: 280, delay: 300, easing: quintOut }}
+            in:fly|local={{
+              y: 12,
+              duration: 280,
+              delay: 300,
+              easing: quintOut
+            }}
           >
             <p class="font-semibold">
               {translations[$languageStore].robuxPage?.faq?.safetyTitle ??
@@ -373,7 +449,12 @@
           </div>
           <div
             class="p-4 rounded-lg border border-[#3BA4F0]/10 bg-[#1D2535]/30"
-            in:fly|local={{ y: 12, duration: 280, delay: 350, easing: quintOut }}
+            in:fly|local={{
+              y: 12,
+              duration: 280,
+              delay: 350,
+              easing: quintOut
+            }}
           >
             <p class="font-semibold">
               {translations[$languageStore].robuxPage?.faq?.paymentsTitle ??
@@ -386,7 +467,12 @@
           </div>
           <div
             class="p-4 rounded-lg border border-[#3BA4F0]/10 bg-[#1D2535]/30"
-            in:fly|local={{ y: 12, duration: 280, delay: 400, easing: quintOut }}
+            in:fly|local={{
+              y: 12,
+              duration: 280,
+              delay: 400,
+              easing: quintOut
+            }}
           >
             <p class="font-semibold">
               {translations[$languageStore].robuxPage?.faq?.refundsTitle ??
@@ -402,6 +488,15 @@
     </div>
   </section>
 </div>
+
+<!-- Payment Modal -->
+<SquarePaymentModal
+  bind:open={paymentModalOpen}
+  robuxAmount={amount}
+  {approxPrice}
+  squareAppId={data.squareAppId}
+  squareLocationId={data.squareLocationId}
+/>
 
 <style>
   :global(.animate-float) {
