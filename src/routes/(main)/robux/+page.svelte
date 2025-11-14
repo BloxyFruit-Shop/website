@@ -9,7 +9,10 @@
   import { flip } from 'svelte/animate';
   import { quintOut } from 'svelte/easing';
   import { toast } from '$lib/svoast';
+  import { page } from '$app/stores';
+  import { goto } from '$app/navigation';
   import SquarePaymentModal from '$lib/modals/payment/square-payment.svelte';
+  import ClaimModal from '$lib/modals/claim/claim-modal-container.svelte';
 
   export let data;
 
@@ -28,10 +31,13 @@
   const MAX = 10000;
   const STEP = 50;
 
+  let claimModalOpen = false;
   let paymentModalOpen = false;
+  let pendingClaimData = null;
   let usdToRobuxRate = data.usdToRobuxRate;
   let rateLimitHours = data.purchaseLimitHours;
   let hoursUntilNextPurchase = 0;
+  let isCreatingClaim = false;  // Prevent duplicate claim creation
 
   $: approxPrice = Math.max(
     1,
@@ -55,7 +61,69 @@
       toast.error(`You can purchase again in ${Math.ceil(hoursUntilNextPurchase)} hours.`);
       return;
     }
-    paymentModalOpen = true;
+
+    // Check authentication
+    if (!$page.data.localUser) {
+      toast.error('Please log in to purchase Robux');
+      return;
+    }
+
+    // Open claim modal
+    claimModalOpen = true;
+  }
+
+  // Custom finish function for robux purchase claims
+  async function handleClaimFinish(claimData) {
+    // Prevent duplicate claim creation
+    if (isCreatingClaim) {
+      console.warn('Claim creation already in progress');
+      return;
+    }
+
+    isCreatingClaim = true;
+
+    try {
+      // Create robux claim via API
+      const response = await fetch('/api/robux/claim', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(claimData)
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        toast.error(result.error || 'Failed to create claim');
+        isCreatingClaim = false;
+        return;
+      }
+
+      // Store claim data for payment modal
+      pendingClaimData = {
+        ...claimData,
+        claimId: result.claimId
+      };
+
+      // Close claim modal
+      claimModalOpen = false;
+
+      // Open payment modal
+      paymentModalOpen = true;
+    } catch (error) {
+      console.error('Error creating claim:', error);
+      toast.error('Failed to create claim. Please try again.');
+      isCreatingClaim = false;
+    }
+  }
+
+  // Handle payment success
+  function handlePaymentSuccess() {
+    isCreatingClaim = false;
+    // Payment webhook will update the claim
+    // Redirect to account page
+    goto('/account');
   }
 </script>
 
@@ -489,6 +557,13 @@
   </section>
 </div>
 
+<!-- Claim Modal -->
+<ClaimModal
+  bind:open={claimModalOpen}
+  bind:robuxAmount={amount}
+  finishFunction={handleClaimFinish}
+/>
+
 <!-- Payment Modal -->
 <SquarePaymentModal
   bind:open={paymentModalOpen}
@@ -496,6 +571,8 @@
   {approxPrice}
   squareAppId={data.squareAppId}
   squareLocationId={data.squareLocationId}
+  claimData={pendingClaimData}
+  on:payment-success={handlePaymentSuccess}
 />
 
 <style>

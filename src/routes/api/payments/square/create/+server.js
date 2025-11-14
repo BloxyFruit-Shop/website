@@ -53,7 +53,7 @@ export async function POST({ request, locals }) {
       return json({ success: false, error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { robuxAmount, sourceId } = await request.json();
+    const { robuxAmount, sourceId, claimData } = await request.json();
 
     // Validate input
     if (!robuxAmount || !sourceId) {
@@ -173,6 +173,7 @@ export async function POST({ request, locals }) {
         idempotencyKey: idempotencyKey,
         sourceAmount: eurAmount,
         sourceCurrency: 'EUR',
+        claimData: claimData || null,  // NEW: Store claim data for webhook
         createdAt: new Date(),
         receiptUrl: payment.receiptUrl || null
       });

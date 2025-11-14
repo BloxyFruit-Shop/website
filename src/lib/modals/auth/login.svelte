@@ -72,7 +72,8 @@
 
   <p class="text-[#809BB5] font-medium mt-4">
     Forgot password?&nbsp;
-    <button 
+    <button
+      type="button"
       class="underline decoration-[#3BA4F0]/60 hover:decoration-[#3BA4F0] text-[#3BA4F0] transition-colors"
       on:click={() => { setModal("forgot"); setModalType("Forgot Password") }}
     >

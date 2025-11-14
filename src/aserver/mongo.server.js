@@ -7,8 +7,8 @@ import {
   inventoryItemSchema,
   globalSettingsSchema,
   robuxClaimsSchema,
+  robuxPurchasesSchema,
   squarePaymentsSchema,
-  robuxTransactionsSchema,
   squareDisputesSchema
 } from './schemes.server';
 import { MONGODB_URI } from '$env/static/private';
@@ -29,12 +29,12 @@ const globalSettings = db
   ? db.model('globalSettings', globalSettingsSchema)
   : null;
 const robuxClaims = db ? db.model('robuxClaims', robuxClaimsSchema) : null;
+const robuxPurchases = db ? db.model('robuxPurchases', robuxPurchasesSchema) : null;
 const squarePayments = db ? db.model('squarePayments', squarePaymentsSchema) : null;
-const robuxTransactions = db ? db.model('robuxTransactions', robuxTransactionsSchema) : null;
 const squareDisputes = db ? db.model('squareDisputes', squareDisputesSchema) : null;
 
 export const closeConnection = () => {
   db.close();
 };
 
-export { users, verifications, orders, products, inventory, globalSettings, robuxClaims, squarePayments, robuxTransactions, squareDisputes };
+export { users, verifications, orders, products, inventory, globalSettings, robuxClaims, robuxPurchases, squarePayments, squareDisputes };

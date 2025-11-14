@@ -13,13 +13,23 @@
 
   export let open;
   export let robuxAmount;
+  export let finishFunction = null;  // NEW: Custom handler for robux purchases
 
   const dispatch = createEventDispatcher();
 
   let currentStep = 1;
-  let stepData = {robuxAmount, adjustedRobuxAmount : Math.ceil((robuxAmount / 70) * 100)};
+  let stepData = {};
   
-  const steps = ['Account Selection', 'Game Selection', 'Gamepass Creation', 'Gamepass Selection', 'Confirm']; // Define step labels
+  // Keep robux-related values in sync with the latest prop value
+  $: if (robuxAmount != null && stepData.robuxAmount !== robuxAmount) {
+      stepData = {
+          ...stepData,
+          robuxAmount,
+          adjustedRobuxAmount: Math.ceil((robuxAmount / 70) * 100)
+      };
+  }
+  
+  const steps = ['Account Selection', 'Game Selection', 'Gamepass Creation', 'Gamepass ID Entry', 'Confirm']; // Define step labels
 
   function handleStepAConfirm(event) {
       stepData = { ...stepData, user: event.detail.robloxUser };
@@ -48,8 +58,14 @@
   }
   
   function handleStepEFinish() {
-      dispatch('claim-success', { amount: stepData.robuxAmount });
-      open = false;
+      if (finishFunction) {
+          // Use custom finish function if provided (for robux purchases)
+          finishFunction(stepData);
+      } else {
+          // Default behavior: dispatch event for affiliate claims
+          dispatch('claim-success', { amount: stepData.robuxAmount });
+          open = false;
+      }
   }
 
   // Reset state when modal is closed
@@ -98,7 +114,7 @@
                   {:else if currentStep === 4}
                       <StepD data={stepData} on:finish={handleStepDFinish} />
                   {:else if currentStep === 5}
-                      <StepE data={stepData} on:finish={handleStepEFinish} />
+                      <StepE data={stepData} {finishFunction} on:finish={handleStepEFinish} />
                   {/if}
               </div>
           </div>

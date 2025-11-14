@@ -3,11 +3,12 @@ import {
   users,
   globalSettings,
   squarePayments,
-  robuxTransactions,
   squareDisputes,
-  robuxClaims
+  robuxPurchases,
+  orders
 } from '$server/mongo';
-import crypto from 'crypto';
+import { SITE_URL } from '$env/static/private';
+import { WebhooksHelper } from 'square';
 
 /**
  * Verify Square webhook signature using official Square SDK
@@ -89,61 +90,71 @@ async function handleDisputeCreated(dispute, settings) {
 
     console.log(`Processing dispute ${dispute.id} for user ${user.username}`);
 
-    // 1. Check for PENDING claims (not yet resolved)
-    const pendingClaims = await robuxClaims.find({
-      'user.email': user.email,
-      resolved: false
+    // 1. Check for PENDING robux purchases (not yet resolved)
+    const pendingPurchases = await robuxPurchases.find({
+      'user.id': payment.userId,
+      status: 'pending'
     });
 
     const claimsAffected = [];
     let reversalAmount = payment.robuxAmount;
 
-    if (pendingClaims.length > 0) {
+    if (pendingPurchases.length > 0) {
       console.log(
-        `Found ${pendingClaims.length} pending claims for user ${user.username}`
+        `Found ${pendingPurchases.length} pending robux purchases for user ${user.username}`
       );
 
-      // IMMEDIATELY cancel pending claims
-      for (const claim of pendingClaims) {
-        await robuxClaims.updateOne(
-          { _id: claim._id },
+      // IMMEDIATELY cancel pending robux purchases
+      for (const purchase of pendingPurchases) {
+        await robuxPurchases.updateOne(
+          { _id: purchase._id },
           {
             $set: {
+              status: 'cancelledDueToDispute',
               resolved: true,
-              cancelledDueToDispute: true,
-              disputeId: dispute.id,
-              resolvedAt: new Date()
+              resolvedAt: new Date(),
+              disputeId: dispute.id
+            }
+          }
+        );
+
+        // Also cancel corresponding order
+        await orders.updateOne(
+          { 'robuxPurchase.robuxPurchaseId': purchase._id },
+          {
+            $set: {
+              status: 'cancelled'
             }
           }
         );
 
         claimsAffected.push({
-          claimId: claim._id,
+          purchaseId: purchase._id,
           status: 'pending_cancelled',
           action: 'auto_cancelled'
         });
 
-        console.log(`Cancelled pending claim ${claim._id} due to dispute`);
+        console.log(`Cancelled pending robux purchase ${purchase._id} due to dispute`);
       }
     }
 
-    // 2. Check if robux was ALREADY CLAIMED
-    const claimedClaims = await robuxClaims.find({
-      'user.email': user.email,
-      resolved: true,
-      cancelledDueToDispute: false
+    // 2. Check if robux was ALREADY FULFILLED (resolved robux purchases)
+    const fulfilledPurchases = await robuxPurchases.find({
+      'user.id': payment.userId,
+      status: 'completed',
+      resolved: true
     });
 
-    if (claimedClaims.length > 0) {
+    if (fulfilledPurchases.length > 0) {
       console.log(
-        `Found ${claimedClaims.length} already-claimed claims for user ${user.username}`
+        `Found ${fulfilledPurchases.length} already-fulfilled robux purchases for user ${user.username}`
       );
 
       // Flag for MANUAL REVIEW
-      for (const claim of claimedClaims) {
+      for (const purchase of fulfilledPurchases) {
         claimsAffected.push({
-          claimId: claim._id,
-          status: 'already_claimed',
+          purchaseId: purchase._id,
+          status: 'already_fulfilled',
           action: 'manual_review_required'
         });
       }
@@ -163,7 +174,7 @@ async function handleDisputeCreated(dispute, settings) {
       // Notify admin via Discord - MANUAL REVIEW REQUIRED
       await notifyDiscord(settings.discordDisputeWebhookUrl, {
         title: '⚠️ DISPUTE - MANUAL REVIEW REQUIRED',
-        description: `Dispute created for user ${user.username}. User has already claimed robux from gamepass.`,
+        description: `Dispute created for user ${user.username}. User has already received robux from gamepass.`,
         color: 15158332,
         fields: [
           {
@@ -182,8 +193,8 @@ async function handleDisputeCreated(dispute, settings) {
             inline: true
           },
           {
-            name: 'Claimed Robux Count',
-            value: claimedClaims.length.toString(),
+            name: 'Fulfilled Robux Count',
+            value: fulfilledPurchases.length.toString(),
             inline: true
           },
           {
@@ -200,46 +211,18 @@ async function handleDisputeCreated(dispute, settings) {
       });
 
       console.log(
-        `Dispute ${dispute.id} flagged for manual review - user has claimed robux`
+        `Dispute ${dispute.id} flagged for manual review - user has fulfilled robux purchases`
       );
       return;
     }
 
-    // 3. If NO claims (pending or resolved) - REVERSE ROBUX IMMEDIATELY
-    console.log(
-      `No claims found - reversing ${reversalAmount} robux for user ${user.username}`
+    // 3. If NO purchases (pending or resolved) - This should not happen with the new system
+    // All robux purchases create records, so if we reach here something went wrong
+    console.warn(
+      `No robux purchases found for dispute ${dispute.id} on payment ${payment.paymentId} - this should not happen with the new system`
     );
 
-    const balanceBefore = user.robux;
-    const balanceAfter = balanceBefore - reversalAmount;
-
-    // Update user robux
-    await users.updateOne(
-      { _id: user._id },
-      {
-        $inc: {
-          robux: -reversalAmount,
-          'robuxBreakdown.purchased': -reversalAmount
-        }
-      }
-    );
-
-    // Log transaction reversal
-    const transactionRecord = await robuxTransactions.create({
-      userId: user._id,
-      type: 'chargeback_reversal',
-      amount: -reversalAmount,
-      source: 'square_dispute',
-      sourceId: dispute.id,
-      balanceBefore: balanceBefore,
-      balanceAfter: balanceAfter,
-      metadata: {
-        reason: 'Automatic reversal due to chargeback dispute',
-        disputeReason: dispute.reason_code || 'unknown'
-      }
-    });
-
-    // Mark dispute as processed
+    // Mark dispute as processed but flag for manual review
     await squareDisputes.create({
       disputeId: dispute.id,
       paymentId: payment.paymentId,
@@ -248,8 +231,7 @@ async function handleDisputeCreated(dispute, settings) {
       status: 'created',
       reason: dispute.reason_code || 'unknown',
       claimsAffected: claimsAffected,
-      reversalProcessed: true,
-      reversalTransactionId: transactionRecord._id
+      reversalProcessed: false
     });
 
     // Update payment status
@@ -258,11 +240,11 @@ async function handleDisputeCreated(dispute, settings) {
       { $set: { status: 'disputed', disputeId: dispute.id } }
     );
 
-    // Notify admin via Discord - AUTO REVERSED
+    // Notify admin via Discord - UNEXPECTED STATE
     await notifyDiscord(settings.discordDisputeWebhookUrl, {
-      title: '🔄 DISPUTE - AUTO REVERSED',
-      description: `Dispute created and robux automatically reversed for user ${user.username}`,
-      color: 15105570,
+      title: '⚠️ DISPUTE - UNEXPECTED STATE',
+      description: `Dispute created but no robux purchases found for user ${user.username}. This indicates a system issue.`,
+      color: 16776960,
       fields: [
         {
           name: 'User',
@@ -270,13 +252,8 @@ async function handleDisputeCreated(dispute, settings) {
           inline: true
         },
         {
-          name: 'Robux Reversed',
-          value: `${reversalAmount} R$`,
-          inline: true
-        },
-        {
-          name: 'New Balance',
-          value: `${balanceAfter} R$`,
+          name: 'Robux Amount',
+          value: `${payment.robuxAmount} R$`,
           inline: true
         },
         {
@@ -290,15 +267,15 @@ async function handleDisputeCreated(dispute, settings) {
           inline: false
         },
         {
-          name: 'Action Taken',
-          value: 'Robux automatically reversed - no claims were made',
+          name: 'Action Required',
+          value: 'Manual review needed - no robux purchases were found for this payment',
           inline: false
         }
       ]
     });
 
     console.log(
-      `Dispute ${dispute.id} processed - robux reversed for user ${user.username}`
+      `Dispute ${dispute.id} flagged for manual review - no robux purchases found (unexpected state)`
     );
   } catch (error) {
     console.error('Error handling dispute:', error);

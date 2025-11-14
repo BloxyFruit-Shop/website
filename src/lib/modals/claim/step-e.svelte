@@ -6,6 +6,7 @@
   import { createEventDispatcher } from 'svelte';
 
   export let data;
+  export let finishFunction = null;  // NEW: Custom handler for robux purchases
   const dispatch = createEventDispatcher();
   let error = null;
   let loading = false;
@@ -17,24 +18,31 @@
     error = null; // Reset error on new attempt
 
     try {
-      const response = await fetch('/api/affiliate/claim', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        error = result.error || `HTTP error! Status: ${response.status}`;
-        console.error('Claim API Error:', result);
-      } else if (result.success) {
-        dispatch('finish'); // Dispatch finish only on successful API response
+      if (finishFunction) {
+        // Use custom handler (robux purchase flow)
+        await finishFunction(data);
+        dispatch('finish');
       } else {
-        error = result.message || 'An unexpected issue occurred.';
-        console.warn('Claim API Warning:', result);
+        // Use default affiliate claim flow
+        const response = await fetch('/api/affiliate/claim', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          error = result.error || `HTTP error! Status: ${response.status}`;
+          console.error('Claim API Error:', result);
+        } else if (result.success) {
+          dispatch('finish'); // Dispatch finish only on successful API response
+        } else {
+          error = result.message || 'An unexpected issue occurred.';
+          console.warn('Claim API Warning:', result);
+        }
       }
     } catch (e) {
       console.error('Failed to fetch claim API:', e);
@@ -127,7 +135,7 @@
             </div>
             <div>
               <p class="text-base font-semibold text-transparent bg-gradient-to-r from-white to-white/70 bg-clip-text">
-                {data.gamepass.displayName}
+                {data.gamepass.name || data.gamepass.displayName}
               </p>
               <p class="text-xs text-[#809BB5] flex items-center gap-2">
                 <Robux class="w-3.5 h-3.5" />

@@ -1,4 +1,4 @@
-import { robuxClaims, users } from '$server/mongo';
+import { orders, users } from '$server/mongo';
 import { roleEnums } from '$server/schemes';
 import { redirect } from '@sveltejs/kit';
 import { ObjectId } from 'mongodb';
@@ -15,13 +15,14 @@ export const load = async ({ locals, url }) => {
   const sortParam = url.searchParams.get('sort') || 'newest';
   const limit = CLAIMS_PER_PAGE;
 
-  const filter = { source: { $ne: 'robux_purchase' } };  // Exclude robux_purchase claims
+  // Filter for orders that have robuxPurchase field (robux purchase orders)
+  const filter = { 'robuxPurchase.robuxPurchaseId': { $ne: null } };
   if (searchTerm) {
     const escapedSearchTerm = searchTerm.replace(
       /[-\/\\^$*+?.()|[\]{}]/g,
       '\\$&'
     );
-    filter['user.username'] = { $regex: escapedSearchTerm, $options: 'i' };
+    filter['reciever.username'] = { $regex: escapedSearchTerm, $options: 'i' };
   }
 
   // Determine sort criteria based on sortParam
@@ -31,10 +32,10 @@ export const load = async ({ locals, url }) => {
       sortCriteria = { createdAt: 1 };
       break;
     case 'amount_desc':
-      sortCriteria = { robuxAmount: -1 };
+      sortCriteria = { 'robuxPurchase.robuxAmount': -1 };
       break;
     case 'amount_asc':
-      sortCriteria = { robuxAmount: 1 };
+      sortCriteria = { 'robuxPurchase.robuxAmount': 1 };
       break;
     case 'newest':
     default:
@@ -42,7 +43,7 @@ export const load = async ({ locals, url }) => {
       break;
   }
 
-  const totalClaims = await robuxClaims.countDocuments(filter);
+  const totalClaims = await orders.countDocuments(filter);
   const totalPages = Math.ceil(totalClaims / limit) || 1;
 
   if (page > totalPages && totalPages > 0) {
@@ -51,18 +52,30 @@ export const load = async ({ locals, url }) => {
 
   const skip = (page - 1) * limit;
 
-  const claimsList = await robuxClaims
+  const claimsList = await orders
     .find(filter)
     .sort(sortCriteria)
     .skip(skip)
     .limit(limit)
     .lean();
 
-  const serializedClaims = claimsList.map((claim) => ({
-    ...claim,
-    _id: claim._id.toString(),
-    createdAt: new Date(claim.createdAt)
-  }));
+  const serializedClaims = claimsList.map((order) => {
+    // Deep serialize ObjectIds and Dates
+    const serialize = (obj) => {
+      if (obj === null || obj === undefined) return obj;
+      if (obj instanceof Date) return obj.toISOString();
+      if (obj.constructor.name === 'ObjectId') return obj.toString();
+      if (Array.isArray(obj)) return obj.map(serialize);
+      if (typeof obj === 'object') {
+        return Object.entries(obj).reduce((acc, [key, value]) => {
+          acc[key] = serialize(value);
+          return acc;
+        }, {});
+      }
+      return obj;
+    };
+    return serialize(order);
+  });
 
   return {
     claims: serializedClaims,
@@ -81,7 +94,6 @@ export const actions = {
   fulfillClaim: async ({ request, locals }) => {
     const session = locals.session;
     if (!session) {
-      // Not logged in, redirect to home
       throw redirect(302, '/');
     }
 
@@ -95,24 +107,29 @@ export const actions = {
 
     try {
       const formData = await request.formData();
-      const claimId = formData.get('claimId');
+      const orderId = formData.get('claimId');
 
-      if (!claimId) {
-        return { success: false, message: 'Claim ID is missing.' };
+      if (!orderId) {
+        return { success: false, message: 'Order ID is missing.' };
       }
 
-      // Attempt to update the claim document if it's not already resolved
-      const result = await robuxClaims.updateOne(
-        { _id: new ObjectId(claimId), resolved: false },
-        { $set: { resolved: true, resolvedAt: new Date() } }
+      // Attempt to update the order document to 'ready' status
+      const result = await orders.updateOne(
+        { _id: new ObjectId(orderId), status: 'ready' },
+        {
+          $set: {
+            status: 'completed',
+            'robuxPurchase.fulfillmentDate': new Date()
+          }
+        }
       );
 
       if (result.modifiedCount === 1) {
-        return { success: true, claimId };
+        return { success: true, claimId: orderId };
       } else {
         return {
           success: false,
-          message: 'Claim not found or already fulfilled.'
+          message: 'Order not found or already fulfilled.'
         };
       }
     } catch (error) {
@@ -122,7 +139,6 @@ export const actions = {
   fulfillAllClaims: async ({ locals }) => {
     const session = locals.session;
     if (!session) {
-      // Not logged in, redirect to home
       throw redirect(302, '/');
     }
 
@@ -137,25 +153,29 @@ export const actions = {
     }
 
     try {
-      // Update all claims that are not yet resolved
-      const result = await robuxClaims.updateMany(
-        { resolved: false },
-        { $set: { resolved: true, resolvedAt: new Date() } }
+      // Update all robux purchase orders that are completed but not yet ready
+      const result = await orders.updateMany(
+        { 'robuxPurchase.robuxPurchaseId': { $ne: null }, status: 'ready' },
+        {
+          $set: {
+            status: 'completed',
+            'robuxPurchase.fulfillmentDate': new Date(),
+          }
+        }
       );
 
       return { success: true, updatedCount: result.modifiedCount };
     } catch (error) {
       console.error('Error fulfilling all claims:', error);
-      return fail(500, {
+      return {
         success: false,
         message: 'Failed to fulfill all claims due to a server error.'
-      });
+      };
     }
   },
   clearFulfilledClaims: async ({ request, locals }) => {
     const session = locals.session;
     if (!session) {
-      // Not logged in, redirect to home
       throw redirect(302, '/');
     }
 
@@ -168,8 +188,11 @@ export const actions = {
     }
 
     try {
-      // Delete all claims that are already fulfilled
-      const result = await robuxClaims.deleteMany({ resolved: true });
+      // Delete all robux purchase orders that are already fulfilled (status: 'ready')
+      const result = await orders.deleteMany({
+        'robuxPurchase.robuxPurchaseId': { $ne: null },
+        status: 'ready'
+      });
       return { success: true, deletedCount: result.deletedCount };
     } catch (error) {
       return { success: false, message: error.message };

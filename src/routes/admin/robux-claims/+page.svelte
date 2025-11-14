@@ -43,7 +43,7 @@
     searchParams.set('sort', sortBy.value);
     if (sortBy.value !== currentSort) {
       currentSort = sortBy.value;
-      goto(`/admin/claims?${searchParams.toString()}`, {
+      goto(`/admin/robux-claims?${searchParams.toString()}`, {
         keepFocus: false,
         noScroll: true,
         replaceState: true
@@ -59,7 +59,7 @@
       searchParams.delete('search');
     }
     searchParams.set('page', '1');
-    goto(`/admin/claims?${searchParams.toString()}`, {
+    goto(`/admin/robux-claims?${searchParams.toString()}`, {
       keepFocus: false,
       noScroll: false,
       replaceState: true
@@ -78,7 +78,7 @@
     }
     const searchParams = new URLSearchParams($page.url.search);
     searchParams.set('page', newPage.toString());
-    goto(`/admin/claims?${searchParams.toString()}`, {
+    goto(`/admin/robux-claims?${searchParams.toString()}`, {
       keepFocus: true,
       noScroll: true,
       replaceState: true
@@ -94,8 +94,9 @@
   }
 
   const statusColors = {
-    resolved: 'bg-green-500/20 text-green-400',
-    pending: 'bg-yellow-500/20 text-yellow-400'
+    ready: 'bg-blue-500/20 text-blue-400',
+    pending: 'bg-yellow-500/20 text-yellow-400',
+    completed: 'bg-green-500/20 text-green-400'
   };
 </script>
 
@@ -113,19 +114,15 @@
       in:slide={{ duration: 300 }}
     >
       <div class="flex items-center gap-3">
-        <div
-          class="p-3 bg-blue-500/20 rounded-xl"
-        >
+        <div class="p-3 bg-blue-500/20 rounded-xl">
           <Robux class="text-blue-400 size-8" />
         </div>
         <div>
-          <h1
-            class="text-2xl font-bold text-blue-400"
-          >
-            Claims Management
+          <h1 class="text-2xl font-bold text-blue-400">
+            Robux Purchase Claims
           </h1>
           <p class="text-sm text-[#809BB5]">
-            Manage and fulfill user Robux claims
+            Manage and fulfill user Robux purchase claims
           </p>
         </div>
       </div>
@@ -261,20 +258,20 @@
           </thead>
           <tbody>
             {#each claims as claim (claim._id)}
-              <tr class="bg-[#1D2535]/30 hover:bg-[#1D2535]/50 transition-colors" in:fly={{ y: 10, duration: 300 }}>
+              <tr
+                class="bg-[#1D2535]/30 hover:bg-[#1D2535]/50 transition-colors"
+                in:fly={{ y: 10, duration: 300 }}
+              >
                 <td class="py-4 pl-4 rounded-l-lg">
                   <div class="flex items-center gap-2">
                     <img
                       src="/assets/bacon-headshot.webp"
-                      alt="{claim.user.username}'s avatar"
+                      alt="{claim.reciever.displayName}'s avatar"
                       class="size-8 rounded-full object-cover border border-[#3BA4F0]/30"
                     />
                     <div class="min-w-0">
                       <p class="text-sm font-medium text-white truncate">
-                        {claim.user.displayName}
-                      </p>
-                      <p class="text-xs text-[#809BB5] truncate">
-                        @{claim.user.username}
+                        {claim.reciever.displayName}
                       </p>
                     </div>
                   </div>
@@ -282,27 +279,37 @@
                 <td class="py-4">
                   <div class="flex items-center gap-1.5 w-fit">
                     <Robux class="size-4 text-[#3BA4F0]" />
-                    <span class="font-semibold text-[#3BA4F0]">{claim.robuxAmount}</span>
+                    <span class="font-semibold text-[#3BA4F0]"
+                      >{claim.robuxPurchase.robuxAmount}</span
+                    >
                   </div>
                 </td>
                 <td class="py-4 text-sm text-white">
-                  {claim.game.name}
+                  {claim.game}
                 </td>
                 <td class="py-4 text-sm text-white">
-                  {claim.gamepass.price} Robux
+                  {claim.robuxPurchase.gamepass.price} Robux
                 </td>
                 <td class="py-4 text-sm text-[#809BB5]">
                   {format(new Date(claim.createdAt), 'MMM dd, yyyy HH:mm')}
                 </td>
                 <td class="py-4">
-                  <span class="px-3 py-1 rounded-full text-xs font-medium {statusColors[claim.resolved ? 'resolved' : 'pending']}">
-                    {claim.resolved ? 'Fulfilled' : 'Pending'}
+                  <span
+                    class="px-3 py-1 rounded-full text-xs font-medium {statusColors[
+                      claim.status
+                    ] ?? 'bg-gray-500/20 text-gray-400'}"
+                  >
+                    {claim.status === 'completed'
+                      ? 'Completed'
+                      : claim.status == 'ready'
+                        ? 'Ready to Fulfill'
+                        : 'Processing'}
                   </span>
                 </td>
                 <td class="py-4 pr-4 rounded-r-lg">
                   <div class="flex items-center justify-end gap-2">
                     <a
-                      href={`https://www.roblox.com/game-pass/${claim.gamepass.id}`}
+                      href={`https://www.roblox.com/game-pass/${claim.robuxPurchase.gamepass.id}`}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
@@ -311,8 +318,13 @@
                       </Button>
                     </a>
 
-                    {#if claim.resolved}
-                      <Button variant="contained" color="gray" size="small" disabled>
+                    {#if claim.status === 'completed'}
+                      <Button
+                        variant="contained"
+                        color="gray"
+                        size="small"
+                        disabled
+                      >
                         Done
                       </Button>
                     {:else}
@@ -322,15 +334,19 @@
                         class="inline-block"
                         use:enhance={() => {
                           return async ({ result, update }) => {
-                            if (result.type === 'success' && result.data?.success) {
+                            if (
+                              result.type === 'success' &&
+                              result.data?.success
+                            ) {
                               toast.success(
-                                `Claim fulfilled successfully for ${claim.user.username}.`,
+                                `Claim fulfilled successfully for ${claim.reciever.displayName}.`,
                                 { duration: 2500 }
                               );
                               await invalidateAll();
                             } else if (result.type === 'failure') {
                               toast.error(
-                                result.data?.message || 'Failed to fulfill claim.',
+                                result.data?.message ||
+                                  'Failed to fulfill claim.',
                                 { duration: 3000 }
                               );
                             } else if (result.type === 'error') {
@@ -396,9 +412,9 @@
           in:fade={{ duration: 200, delay: 500 }}
         >
           {#if initialSearchTerm}
-            No claims found matching "{initialSearchTerm}".
+            No robux purchase claims found matching "{initialSearchTerm}".
           {:else}
-            There are no claims to display.
+            There are no robux purchase claims to display.
           {/if}
         </p>
       </div>

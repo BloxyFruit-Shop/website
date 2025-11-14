@@ -33,7 +33,7 @@
     <div class="flex items-center gap-4">
       <Button variant="gradient" color="slate" to="/robux" class="max-md:px-4 h-[46px] w-[46px] md:w-auto">
         <Robux class="size-[22px] mr-0 md:mr-2 text-amber-300" />
-        <p class="hidden md:block">Get Robux! 🔥</p>
+        <p class="hidden md:block">Buy Robux! 🔥</p>
       </Button>
       <Button class="bg-[#7289DA]/65 hover:bg-[#7289DA]/75 size-[46px]" to="https://discord.gg/bloxyfruit" target="_blank">
         <Discord class="size-[22px] text-white" />

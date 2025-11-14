@@ -4,12 +4,16 @@
   import { toast } from '$lib/svoast';
   import Button from '$lib/components/Button.svelte';
   import { bgBlur } from '$lib/utils';
+  import { createEventDispatcher } from 'svelte';
 
   export let open = false;
   export let robuxAmount = 500;
   export let approxPrice = '4.15';
   export let squareAppId = '';
   export let squareLocationId = '';
+  export let claimData = null;  // NEW: Claim data for robux purchases
+
+  const dispatch = createEventDispatcher();
 
   let loading = false;
   let error = '';
@@ -86,7 +90,8 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             robuxAmount,
-            sourceId: token
+            sourceId: token,
+            claimData: claimData  // NEW: Pass claim data
           })
         });
 
@@ -105,6 +110,7 @@
           `Payment successful! ${robuxAmount} Robux will be added to your account shortly.`,
           { duration: 4000 }
         );
+        dispatch('payment-success', { paymentId: paymentData.paymentId });
         open = false;
       } else if (result.status === 'NETWORK_ERROR') {
         error = 'Network error. Please check your connection and try again.';

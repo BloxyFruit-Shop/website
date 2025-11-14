@@ -19,6 +19,7 @@ export const load = async ({ locals, url }) => {
   const emailRegex = new RegExp(`^${localUser.email}$`, "i")
   
   // Fetch total order count for pagination calculation (case-insensitive email)
+  // Now includes both regular orders and robux purchase orders
   const totalOrders = await orders.countDocuments({ email: emailRegex })
   const totalPages = Math.ceil(totalOrders / limit) || 1 // Ensure totalPages is at least 1
   
@@ -30,6 +31,7 @@ export const load = async ({ locals, url }) => {
   const skip = (page - 1) * limit
   
   // Fetch the paginated list of orders (case-insensitive email)
+  // This now includes both regular orders and robux purchase orders
   const orderList = await orders
     .find({ email: emailRegex })
     .sort({ createdAt: -1 }) // Make the newest show at the top (It was annoying to scroll down)
@@ -60,7 +62,11 @@ export const load = async ({ locals, url }) => {
     serializedOrders.push({
       ...order,
       _id: order._id.toString(),
-      items: serializedItems
+      items: serializedItems,
+      robuxPurchase: order.robuxPurchase ? {
+        ...order.robuxPurchase,
+        robuxPurchaseId: order.robuxPurchase.robuxPurchaseId?.toString() || null
+      } : null
     })
   }
 

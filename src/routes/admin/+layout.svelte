@@ -14,7 +14,8 @@
   const navItems = [
     { href: "/admin", icon: Games, label: "Dashboard" },
     { href: "/admin/affiliates", icon: Users, label: "Affiliates" },
-    { href: "/admin/claims", icon: Robux, label: "Claims" },
+    { href: "/admin/claims", icon: Robux, label: "Affiliate Claims" },
+    { href: "/admin/robux-claims", icon: Robux, label: "Robux Purchases" },
     { href: "/admin/settings", icon: Gear, label: "Settings" },
   ];
 
@@ -29,7 +30,8 @@
   $: pageTitle = (() => {
     if (currentPath === '/admin') return 'Dashboard';
     if (currentPath === '/admin/affiliates') return 'Affiliates Management';
-    if (currentPath === '/admin/claims') return 'Claims Management';
+    if (currentPath === '/admin/claims') return 'Affiliate Claims Management';
+    if (currentPath === '/admin/robux-claims') return 'Robux Purchase Claims';
     if (currentPath === '/admin/settings') return 'Global Settings';
     return 'Admin Panel';
   })();

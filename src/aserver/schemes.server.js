@@ -129,7 +129,7 @@ export const ordersSchema = new Schema({
   totalAmount: Number,
   status: {
     type: String,
-    enum: ['pending', 'completed', 'cancelled'],
+    enum: ['pending', 'completed', 'ready', 'cancelled'],
     default: 'pending'
   },
   game: String,
@@ -138,6 +138,17 @@ export const ordersSchema = new Schema({
     displayName: { type: String, default: '' },
     id: { type: String, default: '' },
     thumbnail: { type: String, default: '' }
+  },
+  robuxPurchase: {
+    robuxPurchaseId: { type: Schema.Types.ObjectId, ref: 'robuxPurchases', default: null },
+    robuxAmount: { type: Number, default: null },
+    eurAmount: { type: Number, default: null },
+    gamepass: {
+      id: { type: String, default: null },
+      displayName: { type: String, default: null },
+      price: { type: Number, default: null }
+    },
+    fulfillmentDate: { type: Date, default: null }
   },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }
@@ -168,11 +179,31 @@ export const robuxClaimsSchema = new Schema({
     displayName: String,
     email: { type: String, default: '' },
   },
+  source: {
+    type: String,
+    enum: ['affiliate'],
+    default: 'affiliate'
+  },
+  status: {
+    type: String,
+    enum: ['pending', 'completed', 'cancelled', 'cancelledDueToDispute'],
+    default: 'pending'
+  },
   resolved: { type: Boolean, default: false },
   resolvedAt: { type: Date, default: null },
-  cancelledDueToDispute: { type: Boolean, default: false },
-  disputeId: { type: String, default: null },
   robuxAmount: { type: Number, default: 0 },
+  createdAt: { type: Date, default: Date.now }
+});
+
+export const robuxPurchasesSchema = new Schema({
+  user: {
+    id: String,
+    username: String,
+    displayName: String,
+    email: { type: String, default: '' },
+  },
+  robuxAmount: { type: Number, default: 0 },
+  adjustedRobuxAmount: { type: Number, default: 0 },
   game: {
     id: String,
     name: String
@@ -182,52 +213,45 @@ export const robuxClaimsSchema = new Schema({
     displayName: String,
     price: Number
   },
+  paymentId: {
+    type: String,
+    default: null
+  },
+  eurAmount: { type: Number, default: 0 },
+  status: {
+    type: String,
+    enum: ['pending', 'completed', 'cancelled', 'cancelledDueToDispute'],
+    default: 'pending'
+  },
+  resolved: { type: Boolean, default: false },
+  resolvedAt: { type: Date, default: null },
+  disputeId: { type: String, default: null },
   createdAt: { type: Date, default: Date.now }
 });
 
 export const squarePaymentsSchema = new Schema({
-   paymentId: String,
-   userId: { type: Schema.Types.ObjectId, ref: 'users' },
-   amount: Number,           // USD cents
-   robuxAmount: Number,
-   status: {
-     type: String,
-     enum: ['pending', 'authorized', 'completed', 'failed', 'disputed'],
-     default: 'pending'
-   },
-   idempotencyKey: String,
-   sourceAmount: Number,     // Original amount before conversion
-   sourceCurrency: String,   // USD
-   createdAt: { type: Date, default: Date.now },
-   authorizedAt: { type: Date, default: null },
-   completedAt: { type: Date, default: null },
-   failureReason: { type: String, default: null },
-   disputeId: { type: String, default: null },
-   receiptUrl: { type: String, default: null }
-});
-
-export const robuxTransactionsSchema = new Schema({
-  userId: { type: Schema.Types.ObjectId, ref: 'users' },
-  type: {
-    type: String,
-    enum: ['purchase', 'claim', 'chargeback_reversal', 'claim_cancellation', 'admin'],
-    required: true
-  },
-  amount: Number,
-  source: {
-    type: String,
-    enum: ['square_payment', 'robux_claim', 'square_dispute', 'admin'],
-    required: true
-  },
-  sourceId: String,         // paymentId, claimId, or disputeId
-  balanceBefore: Number,
-  balanceAfter: Number,
-  metadata: {
-    reason: { type: String, default: null },
-    adminId: { type: Schema.Types.ObjectId, default: null },
-    notes: { type: String, default: null }
-  },
-  createdAt: { type: Date, default: Date.now }
+    paymentId: String,
+    userId: { type: Schema.Types.ObjectId, ref: 'users' },
+    amount: Number,           // USD cents
+    robuxAmount: Number,
+    status: {
+      type: String,
+      enum: ['pending', 'authorized', 'completed', 'failed', 'disputed'],
+      default: 'pending'
+    },
+    idempotencyKey: String,
+    sourceAmount: Number,     // Original amount before conversion
+    sourceCurrency: String,   // USD
+    claimData: {              // NEW: Claim data for robux purchases
+      type: Schema.Types.Mixed,
+      default: null
+    },
+    createdAt: { type: Date, default: Date.now },
+    authorizedAt: { type: Date, default: null },
+    completedAt: { type: Date, default: null },
+    failureReason: { type: String, default: null },
+    disputeId: { type: String, default: null },
+    receiptUrl: { type: String, default: null }
 });
 
 export const squareDisputesSchema = new Schema({
