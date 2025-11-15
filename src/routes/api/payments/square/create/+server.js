@@ -3,6 +3,7 @@ import { users, globalSettings, squarePayments } from '$server/mongo';
 import { SquareClient, SquareEnvironment } from 'square';
 import { SQUARE_ACCESS_TOKEN, SQUARE_ENVIRONMENT } from '$env/static/private';
 import crypto from 'crypto';
+import { parseSquareError } from '$lib/utils/square-error-messages.js';
 
 const client = new SquareClient({
   environment:
@@ -196,6 +197,9 @@ export async function POST({ request, locals }) {
     } catch (squareError) {
       console.error('Square API error:', squareError);
 
+      // Parse the Square error to get user-friendly message
+      const parsedError = parseSquareError(squareError);
+
       // Store failed payment record
       await squarePayments.create({
         paymentId: `failed-${idempotencyKey}`,
@@ -206,13 +210,16 @@ export async function POST({ request, locals }) {
         idempotencyKey: idempotencyKey,
         sourceAmount: eurAmount,
         sourceCurrency: 'EUR',
-        failureReason: squareError.message || 'Payment processing failed'
+        failureReason: parsedError.originalError || 'Payment processing failed',
+        errorCode: parsedError.originalError
       });
 
       return json(
         {
           success: false,
-          error: squareError.message || 'Payment processing failed'
+          error: parsedError.message,
+          errorTitle: parsedError.title,
+          errorCategory: parsedError.category
         },
         { status: 400 }
       );

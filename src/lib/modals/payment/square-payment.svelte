@@ -5,6 +5,7 @@
   import Button from '$lib/components/Button.svelte';
   import { bgBlur } from '$lib/utils';
   import { createEventDispatcher } from 'svelte';
+  import { parseSquareError } from '$lib/utils/square-error-messages.js';
 
   export let open = false;
   export let robuxAmount = 500;
@@ -101,6 +102,7 @@
           if (paymentData.rateLimitHours) {
             error = `You can purchase again in ${paymentData.rateLimitHours} hours.`;
           } else {
+            // Use the improved error message from backend
             error = paymentData.error || 'Payment failed. Please try again.';
           }
           return;
@@ -114,6 +116,10 @@
         open = false;
       } else if (result.status === 'NETWORK_ERROR') {
         error = 'Network error. Please check your connection and try again.';
+      } else if (result.errors && Array.isArray(result.errors)) {
+        // Parse tokenization errors
+        const parsedError = parseSquareError(result.errors[0]);
+        error = parsedError.message;
       } else {
         error =
           result.errors?.[0]?.message || 'Payment failed. Please try again.';
