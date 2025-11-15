@@ -49,7 +49,7 @@ export const load = async ({ locals, url }) => {
 
   // Calculate grand total of all robux purchase gamepass prices
   const grandTotalResult = await orders.aggregate([
-    { $match: filter },
+    { $match: { 'robuxPurchase.robuxPurchaseId': { $ne: null }, status: { $ne: 'completed' }, hiddenFromAdmin: { $ne: true } } },
     {
       $group: {
         _id: null,
