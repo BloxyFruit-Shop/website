@@ -124,8 +124,8 @@
   function handlePaymentSuccess() {
     isCreatingClaim = false;
     // Payment webhook will update the claim
-    // Redirect to account page
-    goto('/account');
+    // Redirect to account page after 2 seconds
+    setTimeout(() => goto('/account'), 2000);
   }
 </script>
 

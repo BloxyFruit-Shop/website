@@ -12,7 +12,7 @@
   export let approxPrice = '4.15';
   export let squareAppId = '';
   export let squareLocationId = '';
-  export let claimData = null;  // NEW: Claim data for robux purchases
+  export let claimData = null; // NEW: Claim data for robux purchases
 
   const dispatch = createEventDispatcher();
 
@@ -92,7 +92,7 @@
           body: JSON.stringify({
             robuxAmount,
             sourceId: token,
-            claimData: claimData  // NEW: Pass claim data
+            claimData: claimData // NEW: Pass claim data
           })
         });
 
@@ -109,7 +109,7 @@
         }
 
         toast.success(
-          `Payment successful! ${robuxAmount} Robux will be added to your account shortly.`,
+          `Payment successful! An admin will review your request for ${robuxAmount} shortly. Checkout your order status in the order history!.`,
           { duration: 4000 }
         );
         dispatch('payment-success', { paymentId: paymentData.paymentId });
