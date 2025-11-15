@@ -37,7 +37,7 @@
   let usdToRobuxRate = data.usdToRobuxRate;
   let rateLimitHours = data.purchaseLimitHours;
   let hoursUntilNextPurchase = 0;
-  let isCreatingClaim = false;  // Prevent duplicate claim creation
+  let isCreatingClaim = false; // Prevent duplicate claim creation
 
   $: approxPrice = Math.max(
     1,
@@ -58,7 +58,9 @@
 
   function handleBuy() {
     if (hoursUntilNextPurchase > 0) {
-      toast.error(`You can purchase again in ${Math.ceil(hoursUntilNextPurchase)} hours.`);
+      toast.error(
+        `You can purchase again in ${Math.ceil(hoursUntilNextPurchase)} hours.`
+      );
       return;
     }
 
@@ -166,7 +168,10 @@
 
       <div class="relative grid items-stretch gap-0 md:grid-cols-2">
         <!-- Left -->
-        <div class="flex flex-col justify-center p-6 sm:p-10" in:slide={{ duration: 300 }}>
+        <div
+          class="flex flex-col justify-center p-6 sm:p-10"
+          in:slide={{ duration: 300 }}
+        >
           <div class="flex gap-3 sm:items-center max-sm:flex-col">
             <a
               href="https://trustpilot.com/review/bloxyfruit.com"
@@ -273,11 +278,13 @@
               {/if}
             </Button>
 
-            {#if hoursUntilNextPurchase > 0}
-              <p class="text-xs text-[#809BB5] text-center mt-2">
+            <p class="text-xs text-[#809BB5] text-center mt-2 max-w-md mx-auto">
+              {#if hoursUntilNextPurchase > 0}
                 You can only purchase once every {rateLimitHours} hours
-              </p>
-            {/if}
+              {:else}
+                {translations[$languageStore].robuxPage?.disclaimer}
+              {/if}
+            </p>
           </div>
         </div>
 

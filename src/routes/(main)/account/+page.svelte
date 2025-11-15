@@ -435,7 +435,7 @@
                         color="user"
                         size="small"
                         disabled={order.status !== 'pending' ||
-                          order.robuxPurchase}
+                          order?.robuxPurchase?.robuxAmount}
                         class="mx-auto"
                         title={order.status === 'pending'
                           ? 'Add or Edit Roblox Account'
