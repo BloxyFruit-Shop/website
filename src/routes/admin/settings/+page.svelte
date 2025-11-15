@@ -43,7 +43,6 @@
   $: previewEuro = 10;
   $: previewRobux = previewEuro * euroToRobuxRateInput;
   $: previewUsd = 10;
-  $: previewRobuxFromUsd = Math.round(previewUsd / usdToRobuxRateInput);
 </script>
 
 <div
@@ -54,7 +53,7 @@
 ></div>
 
 <div class="px-6 min-h-[calc(100dvh-178px-104px)] pb-10">
-  <div class="max-w-[1440px] w-full mx-auto mt-[104px] flex flex-col gap-6">
+  <div class="max-w-[1440px] w-full mx-auto  flex flex-col gap-6">
     <div
       class="w-full p-6 rounded-lg"
       style={bgBlur({ color: '#111A28', blur: 6, opacity: 0.9 })}
@@ -83,11 +82,13 @@
         use:enhance={() => {
           isSubmitting = true;
           return async ({ result }) => {
-            if (result.type === 'success' && result.data?.success) {
+            console.log('Form result:', result);
+            if (result.type === 'success') {
+              console.log('Success result data:', result.data);
               toast.success('Settings updated successfully!');
               await invalidateAll();
             } else if (result.type === 'failure') {
-              console.error('Failed to update settings:', result.data?.message);
+              toast.error(result.data?.message || 'Failed to update settings');
             } else if (result.type === 'error') {
               toast.error(
                 `An unexpected error occurred: ${result.error.message}`
@@ -250,14 +251,14 @@
               <div class="flex items-center gap-2">
                 <Robux class="text-amber-300 size-5" />
                 <span class="text-base font-semibold"
-                  >{previewRobuxFromUsd} R$</span
+                  >{Math.round(previewUsd / usdToRobuxRateInput)} R$</span
                 >
               </div>
             </div>
             <div class="grid grid-cols-2 gap-2 text-xs text-[#809BB5] mt-2">
               <div>
                 <span class="block">
-                  1 R$ = ${usdToRobuxRateInput?.toFixed(5)}
+                  1 R$ = ${usdToRobuxRateInput}
                 </span>
                 <span class="block text-xs text-[#809BB5] mt-1">
                   {purchaseLimitHoursInput > 0

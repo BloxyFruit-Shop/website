@@ -15,7 +15,7 @@
   export let data;
 
   // Reactive destructuring of loaded data
-  $: ({ claims, pagination, searchTerm: initialSearchTerm } = data);
+  $: ({ claims, pagination, searchTerm: initialSearchTerm, grandTotal } = data);
   $: ({ currentPage, totalPages, totalClaims, limit } = pagination || {
     currentPage: 1,
     totalPages: 1,
@@ -127,15 +127,25 @@
         </div>
       </div>
       {#if totalClaims > 0}
-        <p
-          class="text-sm text-[#809BB5]"
-          in:fade={{ duration: 200, delay: 300 }}
-        >
-          Showing {(currentPage - 1) * limit + 1}-{Math.min(
-            (currentPage - 1) * limit + claims.length,
-            totalClaims
-          )} of {totalClaims} claims
-        </p>
+        <div class="flex flex-col items-end gap-1">
+          <p
+            class="text-sm text-[#809BB5]"
+            in:fade={{ duration: 200, delay: 300 }}
+          >
+            Showing {(currentPage - 1) * limit + 1}-{Math.min(
+              (currentPage - 1) * limit + claims.length,
+              totalClaims
+            )} of {totalClaims} claims
+          </p>
+          {#if grandTotal > 0}
+            <p
+              class="text-sm font-semibold text-[#3BA4F0]"
+              in:fade={{ duration: 200, delay: 400 }}
+            >
+              Total: {grandTotal} Robux
+            </p>
+          {/if}
+        </div>
       {/if}
     </div>
 

@@ -46,6 +46,19 @@ export const load = async ({ locals, url }) => {
   const totalClaims = await orders.countDocuments(filter);
   const totalPages = Math.ceil(totalClaims / limit) || 1;
 
+  // Calculate grand total of all robux purchase gamepass prices
+  const grandTotalResult = await orders.aggregate([
+    { $match: filter },
+    {
+      $group: {
+        _id: null,
+        totalAmount: { $sum: '$robuxPurchase.gamepass.price' }
+      }
+    }
+  ]);
+  
+  const grandTotal = grandTotalResult.length > 0 ? grandTotalResult[0].totalAmount : 0;
+
   if (page > totalPages && totalPages > 0) {
     page = totalPages;
   }
@@ -86,7 +99,8 @@ export const load = async ({ locals, url }) => {
       totalClaims: totalClaims
     },
     searchTerm: searchTerm,
-    sort: sortParam
+    sort: sortParam,
+    grandTotal: grandTotal
   };
 };
 
@@ -159,7 +173,7 @@ export const actions = {
         {
           $set: {
             status: 'completed',
-            'robuxPurchase.fulfillmentDate': new Date(),
+            'robuxPurchase.fulfillmentDate': new Date()
           }
         }
       );
@@ -191,7 +205,7 @@ export const actions = {
       // Delete all robux purchase orders that are already fulfilled (status: 'ready')
       const result = await orders.deleteMany({
         'robuxPurchase.robuxPurchaseId': { $ne: null },
-        status: 'ready'
+        status: 'completed'
       });
       return { success: true, deletedCount: result.deletedCount };
     } catch (error) {
