@@ -16,7 +16,8 @@ export const load = async ({ locals, url }) => {
   const limit = CLAIMS_PER_PAGE;
 
   // Filter for orders that have robuxPurchase field (robux purchase orders)
-  const filter = { 'robuxPurchase.robuxPurchaseId': { $ne: null } };
+  // Exclude orders hidden from admin panel
+  const filter = { 'robuxPurchase.robuxPurchaseId': { $ne: null }, hiddenFromAdmin: { $ne: true } };
   if (searchTerm) {
     const escapedSearchTerm = searchTerm.replace(
       /[-\/\\^$*+?.()|[\]{}]/g,
@@ -202,12 +203,18 @@ export const actions = {
     }
 
     try {
-      // Delete all robux purchase orders that are already fulfilled (status: 'ready')
-      const result = await orders.deleteMany({
-        'robuxPurchase.robuxPurchaseId': { $ne: null },
-        status: 'completed'
-      });
-      return { success: true, deletedCount: result.deletedCount };
+      // Hide all robux purchase orders that are already fulfilled (status: 'completed') from admin panel
+      // This keeps them in the database so users can still see them
+      const result = await orders.collection.updateMany(
+        {
+          'robuxPurchase.robuxPurchaseId': { $ne: null },
+          status: 'completed'
+        },
+        {
+          $set: { hiddenFromAdmin: true }
+        }
+      );
+      return { success: true, hiddenCount: result.modifiedCount };
     } catch (error) {
       return { success: false, message: error.message };
     }
