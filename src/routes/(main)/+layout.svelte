@@ -31,7 +31,7 @@
     </div>
 
     <div class="flex items-center gap-4">
-      <Button variant="gradient" color="slate" to="/robux" class="max-md:px-4 h-[46px] w-[46px] md:w-auto">
+      <Button variant="gradient" color="slate" to="/robux" class="max-md:px-4 h-[46px] w-[46px] md:w-auto" disabled>
         <Robux class="size-[22px] mr-0 md:mr-2 text-amber-300" />
         <p class="hidden md:block">Buy Robux! 🔥</p>
       </Button>

@@ -1,6 +1,8 @@
 import { globalSettings } from '$server/mongo';
+import { redirect } from '@sveltejs/kit';
 
 export const load = async () => {
+  return redirect(303, '/');
   try {
     const settings = await globalSettings.findOne({ _id: 'settings' }).lean();
 
