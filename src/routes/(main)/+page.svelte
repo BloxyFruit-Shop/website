@@ -571,20 +571,20 @@
         </div>
       {/each}
     </div>
+    <div
+      class="w-full flex flex-col items-center py-16 md:py-24 overflow-hidden px-4 sm:px-6"
+    >
+      <div class="max-w-[1400px] w-full flex justify-center flex-col">
+        <h2 class="font-extrabold text-[32px] leading-none text-center mb-12">
+          {translations[$languageStore].testimonialsTitle}
+        </h2>
+  
+        <div id="shapo-widget-c643278e8b387a957403"></div>
+      </div>
+    </div>
   </div>
 
   <!-- Testimonials -->
-  <div
-    class="bg-[#3BA4F0]/4 w-full flex flex-col items-center py-16 md:py-24 overflow-hidden px-4 sm:px-6"
-  >
-    <div class="max-w-[1400px] w-full flex justify-center flex-col">
-      <h2 class="font-extrabold text-[32px] leading-none text-center mb-12">
-        {translations[$languageStore].testimonialsTitle}
-      </h2>
-
-      <div id="shapo-widget-c643278e8b387a957403"></div>
-    </div>
-  </div>
 
   <div
     class="bg-[#3BA4F0]/4 w-full flex flex-col items-center py-12 overflow-hidden"
