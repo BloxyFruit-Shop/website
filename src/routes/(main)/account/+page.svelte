@@ -165,7 +165,7 @@
         <div class="flex items-center justify-between gap-2">
           <p class="flex items-center gap-2">
             <Crown class="pb-1.5 px-1 size-9" />
-            <span class="text-2xl font-bold">Affiliate panel</span>
+            <span class="text-2xl font-bold">Bloxypoints panel</span>
           </p>
         </div>
 
@@ -211,7 +211,7 @@
             <div class="grid grid-cols-[auto_1fr] gap-1 text-[#809BB5] mt-2">
               <EmptyCircleInfo class="size-3 mt-0.5" />
               <p class="text-sm">
-                Share your link, recieve robux everytime anyone buys using your
+                Share your link, recieve points everytime anyone buys using your
                 code!
               </p>
             </div>

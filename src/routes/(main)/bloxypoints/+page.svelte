@@ -158,7 +158,7 @@
 
           <!-- Pack Selection Grid -->
           <div
-            class="mt-8 grid grid-cols-2 sm:grid-cols-3 gap-3"
+            class="mt-8 grid grid-cols-2 gap-3"
             in:fly|local={{
               y: 20,
               duration: 300,
@@ -252,8 +252,8 @@
           ></div>
 
           <img
-            src="/assets/character-ilustration-4.webp"
-            class="max-w-none max-xl:w-[465px] max-[1650px]:w-[485px] w-[515px] h-full absolute left-1/2 -translate-x-1/2 object-contain select-none pointer-events-none hidden md:block"
+            src="/assets/character-ilustration-3.webp"
+            class="max-w-none max-xl:w-[600px] max-[1650px]:w-[650px] w-[700px] absolute bottom-0 left-1/2 -translate-x-1/2 select-none pointer-events-none hidden md:block"
             alt=""
             in:fly|local={{
               x: 40,
@@ -264,7 +264,7 @@
           />
 
           <div
-            class="absolute top-[18%] left-[18%] animate-float [--duration:2.4s] [--rotation:-10deg] hidden md:block"
+            class="absolute top-[15%] left-[10%] animate-float [--duration:2.4s] [--rotation:-10deg] hidden md:block"
           >
             <div
               class="size-16 rounded-2xl flex items-center justify-center shadow-[0_10px_25px_0_rgba(59,164,240,0.12)]"
@@ -281,7 +281,7 @@
             </div>
           </div>
           <div
-            class="absolute top-[58%] left-[10%] animate-float [--duration:3.1s] [--rotation:14deg] [--adjusted-rotation:10deg] hidden md:block"
+            class="absolute top-[60%] left-[5%] animate-float [--duration:3.1s] [--rotation:14deg] [--adjusted-rotation:10deg] hidden md:block"
           >
             <div
               class="flex items-center justify-center size-12 rounded-2xl"
@@ -298,7 +298,7 @@
             </div>
           </div>
           <div
-            class="absolute top-[22%] right-[14%] animate-float [--duration:2.8s] [--rotation:10deg] hidden md:block"
+            class="absolute top-[15%] right-[10%] animate-float [--duration:2.8s] [--rotation:10deg] hidden md:block"
           >
             <div
               class="flex items-center justify-center size-14 rounded-2xl"
@@ -315,7 +315,7 @@
             </div>
           </div>
           <div
-            class="absolute bottom-[12%] right-[22%] animate-float [--duration:3.4s] [--rotation:-12deg] hidden md:block"
+            class="absolute bottom-[20%] right-[10%] animate-float [--duration:3.4s] [--rotation:-12deg] hidden md:block"
           >
             <div
               class="flex items-center justify-center size-24 rounded-2xl"
@@ -329,44 +329,6 @@
               }}
             >
               <Robux class="size-12 text-[#3BA4F0]" />
-            </div>
-          </div>
-
-          <!-- Floating summary card -->
-          <div class="absolute left-6 bottom-6 right-6">
-            <div
-              class="flex items-center justify-between gap-3 p-4 border border-blue-400/20 rounded-xl"
-              style={bgBlur({ color: '#111A28', blur: 8, opacity: 0.9 })}
-              in:fly|local={{
-                y: 16,
-                duration: 300,
-                delay: 200,
-                easing: quintOut
-              }}
-            >
-              <div class="flex items-center gap-3">
-                <div
-                  class="size-9 rounded-full bg-[#3BA4F0]/10 flex items-center justify-center"
-                >
-                  <Robux class="size-5 text-[#3BA4F0]" />
-                </div>
-                <div>
-                  <p class="text-sm text-[#809BB5] leading-none">
-                    {translations[$languageStore].robuxPage?.selected ??
-                      'Selected'}
-                  </p>
-                  <p class="text-lg font-semibold leading-tight">{amount} BP</p>
-                </div>
-              </div>
-              <div class="text-right">
-                <p class="text-sm text-[#809BB5] leading-none">
-                  {translations[$languageStore].robuxPage?.estimated ??
-                    'Estimated'}
-                </p>
-                <p class="text-lg font-semibold leading-tight">
-                  €{approxPrice}
-                </p>
-              </div>
             </div>
           </div>
         </div>
