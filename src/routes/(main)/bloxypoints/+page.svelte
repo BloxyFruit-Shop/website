@@ -216,7 +216,7 @@
           >
             <div class="flex items-center justify-between mb-4">
               <span class="text-[#809BB5] font-medium">Total Price</span>
-              <span class="text-xl font-bold text-white">${approxPrice}</span>
+              <span class="text-xl font-bold text-white">€{approxPrice}</span>
             </div>
 
             <Button
@@ -364,7 +364,7 @@
                     'Estimated'}
                 </p>
                 <p class="text-lg font-semibold leading-tight">
-                  ${approxPrice}
+                  €{approxPrice}
                 </p>
               </div>
             </div>
