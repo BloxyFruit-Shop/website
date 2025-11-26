@@ -596,7 +596,7 @@
         <div
           class="px-1 py-1 max-h-[calc(min(100dvh-160px,300px))] overflow-y-auto"
         >
-          {#each Object.values(games) as inGame}
+          {#each Object.values(games).filter((g) => !g.hidden) as inGame}
             <Select.Item
               class="flex h-10 w-full text-sm select-none items-center rounded-button outline-none transition-all duration-75 data-[highlighted]:bg-white/10 rounded-md"
               value={inGame.internalName}
@@ -693,7 +693,7 @@
           transitionConfig={{ duration: 200 }}
           class="pb-[25px] text-sm tracking-[-0.01em] flex flex-col gap-3"
         >
-          {#each Object.values(games) as game, i}
+          {#each Object.values(games).filter((g) => !g.hidden) as game, i}
             <Button
               variant="bordered"
               color="game"

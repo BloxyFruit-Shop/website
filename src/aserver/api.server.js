@@ -17,7 +17,7 @@ import { setIntervalImmediately, modifyProductTags } from "$server/utils";
 import { restResources } from "@shopify/shopify-api/rest/admin/2024-07";
 import games from "$lib/utils/games";
 import { building } from "$app/environment";
-import { orders, products as dbProducts, inventory } from "$server/mongo";
+import { orders, products as dbProducts, inventory, users } from "$server/mongo";
 import { cacheProductById, updateProductStock } from "$server/cache";
 import { globalSettings } from "$server/mongo";
 
@@ -342,6 +342,10 @@ const fetchOrders = async () => {
                     }
                   }
                 }
+                customAttributes {
+                  key
+                  value
+                }
               }
             }
             pageInfo {
@@ -391,6 +395,7 @@ const fetchOrders = async () => {
               price: Number(item.originalUnitPriceSet.shopMoney.amount),
               quantity: item.quantity,
               deliveryType: product.deliveryType || "manual",
+              robuxAmount: product.robuxAmount ? parseInt(product.robuxAmount) : 0 // Pass parsed amount
             };
           }),
         );
@@ -408,8 +413,55 @@ const fetchOrders = async () => {
           updatedAt: new Date(orderData.createdAt),
         });
 
+        // Auto-fulfill Bloxypoints items in Shopify
+        const bloxypointsItems = validOrderItems.filter(item => item.deliveryType === 'bloxypoints');
+        if (bloxypointsItems.length > 0) {
+          const variantIds = bloxypointsItems.map(item => item.productId);
+          console.log(`[fetchOrders] Found Bloxypoints items for order ${orderId}. Triggering auto-fulfillment for variants: ${variantIds.join(', ')}`);
+          await fulfillShopifyOrder(orderId, variantIds);
+        } else {
+          console.log(`[fetchOrders] No Bloxypoints items found for order ${orderId} (checked ${validOrderItems.length} items).`);
+        }
+
         // For account delivery types, attempt to reserve inventory items
         for (const item of validOrderItems) {
+          if (item.deliveryType === 'bloxypoints') {
+             try {
+                const userIdAttribute = orderData.customAttributes.find(attr => attr.key === 'userId');
+                const userId = userIdAttribute ? userIdAttribute.value : null;
+
+                if (!userId) {
+                  console.error(`No userId found in customAttributes for order ${orderId}`);
+                  continue;
+                }
+
+                const robuxAmount = item.robuxAmount || 0;
+
+                if (robuxAmount > 0) {
+                   await users.updateOne({ _id: userId }, { $inc: { robux: robuxAmount * item.quantity } });
+                   
+                   // Mark item as completed/ready
+                   await orders.updateOne(
+                    {
+                      id: orderId,
+                      "items.productId": item.productId,
+                    },
+                    {
+                      $set: {
+                        "items.$.status": "completed",
+                      },
+                    },
+                  );
+                } else {
+                   console.error(`Could not determine robuxAmount for product ${item.productId}. Item data:`, JSON.stringify(item));
+                }
+
+             } catch (err) {
+                console.error(`Error fulfilling Bloxypoints for order ${orderId}:`, err);
+             }
+             continue; 
+          }
+
           if (item.deliveryType !== "account") continue;
 
           try {
@@ -638,6 +690,106 @@ export const fetchItems = async () => {
  *
  * @returns {Promise<void>}
  */
+/**
+ * Fulfills specific line items in a Shopify order.
+ * @param {string} orderId - The Shopify Order ID (numeric part).
+ * @param {string[]} variantIds - Array of variant IDs to fulfill.
+ */
+const fulfillShopifyOrder = async (orderId, variantIds) => {
+  try {
+    const client = new shopify.clients.Graphql({ session: shopifySession });
+    const shopifyOrderId = `gid://shopify/Order/${orderId}`;
+
+    // 1. Get Fulfillment Orders with Line Items and their Variants
+    const query = `
+      query GetFulfillmentOrders($orderId: ID!) {
+        order(id: $orderId) {
+          fulfillmentOrders(first: 10) {
+            edges {
+              node {
+                id
+                lineItems(first: 100) {
+                  edges {
+                    node {
+                      id
+                      remainingQuantity
+                      lineItem {
+                        variant {
+                          id
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }`;
+
+    const response = await client.request(query, {
+      variables: { orderId: shopifyOrderId },
+    });
+
+    const fulfillmentOrders = response?.data?.order?.fulfillmentOrders?.edges || [];
+
+    for (const edge of fulfillmentOrders) {
+      const fulfillmentOrder = edge.node;
+      const fulfillmentOrderId = fulfillmentOrder.id;
+      
+      // Filter line items that match our variantIds and have remaining quantity
+      const itemsToFulfill = fulfillmentOrder.lineItems.edges
+        .map(e => e.node)
+        .filter(item => {
+          const variantId = item.lineItem?.variant?.id?.replace("gid://shopify/ProductVariant/", "");
+          return variantIds.includes(variantId) && item.remainingQuantity > 0;
+        })
+        .map(item => ({
+          id: item.id,
+          quantity: item.remainingQuantity
+        }));
+
+      if (itemsToFulfill.length === 0) continue;
+
+      // 2. Create Fulfillment
+      const mutation = `
+        mutation fulfillmentCreateV2($fulfillment: FulfillmentV2Input!) {
+          fulfillmentCreateV2(fulfillment: $fulfillment) {
+            fulfillment {
+              id
+              status
+            }
+            userErrors {
+              field
+              message
+            }
+          }
+        }`;
+
+      const fulfillmentResponse = await client.request(mutation, {
+        variables: {
+          fulfillment: {
+            lineItemsByFulfillmentOrder: [{
+              fulfillmentOrderId: fulfillmentOrderId,
+              fulfillmentOrderLineItems: itemsToFulfill
+            }]
+          }
+        }
+      });
+
+      const userErrors = fulfillmentResponse?.data?.fulfillmentCreateV2?.userErrors;
+      if (userErrors && userErrors.length > 0) {
+        console.error(`[fulfillShopifyOrder] Errors fulfilling order ${orderId}:`, userErrors);
+      } else {
+        console.log(`[fulfillShopifyOrder] Successfully fulfilled ${itemsToFulfill.length} items for order ${orderId}`);
+      }
+    }
+
+  } catch (err) {
+    console.error(`[fulfillShopifyOrder] Error fulfilling order ${orderId}:`, err);
+  }
+};
+
 (async function () {
   if (building) return;
 

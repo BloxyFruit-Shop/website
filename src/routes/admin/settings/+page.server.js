@@ -12,11 +12,7 @@ export const load = async ({ locals, url }) => {
     );
     settings = {
       _id: 'settings',
-      euroToRobuxRate: 10,
-      usdToRobuxRate: 0.00829,
-      maxRobuxPerPurchase: 10000,
-      minRobuxPerPurchase: 300,
-      purchaseLimitHours: 6
+      euroToRobuxRate: 10
     };
   }
 
@@ -53,23 +49,11 @@ export const actions = {
 
     const formData = await request.formData();
     const euroToRobuxRateStr = formData.get('euroToRobuxRate')?.toString();
-    const usdToRobuxRateStr = formData.get('usdToRobuxRate')?.toString();
-    const maxRobuxStr = formData.get('maxRobuxPerPurchase')?.toString();
-    const minRobuxStr = formData.get('minRobuxPerPurchase')?.toString();
-    const purchaseLimitHoursStr = formData
-      .get('purchaseLimitHours')
-      ?.toString();
-    const squareWebhookPaymentsKey = formData
-      .get('squareWebhookSignaturesPayments')
-      ?.toString();
-    const squareWebhookDisputesKey = formData
-      .get('squareWebhookSignaturesDisputes')
-      ?.toString();
     const discordWebhookUrl = formData
       .get('discordDisputeWebhookUrl')
       ?.toString();
 
-    let euroToRobuxRate, usdToRobuxRate, maxRobux, minRobux, purchaseLimitHours;
+    let euroToRobuxRate;
     const errors = {};
 
     // Validate Euro to Robux Rate
@@ -86,103 +70,22 @@ export const actions = {
       }
     }
 
-    // Validate USD to Robux Rate
-    if (!usdToRobuxRateStr) {
-      errors.usdToRobuxRate = 'USD to Robux rate is required.';
-    } else {
-      try {
-        usdToRobuxRate = parseFloat(usdToRobuxRateStr);
-        if (isNaN(usdToRobuxRate) || usdToRobuxRate <= 0) {
-          throw new Error('Invalid rate');
-        }
-      } catch (error) {
-        errors.usdToRobuxRate = 'Rate must be a positive number.';
-      }
-    }
-
-    // Validate Max Robux
-    if (!maxRobuxStr) {
-      errors.maxRobuxPerPurchase = 'Maximum Robux per purchase is required.';
-    } else {
-      try {
-        maxRobux = parseInt(maxRobuxStr, 10);
-        if (isNaN(maxRobux) || maxRobux <= 0) {
-          throw new Error('Invalid amount');
-        }
-      } catch (error) {
-        errors.maxRobuxPerPurchase = 'Must be a positive whole number.';
-      }
-    }
-
-    // Validate Min Robux
-    if (!minRobuxStr) {
-      errors.minRobuxPerPurchase = 'Minimum Robux per purchase is required.';
-    } else {
-      try {
-        minRobux = parseInt(minRobuxStr, 10);
-        if (isNaN(minRobux) || minRobux <= 0) {
-          throw new Error('Invalid amount');
-        }
-      } catch (error) {
-        errors.minRobuxPerPurchase = 'Must be a positive whole number.';
-      }
-    }
-
-    // Validate Purchase Limit Hours
-    if (!purchaseLimitHoursStr) {
-      errors.purchaseLimitHours = 'Purchase limit hours is required.';
-    } else {
-      try {
-        purchaseLimitHours = parseInt(purchaseLimitHoursStr, 10);
-        if (isNaN(purchaseLimitHours) || purchaseLimitHours < 0) {
-          throw new Error('Invalid hours');
-        }
-      } catch (error) {
-        errors.purchaseLimitHours = 'Must be a positive whole number.';
-      }
-    }
-
-    // Check min < max
-    if (minRobux && maxRobux && minRobux >= maxRobux) {
-      errors.minRobuxPerPurchase = 'Minimum must be less than maximum.';
-    }
-
     if (Object.keys(errors).length > 0) {
       return fail(400, {
         success: false,
         message: 'Please correct the errors below.',
         errors,
         formData: {
-          euroToRobuxRate: euroToRobuxRateStr,
-          usdToRobuxRate: usdToRobuxRateStr,
-          maxRobuxPerPurchase: maxRobuxStr,
-          minRobuxPerPurchase: minRobuxStr,
-          purchaseLimitHours: purchaseLimitHoursStr
+          euroToRobuxRate: euroToRobuxRateStr
         }
       });
     }
 
     try {
       const updateData = {
-        euroToRobuxRate: euroToRobuxRate,
-        usdToRobuxRate: usdToRobuxRate,
-        maxRobuxPerPurchase: maxRobux,
-        minRobuxPerPurchase: minRobux,
-        purchaseLimitHours: purchaseLimitHours
+        euroToRobuxRate: euroToRobuxRate
       };
 
-      // Only update webhook keys if provided
-      if (squareWebhookPaymentsKey || squareWebhookDisputesKey) {
-        updateData.squareWebhookSignatures = {};
-        if (squareWebhookPaymentsKey) {
-          updateData.squareWebhookSignatures.payments =
-            squareWebhookPaymentsKey;
-        }
-        if (squareWebhookDisputesKey) {
-          updateData.squareWebhookSignatures.disputes =
-            squareWebhookDisputesKey;
-        }
-      }
       if (discordWebhookUrl) {
         updateData.discordDisputeWebhookUrl = discordWebhookUrl;
       }
@@ -213,11 +116,7 @@ export const actions = {
         success: false,
         message: 'Failed to save settings due to a server error.',
         formData: {
-          euroToRobuxRate: euroToRobuxRateStr,
-          usdToRobuxRate: usdToRobuxRateStr,
-          maxRobuxPerPurchase: maxRobuxStr,
-          minRobuxPerPurchase: minRobuxStr,
-          purchaseLimitHours: purchaseLimitHoursStr
+          euroToRobuxRate: euroToRobuxRateStr
         }
       });
     }

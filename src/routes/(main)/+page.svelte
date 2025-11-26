@@ -4,7 +4,7 @@
     RoundedArrowRight,
     Youtube,
     PhosphorFlame,
-    Trustpilot
+    Star
   } from '$icons';
   import Button from '$components/Button.svelte';
   import WholeItem from '$components/WholeItem.svelte';
@@ -200,13 +200,14 @@
         class="h-full absolute top-0 left-0 right-[var(--scrollbar-width,0px)] bg-[linear-gradient(to_bottom,#0c0e16e0,#0c0e16),url(/assets/background-glow.webp)] opacity-[0.05] bg-no-repeat bg-cover bg-center z-[-1]"
       ></div>
       <div class="">
-        <div class="flex gap-3 mb-5 sm:items-center max-sm:flex-col">
-          <a
-            href="https://trustpilot.com/review/bloxyfruit.com"
-            target="_blank"
-          >
-            <Trustpilot class="w-[200px] md:w-[230px]" />
-          </a>
+        <a
+          href="https://trustpilot.com/review/bloxyfruit.com"
+          target="_blank"
+          class="flex gap-3 mb-5 sm:items-center max-sm:flex-col group relative z-10"
+        >
+          <Star
+            class="w-6 group-hover:scale-110 transition-all duration-200 fill-accent-500 text-accent-500"
+          />
 
           <svg
             width="2"
@@ -227,7 +228,10 @@
           <p class="text-sm font-medium md:text-base">
             {translations[$languageStore].review}
           </p>
-        </div>
+          <div
+            class="absolute top-1/2 -translate-y-1/2 h-[10px] w-[35%] bg-accent-500 blur-[50px] opacity-0 scale-80 transition-all duration-300 group-hover:opacity-60 group-hover:scale-100 z-[-1]"
+          ></div>
+        </a>
 
         <h1 class="text-4xl font-bold leading-tight md:text-5xl">
           {translations[$languageStore].heroTitle1}<br />
@@ -566,6 +570,19 @@
           <p class="font-medium">{reason.description}</p>
         </div>
       {/each}
+    </div>
+  </div>
+
+  <!-- Testimonials -->
+  <div
+    class="bg-[#3BA4F0]/4 w-full flex flex-col items-center py-16 md:py-24 overflow-hidden px-4 sm:px-6"
+  >
+    <div class="max-w-[1400px] w-full flex justify-center flex-col">
+      <h2 class="font-extrabold text-[32px] leading-none text-center mb-12">
+        {translations[$languageStore].testimonialsTitle}
+      </h2>
+
+      <div id="shapo-widget-c643278e8b387a957403"></div>
     </div>
   </div>
 

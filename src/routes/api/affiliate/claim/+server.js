@@ -1,5 +1,5 @@
 import { json } from '@sveltejs/kit';
-import { users, robuxClaims } from '$server/mongo';
+import { users, robuxClaims, robuxLedger } from '$server/mongo';
 import { DISCORD_AFFILIATE_CLAIM_WEBHOOK } from '$env/static/private';
 
 /**
@@ -69,7 +69,7 @@ export async function POST({ request, locals }) {
       }
     });
 
-    await robuxClaims.create({
+    const claim = await robuxClaims.create({
       user: {
         id: dbUser._id,
         username: requestUser.username,
@@ -86,7 +86,16 @@ export async function POST({ request, locals }) {
         displayName: gamepass.displayName,
         price: gamepass.price
       }
-    })
+    });
+
+    await robuxLedger.create({
+      userId: dbUser._id,
+      type: 'exchange',
+      amount: -robuxAmount,
+      balanceAfter: (dbUser.robux || 0) - robuxAmount,
+      referenceId: claim._id,
+      description: `Exchange of ${robuxAmount} Bloxypoints for Robux`
+    });
 
     await fetch(DISCORD_AFFILIATE_CLAIM_WEBHOOK, {
       method: 'POST',

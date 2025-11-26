@@ -217,7 +217,7 @@
             </div>
           </div>
           <div class="flex items-center gap-2 text-lg font-medium">
-            <p class="text-[#809BB5]">Collected Robux:</p>
+            <p class="text-[#809BB5]">Bloxypoints:</p>
             <p class="flex items-center gap-1 text-white">
               <Robux class="size-4" />{data.robuxAmount}
             </p>
@@ -231,7 +231,7 @@
           class="w-full"
           onClick={() => {
             if (data.robuxAmount < 50) {
-              toast.info('You need at least 50 Robux to claim.', {
+              toast.info('You need at least 50 Bloxypoints to exchange.', {
                 duration: 3000
               });
               return;
@@ -239,7 +239,7 @@
             claimModalOpen = true;
           }}
         >
-          Claim Robux {data.robuxAmount < 50 ? '(Need 50+)' : ''}
+          Claim Robux {data.robuxAmount < 50 ? '(Need 50+ points)' : ''}
         </Button>
         <a
           href="https://discord.gg/efzkFH5mxc"

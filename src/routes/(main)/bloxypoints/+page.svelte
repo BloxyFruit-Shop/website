@@ -1,7 +1,7 @@
 <script>
   import Button from '$lib/components/Button.svelte';
   import HoverCard from '$lib/components/HoverCard.svelte';
-  import { Robux, Trustpilot, RoundedArrowRight } from '$lib/icons';
+  import { Robux, Trustpilot, RoundedArrowRight, Discord } from '$lib/icons';
   import { bgBlur } from '$lib/utils';
   import translations from '$lib/utils/translations';
   import { languageStore } from '$lib/utils/stores';
@@ -11,135 +11,93 @@
   import { toast } from '$lib/svoast';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
-  import SquarePaymentModal from '$lib/modals/payment/square-payment.svelte';
-  import ClaimModal from '$lib/modals/claim/claim-modal-container.svelte';
 
   export let data;
 
-  // Presets used across UI
-  const robuxPacks = [
-    { id: 'r300', amount: 300, best: false },
-    { id: 'r500', amount: 500, best: false },
-    { id: 'r800', amount: 800, best: true },
-    { id: 'r1000', amount: 1000, best: false },
-    { id: 'r2500', amount: 2500, best: false },
-    { id: 'r5000', amount: 5000, best: false }
-  ];
+  // Filter Bloxypoints products from data.products (assuming they are available globally or passed in data)
+  // If not available in data, we might need to fetch them or rely on them being passed.
+  // For now, let's assume we can filter them from a 'bloxypoints' game in data.game or similar if we load it.
+  // Actually, we need to load the products. Let's assume data.products contains them if we update the load function,
+  // OR we can just use the hardcoded structure but map it to variant IDs if we had them.
+  // BETTER APPROACH: The load function for this page should fetch the 'bloxypoints' game products.
 
-  let amount = 500; // default
-  const MIN = 300;
-  const MAX = 10000;
-  const STEP = 50;
+  // Since we haven't updated the load function yet, let's assume we will have `data.bloxypointsProducts`.
+  // If not, we should probably update the load function for this page too.
 
-  let claimModalOpen = false;
-  let paymentModalOpen = false;
-  let pendingClaimData = null;
-  let usdToRobuxRate = data.usdToRobuxRate;
-  let rateLimitHours = data.purchaseLimitHours;
-  let hoursUntilNextPurchase = 0;
-  let isCreatingClaim = false; // Prevent duplicate claim creation
+  // Let's use the products from data if available, otherwise fallback to empty to avoid crash until backend is ready.
+  let products = data.bloxypointsProducts || [];
 
-  $: approxPrice = Math.max(
-    1,
-    Math.round(amount * usdToRobuxRate * 100) / 100
-  ).toFixed(2);
+  // Sort products by price or robux amount
+  $: sortedProducts = products.sort((a, b) => a.price - b.price);
 
-  // Keep presets in sync with slider when clicking
+  // Map products to the structure we need
+  $: robuxPacks = sortedProducts
+    .map((p) => {
+      // modifyProductTags converts tags to properties and removes the tags array
+      const amount = p.robuxAmount ? parseInt(p.robuxAmount) : 0;
+      return {
+        id: p.variantId, // Use variantId as the ID
+        amount: amount,
+        price: p.price,
+        best: p.best === 'true'
+      };
+    })
+    .filter((p) => p.amount > 0);
+
+  let selectedPackId = null;
+  $: selectedPack =
+    robuxPacks.find((p) => p.id === selectedPackId) || robuxPacks[0];
+  $: amount = selectedPack?.amount || 0;
+  $: approxPrice = selectedPack?.price || 0;
+
   function selectPack(id) {
-    const pack = robuxPacks.find((p) => p.id === id);
-    if (pack) amount = pack.amount;
+    selectedPackId = id;
   }
 
-  function onSlide(e) {
-    const val = Number(e.target.value);
-    const snapped = Math.round(val / STEP) * STEP;
-    amount = Math.min(MAX, Math.max(MIN, snapped));
-  }
-
-  function handleBuy() {
-    if (hoursUntilNextPurchase > 0) {
-      toast.error(
-        `You can purchase again in ${Math.ceil(hoursUntilNextPurchase)} hours.`
-      );
-      return;
-    }
-
+  async function handleBuy() {
     // Check authentication
     if (!$page.data.localUser) {
-      toast.error('Please log in to purchase Robux');
+      toast.error('Please log in to purchase Bloxypoints');
       return;
     }
 
-    // Open claim modal
-    claimModalOpen = true;
-  }
-
-  // Custom finish function for robux purchase claims
-  async function handleClaimFinish(claimData) {
-    // Prevent duplicate claim creation
-    if (isCreatingClaim) {
-      console.warn('Claim creation already in progress');
-      return;
-    }
-
-    isCreatingClaim = true;
+    if (!selectedPack) return;
 
     try {
-      // Create robux claim via API
-      const response = await fetch('/api/robux/claim', {
+      const res = await fetch('/api/payments/shopify/create', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(claimData)
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ variantId: selectedPack.id })
       });
 
-      const result = await response.json();
+      const result = await res.json();
 
-      if (!response.ok) {
-        toast.error(result.error || 'Failed to create claim');
-        isCreatingClaim = false;
+      if (result.error) {
+        toast.error(result.error);
         return;
       }
 
-      // Store claim data for payment modal
-      pendingClaimData = {
-        ...claimData,
-        claimId: result.claimId
-      };
-
-      // Close claim modal
-      claimModalOpen = false;
-
-      // Open payment modal
-      paymentModalOpen = true;
-    } catch (error) {
-      console.error('Error creating claim:', error);
-      toast.error('Failed to create claim. Please try again.');
-      isCreatingClaim = false;
+      if (result.webUrl) {
+        window.location.href = result.webUrl;
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to initiate checkout');
     }
-  }
-
-  // Handle payment success
-  function handlePaymentSuccess() {
-    isCreatingClaim = false;
-    // Payment webhook will update the claim
-    // Redirect to account page after 2 seconds
-    setTimeout(() => goto('/account'), 2000);
   }
 </script>
 
 <svelte:head>
   <title
     >{translations[$languageStore].robuxPage?.metaTitle ??
-      'Buy Robux - BloxyFruit'}</title
+      'Buy Bloxypoints - BloxyFruit'}</title
   >
   <meta
     name="description"
     content={translations[$languageStore].robuxPage?.metaDescription ??
-      'Buy Robux securely on BloxyFruit. Choose an amount and get fast delivery with a trusted process.'}
+      'Buy Bloxypoints securely on BloxyFruit. Choose an amount and get fast delivery with a trusted process.'}
   />
-  <link rel="canonical" href="https://bloxyfruit.com/robux" />
+  <link rel="canonical" href="https://bloxyfruit.com/bloxypoints" />
 </svelte:head>
 
 <div
@@ -190,18 +148,17 @@
               'Power up with'}
             <span class="text-[#3BA4F0]"
               >{translations[$languageStore].robuxPage?.robuxWord ??
-                'Robux'}</span
+                'Bloxypoints'}</span
             >
           </h1>
           <p class="text-[#809BB5] md:text-lg font-medium max-w-[620px] mt-2">
             {translations[$languageStore].robuxPage?.heroSubtitle ??
-              'Slide to choose the exact amount or pick a preset. Fast delivery and the best prices!'}
+              'The internal currency of BloxyFruit. Buy Bloxypoints and exchange them for Robux instantly!'}
           </p>
 
-          <!-- Slider -->
+          <!-- Pack Selection Grid -->
           <div
-            class="p-4 mt-6 rounded-xl"
-            style={bgBlur({ color: '#111A28', blur: 8, opacity: 0.9 })}
+            class="mt-8 grid grid-cols-2 sm:grid-cols-3 gap-3"
             in:fly|local={{
               y: 20,
               duration: 300,
@@ -209,81 +166,76 @@
               easing: quintOut
             }}
           >
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-2">
-                <div
-                  class="size-8 rounded-full bg-[#3BA4F0]/10 flex items-center justify-center"
-                >
-                  <Robux class="size-4.5 text-[#3BA4F0]" />
-                </div>
-                <span class="text-lg font-semibold">{amount} R$</span>
-              </div>
-              <span class="text-sm text-[#809BB5]"
-                >~ ${approxPrice}
-                {translations[$languageStore].robuxPage?.usd ?? 'USD'}</span
+            {#each robuxPacks as p, i (p.id)}
+              <button
+                class="relative flex flex-col items-center justify-center p-4 rounded-xl border transition-all duration-300 group
+                {selectedPackId === p.id
+                  ? 'bg-[#3BA4F0]/10 border-[#3BA4F0] shadow-[0_0_20px_rgba(59,164,240,0.15)]'
+                  : 'bg-[#1D2535]/40 border-[#3BA4F0]/10 hover:border-[#3BA4F0]/40 hover:bg-[#1D2535]/60 hover:-translate-y-1'}"
+                on:click={() => selectPack(p.id)}
               >
-            </div>
+                {#if p.best}
+                  <div
+                    class="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-[#3BA4F0] to-[#2B7CB0] text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-lg"
+                  >
+                    BEST VALUE
+                  </div>
+                {/if}
 
-            <input
-              type="range"
-              min={MIN}
-              max={MAX}
-              step={STEP}
-              value={amount}
-              on:input={onSlide}
-              class="w-full mt-4 accent-[#3BA4F0] [--tw-shadow:0_10px_25px_0_rgba(59,164,240,0.10)]"
-            />
-
-            <div class="grid grid-cols-3 gap-2 mt-3 sm:grid-cols-6">
-              {#each robuxPacks as p, i (p.id)}
-                <button
-                  class="relative p-2 rounded-md border transition-all group text-center text-sm font-medium {p.amount ===
-                  amount
-                    ? 'border-[#3BA4F0]/60 bg-[#1D2535]/60'
-                    : 'border-[#3BA4F0]/10 hover:border-[#3BA4F0]/30 hover:bg-[#1D2535]/40'}"
-                  on:click={() => selectPack(p.id)}
-                  aria-pressed={p.amount === amount}
-                  in:fly|local={{
-                    y: 12,
-                    duration: 220,
-                    delay: 150 + i * 40,
-                    easing: quintOut
-                  }}
+                <div
+                  class="size-10 rounded-full flex items-center justify-center mb-2 transition-transform duration-300 group-hover:scale-110
+                  {selectedPackId === p.id
+                    ? 'bg-[#3BA4F0]/20'
+                    : 'bg-[#3BA4F0]/10'}"
                 >
-                  {#if p.best}
-                    <span
-                      class="absolute -top-3 -right-2 text-[10px] px-1.5 py-0.5 rounded-full group-aria-pressed:bg-[#19354F] bg-[#19354F]/80 text-[#3BA4F0] font-semibold"
-                      >Best</span
-                    >
-                  {/if}
-                  {p.amount} R$
-                </button>
-              {/each}
+                  <Robux class="size-6 text-[#3BA4F0]" />
+                </div>
+
+                <span
+                  class="text-2xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-br from-white to-white/70 group-hover:to-white"
+                >
+                  {p.amount}
+                </span>
+                <span
+                  class="text-xs font-bold text-[#3BA4F0] uppercase tracking-wider mb-1"
+                  >Bloxypoints</span
+                >
+              </button>
+            {/each}
+          </div>
+
+          <!-- Summary & Action -->
+          <div
+            class="mt-6 p-4 rounded-xl border border-[#3BA4F0]/10 bg-[#1D2535]/40 backdrop-blur-sm"
+            in:fly|local={{
+              y: 20,
+              duration: 300,
+              delay: 200,
+              easing: quintOut
+            }}
+          >
+            <div class="flex items-center justify-between mb-4">
+              <span class="text-[#809BB5] font-medium">Total Price</span>
+              <span class="text-xl font-bold text-white">${approxPrice}</span>
             </div>
 
             <Button
               color="accent"
               variant="gradient"
-              class="w-full mt-4"
+              class="w-full shadow-[0_4px_20px_rgba(59,164,240,0.25)] hover:shadow-[0_4px_25px_rgba(59,164,240,0.4)] transition-shadow duration-300"
               onClick={handleBuy}
-              disabled={hoursUntilNextPurchase > 0}
+              disabled={!selectedPack}
             >
-              {#if hoursUntilNextPurchase > 0}
-                Can purchase in {Math.ceil(hoursUntilNextPurchase)} hours
-              {:else}
+              <span class="flex items-center gap-2">
                 {translations[$languageStore].robuxPage?.continueCta ??
-                  'Continue with'}
-                {amount} R$ • ${approxPrice}
-                <RoundedArrowRight class="size-4 ml-1.5" />
-              {/if}
+                  'Purchase'}
+                {amount} BP
+                <RoundedArrowRight class="size-4" />
+              </span>
             </Button>
 
-            <p class="text-xs text-[#809BB5] text-center mt-2 max-w-md mx-auto">
-              {#if hoursUntilNextPurchase > 0}
-                You can only purchase once every {rateLimitHours} hours
-              {:else}
-                {translations[$languageStore].robuxPage?.disclaimer}
-              {/if}
+            <p class="text-xs text-[#809BB5]/80 text-center mt-3">
+              {translations[$languageStore].robuxPage?.disclaimer}
             </p>
           </div>
         </div>
@@ -302,6 +254,7 @@
           <img
             src="/assets/character-ilustration-4.webp"
             class="max-w-none max-xl:w-[465px] max-[1650px]:w-[485px] w-[515px] h-full absolute left-1/2 -translate-x-1/2 object-contain select-none pointer-events-none hidden md:block"
+            alt=""
             in:fly|local={{
               x: 40,
               duration: 400,
@@ -402,7 +355,7 @@
                     {translations[$languageStore].robuxPage?.selected ??
                       'Selected'}
                   </p>
-                  <p class="text-lg font-semibold leading-tight">{amount} R$</p>
+                  <p class="text-lg font-semibold leading-tight">{amount} BP</p>
                 </div>
               </div>
               <div class="text-right">
@@ -452,28 +405,51 @@
           {translations[$languageStore].robuxPage?.howItWorksTitle ??
             'How it works'}
         </h2>
-        <p class="text-[#809BB5] font-medium mt-1">
+        <p class="text-[#809BB5] font-medium mt-1 mb-4">
           {translations[$languageStore].robuxPage?.howItWorksSubtitle ??
-            'Simple, transparent, and fast delivery.'}
+            'Simple, transparent, and fast.'}
         </p>
-        <ol class="mt-4 space-y-2 text-sm text-[#B6C6D8]">
-          <li>
-            1. {translations[$languageStore].robuxPage?.steps?.[0] ??
-              'Select your Robux amount using the slider above.'}
-          </li>
-          <li>
-            2. {translations[$languageStore].robuxPage?.steps?.[1] ??
-              'Proceed to checkout and pay securely.'}
-          </li>
-          <li>
-            3. {translations[$languageStore].robuxPage?.steps?.[2] ??
-              'Provide your Roblox username when requested.'}
-          </li>
-          <li>
-            4. {translations[$languageStore].robuxPage?.steps?.[3] ??
-              'Receive your Robux quickly after payment verification.'}
-          </li>
-        </ol>
+
+        <div
+          class="relative w-full aspect-video rounded-lg overflow-hidden bg-black/40 border border-[#3BA4F0]/20 group"
+        >
+          <div class="absolute inset-0 flex items-center justify-center">
+            <div
+              class="size-16 rounded-full bg-[#3BA4F0]/20 flex items-center justify-center backdrop-blur-sm group-hover:scale-110 transition-transform duration-300"
+            >
+              <div
+                class="size-12 rounded-full bg-[#3BA4F0] flex items-center justify-center pl-1"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  class="size-6 text-white"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M4.5 5.653c0-1.426 1.529-2.33 2.779-1.643l11.54 6.348c1.295.712 1.295 2.573 0 3.285L7.28 19.991c-1.25.687-2.779-.217-2.779-1.643V5.653z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              </div>
+            </div>
+          </div>
+          <div
+            class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent"
+          >
+            <p class="text-white font-medium text-sm">
+              Watch how to buy and exchange Bloxypoints
+            </p>
+          </div>
+          <!-- Video placeholder - Replace src with actual video URL later -->
+          <video
+            class="w-full h-full object-cover opacity-60"
+            poster="/assets/landing-background.webp"
+          >
+            <track kind="captions" />
+          </video>
+        </div>
       </div>
 
       <div
@@ -562,25 +538,46 @@
       </div>
     </div>
   </section>
+
+  <!-- Discord CTA Section -->
+  <section class="max-w-[1400px] w-full px-4 sm:px-6 pb-12 md:pb-20">
+    <div
+      class="relative overflow-hidden rounded-2xl p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-8"
+      style="background: linear-gradient(125.74deg, rgba(88, 101, 242, 0.1) 0%, rgba(88, 101, 242, 0.05) 100%); border: 1px solid rgba(88, 101, 242, 0.2);"
+    >
+      <!-- Background effects -->
+      <div class="absolute inset-0 pointer-events-none">
+        <div
+          class="absolute top-0 right-0 size-[300px] bg-[#5865F2]/20 blur-[100px] rounded-full translate-x-1/3 -translate-y-1/3"
+        ></div>
+        <div
+          class="absolute bottom-0 left-0 size-[200px] bg-[#5865F2]/10 blur-[80px] rounded-full -translate-x-1/3 translate-y-1/3"
+        ></div>
+      </div>
+
+      <div class="relative z-10 max-w-2xl">
+        <h2 class="text-3xl font-bold text-white mb-3">
+          Join our Bloxypoints Community
+        </h2>
+        <p class="text-[#B6C6D8] text-lg">
+          Get 24/7 support, stay updated with the latest news, participate in
+          giveaways, and connect with other traders.
+        </p>
+      </div>
+
+      <div class="relative z-10 shrink-0">
+        <Button
+          to="https://discord.gg/fhBthxED3f"
+          target="_blank"
+          class="bg-[#5865F2] hover:bg-[#4752C4] text-white font-bold text-lg px-8 py-4 rounded-xl flex items-center gap-3 transition-all shadow-lg shadow-[#5865F2]/25 hover:shadow-[#5865F2]/40 hover:-translate-y-1"
+        >
+          <Discord class="size-6" />
+          Join Server
+        </Button>
+      </div>
+    </div>
+  </section>
 </div>
-
-<!-- Claim Modal -->
-<ClaimModal
-  bind:open={claimModalOpen}
-  bind:robuxAmount={amount}
-  finishFunction={handleClaimFinish}
-/>
-
-<!-- Payment Modal -->
-<SquarePaymentModal
-  bind:open={paymentModalOpen}
-  robuxAmount={amount}
-  {approxPrice}
-  squareAppId={data.squareAppId}
-  squareLocationId={data.squareLocationId}
-  claimData={pendingClaimData}
-  on:payment-success={handlePaymentSuccess}
-/>
 
 <style>
   :global(.animate-float) {

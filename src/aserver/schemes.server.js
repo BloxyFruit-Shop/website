@@ -95,9 +95,10 @@ export const productsSchema = new Schema({
   game: String,
   deliveryType: {
     type: String,
-    enum: ['account', 'manual'],
+    enum: ['account', 'manual', 'bloxypoints'],
     required: true
   },
+  robuxAmount: Number,
   stockCount: { type: Number, default: 0 }
 });
 
@@ -111,7 +112,7 @@ export const orderItemSchema = new Schema({
   category: String,
   deliveryType: {
     type: String,
-    enum: ['account', 'manual'],
+    enum: ['account', 'manual', 'bloxypoints'],
     required: true
   },
   status: {
@@ -189,9 +190,19 @@ export const robuxClaimsSchema = new Schema({
     enum: ['pending', 'completed', 'cancelled', 'cancelledDueToDispute'],
     default: 'pending'
   },
+  game: {
+    id: String,
+    name: String
+  },
+  gamepass: {
+    id: String,
+    displayName: String,
+    price: Number
+  },
   resolved: { type: Boolean, default: false },
   resolvedAt: { type: Date, default: null },
   robuxAmount: { type: Number, default: 0 },
+  hidden: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now }
 });
 
@@ -229,6 +240,7 @@ export const robuxPurchasesSchema = new Schema({
   createdAt: { type: Date, default: Date.now }
 });
 
+// DEPRECATED: Square integration is being replaced by Shopify
 export const squarePaymentsSchema = new Schema({
     paymentId: String,
     userId: { type: Schema.Types.ObjectId, ref: 'users' },
@@ -254,6 +266,7 @@ export const squarePaymentsSchema = new Schema({
     receiptUrl: { type: String, default: null }
 });
 
+// DEPRECATED: Square integration is being replaced by Shopify
 export const squareDisputesSchema = new Schema({
   disputeId: String,
   paymentId: String,
@@ -276,4 +289,18 @@ export const squareDisputesSchema = new Schema({
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
   resolvedAt: { type: Date, default: null }
+});
+
+export const robuxLedgerSchema = new Schema({
+  userId: { type: Schema.Types.ObjectId, ref: 'users', required: true },
+  type: {
+    type: String,
+    enum: ['purchase', 'exchange', 'chargeback', 'adjustment'],
+    required: true
+  },
+  amount: { type: Number, required: true }, // Positive for credit, negative for debit
+  balanceAfter: { type: Number, required: true },
+  referenceId: { type: String, default: null }, // paymentId, claimId, etc.
+  description: { type: String, default: '' },
+  createdAt: { type: Date, default: Date.now }
 });

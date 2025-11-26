@@ -149,6 +149,16 @@
       {/if}
     </div>
 
+    <div class="w-full h-24 bg-amber-500/10 rounded-lg flex flex-col items-center justify-center mt-4 border border-amber-500/20 border-dashed">
+      <h2 class="text-center text-amber-400 font-bold text-lg">
+        Deprecated notice
+      </h2>
+      <p class="text-center text-amber-400 text-sm">
+        The Robux purchase claims system has been discontinued. Please use the
+        normal claim interface
+      </p>
+    </div>
+
     <div class="w-full h-[3px] bg-[#1D2535] my-5 rounded-full"></div>
 
     <div class="flex flex-wrap items-center justify-between gap-4 mb-6">

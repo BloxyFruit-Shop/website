@@ -131,5 +131,20 @@ export default {
       { name: 'Mythical', color: 'red' }
     ],
     products: []
+  },
+  'bloxypoints': {
+    shortName: 'BP',
+    name: 'Bloxypoints',
+    internalName: 'bloxypoints',
+    hidden: true,
+    order: ['Pack'],
+    rarities: [
+      { name: 'Common', color: 'gray' },
+      { name: 'Uncommon', color: 'lightBlue' },
+      { name: 'Rare', color: 'purple' },
+      { name: 'Legendary', color: 'orange' },
+      { name: 'Mythical', color: 'red' }
+    ],
+    products: []
   }
 };

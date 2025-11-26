@@ -89,6 +89,9 @@ The project follows a file-based routing convention using SvelteKit. Brief overv
     - `src/routes/api/orders/details/+server.js`: Fetches detailed order information, enriching order items with account delivery details.
   - **Products:**
     - `src/routes/api/products/+server.js`: Retrieves product information based on game and variant IDs.
+  - **Payments:**
+    - `src/routes/api/payments/shopify/create/+server.js`: **[NEW]** Creates a Shopify checkout for Bloxypoints purchases.
+    - `src/routes/api/payments/square/create/+server.js`: **[DEPRECATED]** Legacy Square payment creation.
   - **Currency:**
     - `src/routes/api/currency/+server.js`: Provides currency conversion rates based on parameters.
 
@@ -102,6 +105,14 @@ The process for claiming orders is implemented in the main page routes:
   - It validates that the item is eligible for account delivery (must be pending and of the correct delivery type).
   - It then updates the inventory item status (from “available” to “claimed”) and marks the order item accordingly.
   - Finally, it redirects the user to the account page where the claimed order details are shown (see the account pages and order details modal).
+
+### Bloxypoints Migration (Square to Shopify)
+
+We are migrating Bloxypoints payments from Square to Shopify.
+- **New Flow**: Bloxypoints are sold as Shopify products with tags `deliveryType:bloxypoints` and `robuxAmount:<AMOUNT>`.
+- **Checkout**: Users are redirected to Shopify checkout via `/api/payments/shopify/create`.
+- **Fulfillment**: The `fetchOrders` function in `api.server.js` detects Bloxypoints orders and automatically credits the user's account.
+- **Legacy**: Square integration files are marked as deprecated and should be removed in future updates.
 
 ---
 

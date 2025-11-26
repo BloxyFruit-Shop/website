@@ -2,17 +2,17 @@ export default {
   // Language Configuration: English
   EN: {
     // Site Reviews
-    review: '210+ 5 Star Reviews',
+    review: 'Top seller with 240+ 5 Star Reviews',
 
     // Robux Page
     robuxPage: {
-      metaTitle: 'Buy Robux - BloxyFruit',
+      metaTitle: 'Buy Bloxypoints - BloxyFruit',
       metaDescription:
-        'Buy Robux securely on BloxyFruit. Choose an amount and get fast delivery with a trusted process.',
-      heroPowerUp: 'Power up with',
-      robuxWord: 'Robux',
+        'Buy Bloxypoints securely on BloxyFruit. Exchange them for Robux or other items instantly.',
+      heroPowerUp: 'Get Robux with',
+      robuxWord: 'Bloxypoints',
       heroSubtitle:
-        'Slide to choose the exact amount or pick a preset. Fast delivery and the best prices!',
+        'Get our Bloxypoints and exchange them instantly! The easiest and safest way to obtain Robux at the best price.',
       usd: 'USD',
       continueCta: 'Continue with',
       selected: 'Selected',
@@ -20,21 +20,21 @@ export default {
       howItWorksTitle: 'How it works',
       howItWorksSubtitle: 'Simple, transparent, and fast delivery.',
       steps: [
-        'Select your Robux amount using the slider above.',
-        'Provide your Roblox username and a Gamepass when requested.',
-        'Proceed to checkout and pay securely.',
-        'Receive your Robux quickly after payment verification.'
+        'Select your Bloxypoints amount using the slider above.',
+        'Complete the secure payment.',
+        'Receive Bloxypoints in your account instantly.',
+        'Exchange them for Robux or items whenever you want.'
       ],
       disclaimer:
-        "By making a purchase on Bloxyfruit you assume full responsability. We're not responsible for whatever happens outside of the platform.",
+        "By making a purchase on Bloxyfruit you assume full responsability. We're not responsible for whatever may happen outside the platform.",
       faqTitle: 'Frequently Asked',
       faq: {
         speedTitle: 'How fast is delivery?',
         speedBody:
-          "Most orders are completed shortly after payment verification. We do our deliveries through Roblox gamepasses, so you'll have to wait between 3 to 7 days for it to get acredited.",
+          "Bloxypoints are credited instantly after payment. You can then exchange them for Robux, which takes 3-7 days to arrive via Gamepass.",
         safetyTitle: 'Is my account safe?',
         safetyBody:
-          'Yes. We never ask for your password. We only need your Roblox username and a gamepass to deliver.',
+          'Yes. We never ask for your password. We only need your Roblox username to deliver Robux when you exchange your points.',
         paymentsTitle: 'What payment methods do you accept?',
         paymentsBody:
           'We support multiple secure payment options. You’ll see all options at checkout.',
@@ -98,6 +98,9 @@ export default {
     whyChooseTitle: 'Why Choose',
     whyChooseDescription:
       'Get the fastest delivery, the best prices, and the most secure shopping experience for your favorite Roblox items. Our dedicated support team is always here to help!',
+
+    // Testimonials Section
+    testimonialsTitle: 'What our users think',
 
     // FAQ Section
     faqTitle: 'Got Questions?',
@@ -195,17 +198,17 @@ export default {
   // Language Configuration: Spanish
   ES: {
     // Site Reviews
-    review: '210+ 5 Estrellas',
+    review: 'Vendedor top con 240+ 5 Estrellas',
 
     // Robux Page
     robuxPage: {
-      metaTitle: 'Comprar Robux - BloxyFruit',
+      metaTitle: 'Comprar Bloxypoints - BloxyFruit',
       metaDescription:
-        'Compra Robux de forma segura en BloxyFruit. Elige una cantidad y recibe entrega rápida con un proceso confiable.',
-      heroPowerUp: 'Impulsa tu juego con',
-      robuxWord: 'Robux',
+        'Compra Bloxypoints de forma segura en BloxyFruit. Intercámbialos por Robux u otros artículos al instante.',
+      heroPowerUp: 'Obtén Robux con',
+      robuxWord: 'Bloxypoints',
       heroSubtitle:
-        'Desliza para elegir la cantidad exacta o elige una cantidad preestablecida. ¡Entrega rápida y los mejores precios!',
+        '¡Compra Bloxypoints e intercámbialos al instante! La forma más rápida y segura de obtener Robux al mejor precio.',
       usd: 'USD',
       continueCta: 'Continuar con',
       selected: 'Seleccionado',
@@ -213,21 +216,21 @@ export default {
       howItWorksTitle: 'Cómo funciona',
       howItWorksSubtitle: 'Sencillo, transparente y con entrega rápida.',
       steps: [
-        'Selecciona la cantidad de Robux usando el deslizador de arriba.',
-        'Proporciona tu nombre de usuario de Roblox y un Gamepass cuando se te solicite.',
-        'Procede al pago y realiza tu compra de forma segura.',
-        'Recibe tus Robux rápidamente después de la verificación del pago.'
+        'Selecciona la cantidad de Bloxypoints usando el deslizador de arriba.',
+        'Completa el pago seguro.',
+        'Recibe Bloxypoints en tu cuenta al instante.',
+        'Intercámbialos por Robux o artículos cuando quieras.'
       ],
       disclaimer:
-        'Al comprar en Bloxyfruit asumes la responsabilidad completa. No nos hacemos cargo de lo que sucede fuera de la plataforma.',
+        'Al comprar en Bloxyfruit asumes la responsabilidad completa. No nos hacemos cargo de lo que pueda suceder fuera de la plataforma.',
       faqTitle: 'Preguntas Frecuentes',
       faq: {
         speedTitle: '¿Qué tan rápida es la entrega?',
         speedBody:
-          'La mayoría de los pedidos se completan poco después de verificar el pago. Realizamos entregas a través de gamepasses de Roblox, así que deberás esperar entre 3 y 7 días para que se acredite.',
+          'Los Bloxypoints se acreditan instantáneamente tras el pago. Luego puedes intercambiarlos por Robux, lo cual toma de 3 a 7 días en llegar vía Gamepass.',
         safetyTitle: '¿Mi cuenta está segura?',
         safetyBody:
-          'Sí. Nunca te pediremos tu contraseña. Solo necesitamos tu nombre de usuario de Roblox y un gamepass para realizar la entrega.',
+          'Sí. Nunca te pediremos tu contraseña. Solo necesitamos tu nombre de usuario de Roblox para entregar los Robux cuando intercambies tus puntos.',
         paymentsTitle: '¿Qué métodos de pago aceptan?',
         paymentsBody:
           'Aceptamos múltiples opciones de pago seguras. Verás todas las opciones disponibles al momento de pagar.',
@@ -291,6 +294,9 @@ export default {
     whyChooseTitle: '¿Por qué elegir',
     whyChooseDescription:
       'Obtén la entrega más rápida, los mejores precios y la experiencia de compra más segura para tus artículos de Roblox. ¡Nuestro equipo de soporte siempre está aquí para ayudarte!',
+
+    // Testimonials Section
+    testimonialsTitle: 'Lo que piensan nuestros usuarios',
 
     // FAQ Section
     faqTitle: '¿Tienes Preguntas?',

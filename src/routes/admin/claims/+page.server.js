@@ -15,7 +15,11 @@ export const load = async ({ locals, url }) => {
   const sortParam = url.searchParams.get('sort') || 'newest';
   const limit = CLAIMS_PER_PAGE;
 
-  const filter = { source: { $ne: 'robux_purchase' } };  // Exclude robux_purchase claims
+  const filter = {
+    source: { $ne: 'robux_purchase' },
+    hidden: { $ne: true }
+  };
+  
   if (searchTerm) {
     const escapedSearchTerm = searchTerm.replace(
       /[-\/\\^$*+?.()|[\]{}]/g,
@@ -58,6 +62,24 @@ export const load = async ({ locals, url }) => {
     .limit(limit)
     .lean();
 
+  // Calculate Grand Total of Uncompleted Claims
+  const grandTotalResult = await robuxClaims.aggregate([
+    {
+      $match: {
+        source: { $ne: 'robux_purchase' },
+        resolved: false
+      }
+    },
+    {
+      $group: {
+        _id: null,
+        totalAmount: { $sum: '$gamepass.price' }
+      }
+    }
+  ]);
+  
+  const grandTotal = grandTotalResult[0]?.totalAmount || 0;
+
   const serializedClaims = claimsList.map((claim) => ({
     ...claim,
     _id: claim._id.toString(),
@@ -73,7 +95,8 @@ export const load = async ({ locals, url }) => {
       totalClaims: totalClaims
     },
     searchTerm: searchTerm,
-    sort: sortParam
+    sort: sortParam,
+    grandTotal: grandTotal
   };
 };
 
@@ -168,9 +191,12 @@ export const actions = {
     }
 
     try {
-      // Delete all claims that are already fulfilled
-      const result = await robuxClaims.deleteMany({ resolved: true });
-      return { success: true, deletedCount: result.deletedCount };
+      // Hide all claims that are already fulfilled instead of deleting them
+      const result = await robuxClaims.updateMany(
+        { resolved: true, hidden: { $ne: true } },
+        { $set: { hidden: true } }
+      );
+      return { success: true, hiddenCount: result.modifiedCount };
     } catch (error) {
       return { success: false, message: error.message };
     }

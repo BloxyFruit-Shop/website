@@ -1,14 +1,8 @@
 import { json } from '@sveltejs/kit';
-import {
-  users,
-  globalSettings,
-  squarePayments,
-  robuxClaims,
-  robuxPurchases,
-  orders
-} from '$server/mongo';
-import { SITE_URL } from '$env/static/private';
-import { WebhooksHelper } from 'square';
+import { users, globalSettings, squarePayments, robuxClaims, robuxPurchases } from '$server/mongo';
+import { Client, Environment } from 'square';
+import { SITE_URL, SQUARE_ACCESS_TOKEN } from '$env/static/private';
+import crypto from 'crypto';
 
 /**
  * Verify Square webhook signature using official Square SDK
@@ -173,77 +167,41 @@ export async function POST({ request }) {
 
       const robuxAmount = paymentRecord.robuxAmount;
 
-      // If this is a robux purchase (has claimData), update the pending purchase and create order
-      if (paymentRecord.claimData) {
-        // Find the pending robux purchase created before payment
-        const pendingPurchase = await robuxPurchases.findOne({
-          'user.id': paymentRecord.userId,
-          status: 'pending',
-          resolved: false,
-          robuxAmount: robuxAmount
+      // If this is a robux purchase (has claimData or just robuxAmount), credit the user
+      if (robuxAmount > 0) {
+        // Credit user balance
+        await users.updateOne(
+          { _id: user._id },
+          {
+            $inc: {
+              robux: robuxAmount,
+              'robuxBreakdown.purchased': robuxAmount
+            },
+            $set: {
+              lastPurchaseAt: new Date()
+            }
+          }
+        );
+
+        // Create Ledger Entry
+        await robuxLedger.create({
+          userId: user._id,
+          type: 'purchase',
+          amount: robuxAmount,
+          balanceAfter: (user.robux || 0) + robuxAmount,
+          referenceId: payment.id,
+          description: `Purchase of ${robuxAmount} Bloxypoints via Square`
         });
 
-        if (pendingPurchase) {
-          // Update the pending purchase to completed (visible)
-          await robuxPurchases.updateOne(
-            { _id: pendingPurchase._id },
-            {
-              $set: {
-                status: 'completed',
-                paymentId: payment.id,
-                eurAmount: paymentRecord.amount / 100, // Convert cents to EUR
-                resolved: false, // Keep as false - staff will manually fulfill
-                resolvedAt: null // Will be set when staff fulfills
-              }
-            }
-          );
-          console.log(
-            `Updated robux purchase ${pendingPurchase._id} to completed status`
-          );
-
-          // Create corresponding order for robux purchase
-          const newOrder = await orders.create({
-            email: user.email,
-            id: user._id.toString(),
-            items: [],
-            totalAmount: paymentRecord.amount / 100,
-            status: 'ready',
-            game: pendingPurchase.game?.name || 'Robux Purchase',
-            reciever: {
-              username: pendingPurchase.user.displayName || '',
-              displayName: pendingPurchase.user.displayName || '',
-              id: '',
-              thumbnail: ''
-            },
-            robuxPurchase: {
-              robuxPurchaseId: pendingPurchase._id,
-              robuxAmount: pendingPurchase.robuxAmount,
-              eurAmount: paymentRecord.amount / 100,
-              gamepass: {
-                id: pendingPurchase.gamepass?.id || '',
-                displayName: pendingPurchase.gamepass?.displayName || '',
-                price: pendingPurchase.gamepass?.price || 0
-              },
-              fulfillmentDate: null
-            },
-            createdAt: new Date(),
-            updatedAt: new Date()
-          });
-
-          console.log(
-            `Created order ${newOrder._id} for robux purchase ${pendingPurchase._id}`
-          );
-        } else {
-          console.warn(
-            `No pending robux purchase found for user ${paymentRecord.userId} with amount ${robuxAmount}`
-          );
-        }
+        console.log(
+          `Credited ${robuxAmount} Bloxypoints to user ${user.username}`
+        );
       }
 
       // Send Discord notification
       await notifyDiscord(settings.discordDisputeWebhookUrl, {
-        title: '✅ Robux Purchase Completed',
-        description: `User ${user.username} completed payment for ${robuxAmount} Robux`,
+        title: '✅ Bloxypoints Purchased',
+        description: `User ${user.username} purchased ${robuxAmount} Bloxypoints`,
         color: 3066993,
         fields: [
           {
@@ -252,18 +210,18 @@ export async function POST({ request }) {
             inline: true
           },
           {
-            name: 'Robux Amount',
-            value: `${robuxAmount} R$`,
+            name: 'Amount',
+            value: `${robuxAmount} Bloxypoints`,
             inline: true
           },
           {
-            name: 'EUR Amount',
+            name: 'Price',
             value: `€${(paymentRecord.amount / 100).toFixed(2)}`,
             inline: true
           },
           {
             name: 'Status',
-            value: 'Order Created - Awaiting Staff Fulfillment',
+            value: 'Credited to Account',
             inline: true
           },
           {
@@ -275,7 +233,7 @@ export async function POST({ request }) {
       });
 
       console.log(
-        `Payment completed for user ${user.username}: ${robuxAmount} Robux`
+        `Payment completed for user ${user.username}: ${robuxAmount} Bloxypoints`
       );
     }
 

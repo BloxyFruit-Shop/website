@@ -15,7 +15,7 @@
   export let data;
 
   // Reactive destructuring of loaded data
-  $: ({ claims, pagination, searchTerm: initialSearchTerm } = data);
+  $: ({ claims, pagination, searchTerm: initialSearchTerm, grandTotal } = data);
   $: ({ currentPage, totalPages, totalClaims, limit } = pagination || {
     currentPage: 1,
     totalPages: 1,
@@ -113,32 +113,36 @@
       in:slide={{ duration: 300 }}
     >
       <div class="flex items-center gap-3">
-        <div
-          class="p-3 bg-blue-500/20 rounded-xl"
-        >
+        <div class="p-3 bg-blue-500/20 rounded-xl">
           <Robux class="text-blue-400 size-8" />
         </div>
         <div>
-          <h1
-            class="text-2xl font-bold text-blue-400"
-          >
-            Claims Management
-          </h1>
+          <h1 class="text-2xl font-bold text-blue-400">Claims Management</h1>
           <p class="text-sm text-[#809BB5]">
             Manage and fulfill user Robux claims
           </p>
         </div>
       </div>
       {#if totalClaims > 0}
-        <p
-          class="text-sm text-[#809BB5]"
-          in:fade={{ duration: 200, delay: 300 }}
-        >
-          Showing {(currentPage - 1) * limit + 1}-{Math.min(
-            (currentPage - 1) * limit + claims.length,
-            totalClaims
-          )} of {totalClaims} claims
-        </p>
+        <div class="flex flex-col items-end gap-1">
+          <p
+            class="text-sm text-[#809BB5]"
+            in:fade={{ duration: 200, delay: 300 }}
+          >
+            Showing {(currentPage - 1) * limit + 1}-{Math.min(
+              (currentPage - 1) * limit + claims.length,
+              totalClaims
+            )} of {totalClaims} claims
+          </p>
+          {#if grandTotal > 0}
+            <p
+              class="text-sm font-semibold text-[#3BA4F0]"
+              in:fade={{ duration: 200, delay: 400 }}
+            >
+              Total Pending: {grandTotal} Robux
+            </p>
+          {/if}
+        </div>
       {/if}
     </div>
 
@@ -230,7 +234,7 @@
           use:enhance={() => {
             return async ({ result }) => {
               if (result.type === 'success') {
-                toast.success('Fulfilled claims cleared successfully');
+                toast.success('Fulfilled claims hidden successfully');
                 await invalidateAll();
               } else {
                 toast.error('Failed to clear fulfilled claims');
@@ -261,7 +265,10 @@
           </thead>
           <tbody>
             {#each claims as claim (claim._id)}
-              <tr class="bg-[#1D2535]/30 hover:bg-[#1D2535]/50 transition-colors" in:fly={{ y: 10, duration: 300 }}>
+              <tr
+                class="bg-[#1D2535]/30 hover:bg-[#1D2535]/50 transition-colors"
+                in:fly={{ y: 10, duration: 300 }}
+              >
                 <td class="py-4 pl-4 rounded-l-lg">
                   <div class="flex items-center gap-2">
                     <img
@@ -282,7 +289,9 @@
                 <td class="py-4">
                   <div class="flex items-center gap-1.5 w-fit">
                     <Robux class="size-4 text-[#3BA4F0]" />
-                    <span class="font-semibold text-[#3BA4F0]">{claim.robuxAmount}</span>
+                    <span class="font-semibold text-[#3BA4F0]"
+                      >{claim.robuxAmount}</span
+                    >
                   </div>
                 </td>
                 <td class="py-4 text-sm text-white">
@@ -295,7 +304,11 @@
                   {format(new Date(claim.createdAt), 'MMM dd, yyyy HH:mm')}
                 </td>
                 <td class="py-4">
-                  <span class="px-3 py-1 rounded-full text-xs font-medium {statusColors[claim.resolved ? 'resolved' : 'pending']}">
+                  <span
+                    class="px-3 py-1 rounded-full text-xs font-medium {statusColors[
+                      claim.resolved ? 'resolved' : 'pending'
+                    ]}"
+                  >
                     {claim.resolved ? 'Fulfilled' : 'Pending'}
                   </span>
                 </td>
@@ -312,7 +325,12 @@
                     </a>
 
                     {#if claim.resolved}
-                      <Button variant="contained" color="gray" size="small" disabled>
+                      <Button
+                        variant="contained"
+                        color="gray"
+                        size="small"
+                        disabled
+                      >
                         Done
                       </Button>
                     {:else}
@@ -322,7 +340,10 @@
                         class="inline-block"
                         use:enhance={() => {
                           return async ({ result, update }) => {
-                            if (result.type === 'success' && result.data?.success) {
+                            if (
+                              result.type === 'success' &&
+                              result.data?.success
+                            ) {
                               toast.success(
                                 `Claim fulfilled successfully for ${claim.user.username}.`,
                                 { duration: 2500 }
@@ -330,7 +351,8 @@
                               await invalidateAll();
                             } else if (result.type === 'failure') {
                               toast.error(
-                                result.data?.message || 'Failed to fulfill claim.',
+                                result.data?.message ||
+                                  'Failed to fulfill claim.',
                                 { duration: 3000 }
                               );
                             } else if (result.type === 'error') {
