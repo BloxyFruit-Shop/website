@@ -72,7 +72,7 @@ export const load = async ({ locals, url }) => {
 
   const user = await users.findOne({ _id: localUser._id }).lean();
 
-  const claims = await robuxClaims.find({ "user.email": emailRegex }).select({ _id: 1, robuxAmount: 1, "user.username": 1, resolved: 1, resolvedAt: 1, createdAt: 1 }).lean();
+  const claims = await robuxClaims.find({ "user.email": emailRegex }).select({ _id: 1, robuxAmount: 1, "user.username": 1, resolved: 1, resolvedAt: 1, createdAt: 1, status: 1 }).lean();
 
   const serializedClaims = claims.map((claim) => ({
     ...claim,

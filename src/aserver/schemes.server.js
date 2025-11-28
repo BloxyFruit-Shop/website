@@ -187,7 +187,7 @@ export const robuxClaimsSchema = new Schema({
   },
   status: {
     type: String,
-    enum: ['pending', 'completed', 'cancelled', 'cancelledDueToDispute'],
+    enum: ['pending', 'completed', 'cancelled', 'cancelledDueToDispute', 'refunded'],
     default: 'pending'
   },
   game: {

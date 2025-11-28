@@ -297,9 +297,23 @@
                           <span class="font-medium">{claim.robuxAmount}</span>
                         </div>
                         <span
-                          class={`text-sm px-2 py-1 rounded-full ${claim.resolved ? 'bg-green-500/20 text-green-400' : 'bg-yellow-500/20 text-yellow-400'}`}
+                          class={`text-sm px-2 py-1 rounded-full ${
+                            claim.status === 'refunded'
+                              ? 'bg-purple-500/20 text-purple-400'
+                              : claim.status === 'cancelledDueToDispute'
+                                ? 'bg-red-500/20 text-red-400'
+                                : claim.resolved
+                                  ? 'bg-green-500/20 text-green-400'
+                                  : 'bg-yellow-500/20 text-yellow-400'
+                          }`}
                         >
-                          {claim.resolved ? 'Resolved' : 'Pending'}
+                          {claim.status === 'refunded'
+                            ? 'Refunded'
+                            : claim.status === 'cancelledDueToDispute'
+                              ? 'Disputed'
+                              : claim.resolved
+                                ? 'Resolved'
+                                : 'Pending'}
                         </span>
                       </div>
                       <div class="mt-2 text-sm text-[#809BB5] space-y-1">

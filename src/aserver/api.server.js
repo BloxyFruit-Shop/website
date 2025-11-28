@@ -17,7 +17,7 @@ import { setIntervalImmediately, modifyProductTags } from "$server/utils";
 import { restResources } from "@shopify/shopify-api/rest/admin/2024-07";
 import games from "$lib/utils/games";
 import { building } from "$app/environment";
-import { orders, products as dbProducts, inventory, users } from "$server/mongo";
+import { orders, products as dbProducts, inventory, users, robuxLedger } from "$server/mongo";
 import { cacheProductById, updateProductStock } from "$server/cache";
 import { globalSettings } from "$server/mongo";
 
@@ -438,7 +438,25 @@ const fetchOrders = async () => {
                 const robuxAmount = item.robuxAmount || 0;
 
                 if (robuxAmount > 0) {
-                   await users.updateOne({ _id: userId }, { $inc: { robux: robuxAmount * item.quantity } });
+                   // Artificial delay for UX/Safety
+                   await new Promise(resolve => setTimeout(resolve, 2000));
+
+                   const totalRobuxToAdd = robuxAmount * item.quantity;
+                   const updatedUser = await users.findOneAndUpdate(
+                     { _id: userId },
+                     { $inc: { robux: totalRobuxToAdd } },
+                     { new: true }
+                   );
+
+                   // Create Ledger Entry
+                   await robuxLedger.create({
+                     userId: userId,
+                     type: 'purchase',
+                     amount: totalRobuxToAdd,
+                     balanceAfter: updatedUser.robux,
+                     referenceId: orderId,
+                     description: `Purchase of ${item.title} (Shopify Order #${orderId})`
+                   });
                    
                    // Mark item as completed/ready
                    await orders.updateOne(

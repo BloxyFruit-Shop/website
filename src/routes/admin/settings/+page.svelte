@@ -150,7 +150,7 @@
               type="url"
               name="discordDisputeWebhookUrl"
               bind:value={discordWebhookUrlInput}
-              label="Discord Dispute Webhook URL"
+              label="Discord Webhook URL (Disputes & Claims)"
               placeholder="https://discord.com/api/webhooks/..."
               error={form?.errors?.discordDisputeWebhookUrl}
               helperText={form?.errors?.discordDisputeWebhookUrl

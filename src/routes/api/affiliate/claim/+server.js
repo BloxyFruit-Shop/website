@@ -1,6 +1,5 @@
 import { json } from '@sveltejs/kit';
-import { users, robuxClaims, robuxLedger } from '$server/mongo';
-import { DISCORD_AFFILIATE_CLAIM_WEBHOOK } from '$env/static/private';
+import { users, robuxClaims, robuxLedger, globalSettings } from '$server/mongo';
 
 /**
  * @type {import('@sveltejs/kit').RequestHandler}
@@ -97,54 +96,62 @@ export async function POST({ request, locals }) {
       description: `Exchange of ${robuxAmount} Bloxypoints for Robux`
     });
 
-    await fetch(DISCORD_AFFILIATE_CLAIM_WEBHOOK, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        embeds: [
-          {
-            title: '✅ | Cobro procesado',
-            description: `## Solicitud entrante | ${robuxAmount} Robux`,
-            color: 5822829,
-            author: {
-              name: 'Bloxyfruit - Claim Notifier',
-              icon_url: 'https://bloxyfruit.com/favicon.png'
-            },
-            thumbnail: {
-              url: requestUser.thumbnail
-            },
-            fields: [
-              {
-                name: '👤| Usuario',
-                value: `**Name:** ${requestUser.displayName}\n**Username:** [@${requestUser.username}](https://www.roblox.com/users/${requestUser.userId}/profile)\n**User ID:** ${requestUser.userId}`,
-                inline: true
-              },
-              {
-                name: '💰| Monto',
-                value: `${robuxAmount} Robux`,
-                inline: true
-              },
-              {
-                name: '🎟️| Gamepass Utilizado',
-                value: `**Name:** ${gamepass.displayName}\n**Price:** ${gamepass.price} Robux\n**ID:** ${gamepass.id}\nhttps://www.roblox.com/game-pass/${gamepass.id}`,
-                inline: false
-              },
-              {
-                name: '🎮 Juego Asociado',
-                value: `**Name:** ${game.name}\nhttps://www.roblox.com/games/${game.id}`,
-                inline: true
-              }
-            ],
-            footer: {
-              text: 'BloxyFruit - Most Trusted In-Game Store'
-            },
-            timestamp: new Date()
-          }
-        ]
-      })
-    });
+    // Fetch global settings for webhook URL
+    const settings = await globalSettings.findOne({ _id: 'settings' }).lean();
+    const webhookUrl = settings?.discordDisputeWebhookUrl; // Using the same webhook as requested
+
+    if (webhookUrl) {
+        await fetch(webhookUrl, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            embeds: [
+            {
+                title: '✅ | Cobro procesado',
+                description: `## Solicitud entrante | ${robuxAmount} Robux`,
+                color: 5822829,
+                author: {
+                name: 'Bloxyfruit - Claim Notifier',
+                icon_url: 'https://bloxyfruit.com/favicon.png'
+                },
+                thumbnail: {
+                url: requestUser.thumbnail
+                },
+                fields: [
+                {
+                    name: '👤| Usuario',
+                    value: `**Name:** ${requestUser.displayName}\n**Username:** [@${requestUser.username}](https://www.roblox.com/users/${requestUser.userId}/profile)\n**User ID:** ${requestUser.userId}`,
+                    inline: true
+                },
+                {
+                    name: '💰| Monto',
+                    value: `${robuxAmount} Robux`,
+                    inline: true
+                },
+                {
+                    name: '🎟️| Gamepass Utilizado',
+                    value: `**Name:** ${gamepass.displayName}\n**Price:** ${gamepass.price} Robux\n**ID:** ${gamepass.id}\nhttps://www.roblox.com/game-pass/${gamepass.id}`,
+                    inline: false
+                },
+                {
+                    name: '🎮 Juego Asociado',
+                    value: `**Name:** ${game.name}\nhttps://www.roblox.com/games/${game.id}`,
+                    inline: true
+                }
+                ],
+                footer: {
+                text: 'BloxyFruit - Most Trusted In-Game Store'
+                },
+                timestamp: new Date()
+            }
+            ]
+        })
+        });
+    } else {
+        console.warn('Discord webhook URL not configured in global settings. Skipping notification.');
+    }
 
     return json({
       success: true,

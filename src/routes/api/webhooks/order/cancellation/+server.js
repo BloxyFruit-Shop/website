@@ -1,5 +1,5 @@
 import { SHOPIFY_WEBHOOK_SIGNATURE } from '$env/static/private';
-import { users, globalSettings } from '$server/mongo';
+import { processDispute } from '$server/disputes.server.js'; // Assuming alias works, or relative path
 import crypto from 'crypto';
 
 export async function POST({ request }) {
@@ -16,9 +16,14 @@ export async function POST({ request }) {
   // Validate signature
   if (hash !== hmac) return new Response('Unauthorized', { status: 401 });
 
-  const order = JSON.parse(body);
+  const payload = JSON.parse(body);
+  
+  try {
+    await processDispute(payload.id, payload.cancel_reason);
+    return new Response('Webhook processed successfully', { status: 200 });
 
-  console.log(order);
-
-  return new Response('Webhook received successfully', { status: 200 });
+  } catch (error) {
+    console.error('Error processing cancellation webhook:', error);
+    return new Response('Internal Server Error', { status: 500 });
+  }
 }

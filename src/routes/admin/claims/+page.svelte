@@ -95,7 +95,9 @@
 
   const statusColors = {
     resolved: 'bg-green-500/20 text-green-400',
-    pending: 'bg-yellow-500/20 text-yellow-400'
+    pending: 'bg-yellow-500/20 text-yellow-400',
+    refunded: 'bg-purple-500/20 text-purple-400',
+    cancelledDueToDispute: 'bg-red-500/20 text-red-400'
   };
 </script>
 
@@ -305,11 +307,22 @@
                 </td>
                 <td class="py-4">
                   <span
-                    class="px-3 py-1 rounded-full text-xs font-medium {statusColors[
-                      claim.resolved ? 'resolved' : 'pending'
-                    ]}"
+                    class="px-3 py-1 rounded-full text-xs font-medium {claim.status ===
+                    'refunded'
+                      ? statusColors.refunded
+                      : claim.status === 'cancelledDueToDispute'
+                        ? statusColors.cancelledDueToDispute
+                        : claim.resolved
+                          ? statusColors.resolved
+                          : statusColors.pending}"
                   >
-                    {claim.resolved ? 'Fulfilled' : 'Pending'}
+                    {claim.status === 'refunded'
+                      ? 'Refunded'
+                      : claim.status === 'cancelledDueToDispute'
+                        ? 'Disputed'
+                        : claim.resolved
+                          ? 'Fulfilled'
+                          : 'Pending'}
                   </span>
                 </td>
                 <td class="py-4 pr-4 rounded-r-lg">
