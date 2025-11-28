@@ -14,7 +14,8 @@ const config = {
 			"$server/api": "./src/aserver/api.server.js",
 			"$server/cache": "./src/aserver/cache.server.js",
 			"$server/utils": "./src/aserver/utils.server.js",
-			"$server/emails": "./src/aserver/emails"
+			"$server/emails": "./src/aserver/emails",
+			"$server/disputes": "./src/aserver/disputes.server.js"
 		}
 	},
 	preprocess: vitePreprocess()

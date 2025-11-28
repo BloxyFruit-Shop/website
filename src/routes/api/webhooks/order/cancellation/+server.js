@@ -1,5 +1,5 @@
 import { SHOPIFY_WEBHOOK_SIGNATURE } from '$env/static/private';
-import { processDispute } from '$server/disputes.server.js'; // Assuming alias works, or relative path
+import { processDispute } from '$server/disputes';
 import crypto from 'crypto';
 
 export async function POST({ request }) {

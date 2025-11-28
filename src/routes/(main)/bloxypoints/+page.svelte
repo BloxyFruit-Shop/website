@@ -11,8 +11,11 @@
   import { toast } from '$lib/svoast';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
+  import VideoModal from '$lib/modals/bloxypoints/video-modal.svelte';
 
   export let data;
+
+  let showVideoModal = false;
 
   // Filter Bloxypoints products from data.products (assuming they are available globally or passed in data)
   // If not available in data, we might need to fetch them or rely on them being passed.
@@ -372,8 +375,9 @@
             'Simple, transparent, and fast.'}
         </p>
 
-        <div
-          class="relative w-full aspect-video rounded-lg overflow-hidden bg-black/40 border border-[#3BA4F0]/20 group"
+        <button
+          class="relative w-full aspect-video rounded-lg overflow-hidden bg-black/40 border border-[#3BA4F0]/20 group cursor-pointer"
+          on:click={() => (showVideoModal = true)}
         >
           <div class="absolute inset-0 flex items-center justify-center">
             <div
@@ -411,7 +415,7 @@
           >
             <track kind="captions" />
           </video>
-        </div>
+        </button>
       </div>
 
       <div
@@ -540,6 +544,8 @@
     </div>
   </section>
 </div>
+
+<VideoModal bind:open={showVideoModal} />
 
 <style>
   :global(.animate-float) {
