@@ -17,17 +17,6 @@
 
   let showVideoModal = false;
 
-  // Filter Bloxypoints products from data.products (assuming they are available globally or passed in data)
-  // If not available in data, we might need to fetch them or rely on them being passed.
-  // For now, let's assume we can filter them from a 'bloxypoints' game in data.game or similar if we load it.
-  // Actually, we need to load the products. Let's assume data.products contains them if we update the load function,
-  // OR we can just use the hardcoded structure but map it to variant IDs if we had them.
-  // BETTER APPROACH: The load function for this page should fetch the 'bloxypoints' game products.
-
-  // Since we haven't updated the load function yet, let's assume we will have `data.bloxypointsProducts`.
-  // If not, we should probably update the load function for this page too.
-
-  // Let's use the products from data if available, otherwise fallback to empty to avoid crash until backend is ready.
   let products = data.bloxypointsProducts || [];
 
   // Sort products by price or robux amount
@@ -133,18 +122,6 @@
           class="flex flex-col justify-center p-6 sm:p-10"
           in:slide={{ duration: 300 }}
         >
-          <div class="flex gap-3 sm:items-center max-sm:flex-col">
-            <a
-              href="https://trustpilot.com/review/bloxyfruit.com"
-              target="_blank"
-            >
-              <Trustpilot class="w-[200px] md:w-[230px]" />
-            </a>
-            <p class="text-sm font-medium md:text-base">
-              {translations[$languageStore].trustpilotRated ??
-                'Rated Excellent on Trustpilot'}
-            </p>
-          </div>
 
           <h1 class="mt-4 text-[34px] sm:text-5xl font-extrabold leading-tight">
             {translations[$languageStore].robuxPage?.heroPowerUp ??
@@ -161,7 +138,7 @@
 
           <!-- Pack Selection Grid -->
           <div
-            class="mt-8 grid grid-cols-2 gap-3"
+            class="grid grid-cols-2 gap-3 mt-8"
             in:fly|local={{
               y: 20,
               duration: 300,
@@ -390,7 +367,7 @@
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
                   fill="currentColor"
-                  class="size-6 text-white"
+                  class="text-white size-6"
                 >
                   <path
                     fill-rule="evenodd"
@@ -404,13 +381,13 @@
           <div
             class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent"
           >
-            <p class="text-white font-medium text-sm">
+            <p class="text-sm font-medium text-white">
               Watch how to buy and exchange Bloxypoints
             </p>
           </div>
           <!-- Video placeholder - Replace src with actual video URL later -->
           <video
-            class="w-full h-full object-cover opacity-60"
+            class="object-cover w-full h-full opacity-60"
             poster="/assets/landing-background.webp"
           >
             <track kind="captions" />
@@ -508,7 +485,7 @@
   <!-- Discord CTA Section -->
   <section class="max-w-[1400px] w-full px-4 sm:px-6 pb-12 md:pb-20">
     <div
-      class="relative overflow-hidden rounded-2xl p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-8"
+      class="relative flex flex-col items-center justify-between gap-8 p-8 overflow-hidden rounded-2xl md:p-12 md:flex-row"
       style="background: linear-gradient(125.74deg, rgba(88, 101, 242, 0.1) 0%, rgba(88, 101, 242, 0.05) 100%); border: 1px solid rgba(88, 101, 242, 0.2);"
     >
       <!-- Background effects -->
@@ -522,7 +499,7 @@
       </div>
 
       <div class="relative z-10 max-w-2xl">
-        <h2 class="text-3xl font-bold text-white mb-3">
+        <h2 class="mb-3 text-3xl font-bold text-white">
           Join our Bloxypoints Community
         </h2>
         <p class="text-[#B6C6D8] text-lg">

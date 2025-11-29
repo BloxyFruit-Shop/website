@@ -199,14 +199,12 @@
       <div
         class="h-full absolute top-0 left-0 right-[var(--scrollbar-width,0px)] bg-[linear-gradient(to_bottom,#0c0e16e0,#0c0e16),url(/assets/background-glow.webp)] opacity-[0.05] bg-no-repeat bg-cover bg-center z-[-1]"
       ></div>
-      <div class="">
-        <a
-          href="https://trustpilot.com/review/bloxyfruit.com"
-          target="_blank"
-          class="flex gap-3 mb-5 sm:items-center max-sm:flex-col group relative z-10"
+      <div>
+        <div
+          class="relative z-10 flex gap-3 mb-5 sm:items-center max-sm:flex-col group"
         >
           <Star
-            class="w-6 group-hover:scale-110 transition-all duration-200 fill-accent-500 text-accent-500"
+            class="w-6 transition-all duration-200 group-hover:scale-110 fill-accent-500 text-accent-500"
           />
 
           <svg
@@ -231,9 +229,9 @@
           <div
             class="absolute top-1/2 -translate-y-1/2 h-[10px] w-[35%] bg-accent-500 blur-[50px] opacity-0 scale-80 transition-all duration-300 group-hover:opacity-60 group-hover:scale-100 z-[-1]"
           ></div>
-        </a>
+        </div>
 
-        <h1 class="text-4xl font-bold leading-tight md:text-5xl">
+        <h1 class="text-4xl font-bold leading-tight md:text-5xl|">
           {translations[$languageStore].heroTitle1}<br />
           <span class="text-accent-500"
             >{translations[$languageStore].heroTitle2}</span
@@ -572,7 +570,7 @@
       {/each}
     </div>
     <div
-      class="w-full flex flex-col items-center py-16 md:py-24 overflow-hidden px-4 sm:px-6"
+      class="flex flex-col items-center w-full px-4 py-16 overflow-hidden md:py-24 sm:px-6"
     >
       <div class="max-w-[1400px] w-full flex justify-center flex-col">
         <h2 class="font-extrabold text-[32px] leading-none text-center mb-12">
