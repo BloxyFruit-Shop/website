@@ -179,6 +179,7 @@ export const robuxClaimsSchema = new Schema({
     username: String,
     displayName: String,
     email: { type: String, default: '' },
+    discordUsername: { type: String, default: '' }
   },
   source: {
     type: String,

@@ -7,7 +7,7 @@
   import { enhance } from '$app/forms';
   import { toast } from '$lib/svoast';
   import { flyAndScale } from '$lib/utils';
-  import { Robux, ArrowDown, Check } from '$lib/icons';
+  import { Robux, ArrowDown, Check, Discord } from '$lib/icons';
   import { Select } from 'bits-ui';
   import { fade, fly, scale, slide } from 'svelte/transition';
   import { format } from 'date-fns';
@@ -285,6 +285,14 @@
                       <p class="text-xs text-[#809BB5] truncate">
                         @{claim.user.username}
                       </p>
+                      {#if claim.user.discordUsername}
+                        <div
+                          class="flex items-center gap-1 text-xs text-[#5865F2]"
+                        >
+                          <Discord class="size-3" />
+                          <span>{claim.user.discordUsername}</span>
+                        </div>
+                      {/if}
                     </div>
                   </div>
                 </td>

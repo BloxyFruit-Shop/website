@@ -26,7 +26,8 @@ export async function POST({ request, locals }) {
       robuxAmount,
       user: requestUser,
       game,
-      gamepass
+      gamepass,
+      discordUsername
     } = await request.json();
 
     if (robuxAmount === undefined || robuxAmount === null) {
@@ -74,6 +75,7 @@ export async function POST({ request, locals }) {
         username: requestUser.username,
         displayName: requestUser.displayName,
         email: localUser.email,
+        discordUsername: discordUsername || ''
       },
       robuxAmount: robuxAmount,
       game: {
@@ -128,6 +130,11 @@ export async function POST({ request, locals }) {
                 {
                     name: '💰| Monto',
                     value: `${robuxAmount} Robux`,
+                    inline: true
+                },
+                {
+                    name: '💬| Discord',
+                    value: discordUsername ? `\`${discordUsername}\`` : 'Not provided',
                     inline: true
                 },
                 {

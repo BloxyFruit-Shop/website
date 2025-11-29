@@ -6,7 +6,7 @@
   import { createEventDispatcher } from 'svelte';
 
   export let data;
-  export let finishFunction = null;  // NEW: Custom handler for robux purchases
+  export let finishFunction = null; // NEW: Custom handler for robux purchases
   const dispatch = createEventDispatcher();
   let error = null;
   let loading = false;
@@ -59,34 +59,47 @@
 <div class="flex flex-col h-full" in:fade={{ duration: 300, delay: 200 }}>
   <div class="flex flex-col flex-shrink-0 gap-4">
     <div class="flex items-center gap-2">
-      <span class="text-2xl font-bold text-transparent bg-gradient-to-r from-accent-500 to-accent-400 bg-clip-text">
+      <span
+        class="text-2xl font-bold text-transparent bg-gradient-to-r from-accent-500 to-accent-400 bg-clip-text"
+      >
         Confirm Claim
       </span>
     </div>
 
-    <div class="w-full h-[3px] bg-gradient-to-r from-[#1D2535] via-[#2A3547] to-[#1D2535] rounded-full"></div>
+    <div
+      class="w-full h-[3px] bg-gradient-to-r from-[#1D2535] via-[#2A3547] to-[#1D2535] rounded-full"
+    ></div>
   </div>
 
-  <div class="flex-1 overflow-y-auto"> 
-    <div class="grid gap-2 py-4" in:fly={{ y: 20, duration: 400, delay: 300, easing: quintOut }}>
-      <div 
+  <div class="flex-1 overflow-y-auto">
+    <div
+      class="grid gap-2 py-4"
+      in:fly={{ y: 20, duration: 400, delay: 300, easing: quintOut }}
+    >
+      <div
         class="relative px-6 pb-4"
         in:fly={{ y: 20, duration: 400, delay: 400, easing: quintOut }}
       >
-        <div class="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-accent-500/50 to-transparent"></div> 
-        
+        <div
+          class="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-accent-500/50 to-transparent"
+        ></div>
+
         <h3 class="mb-3 text-sm font-medium text-[#809BB5]">Account</h3>
         <div class="flex items-center gap-4">
           <div class="relative group">
-            <div class="absolute inset-0 transition-all duration-300 rounded-lg bg-accent-500/20 blur-xl group-hover:bg-accent-500/30"></div>
-            <img 
-              src={data.user.thumbnail} 
+            <div
+              class="absolute inset-0 transition-all duration-300 rounded-lg bg-accent-500/20 blur-xl group-hover:bg-accent-500/30"
+            ></div>
+            <img
+              src={data.user.thumbnail}
               alt={data.user.displayName}
               class="relative rounded-lg size-14 ring-2 ring-white/10 group-hover:ring-white/20"
             />
           </div>
           <div>
-            <p class="text-lg font-semibold text-transparent bg-gradient-to-r from-white to-white/70 bg-clip-text">
+            <p
+              class="text-lg font-semibold text-transparent bg-gradient-to-r from-white to-white/70 bg-clip-text"
+            >
               {data.user.displayName}
             </p>
             <p class="text-sm text-[#809BB5]">@{data.user.username}</p>
@@ -95,46 +108,58 @@
       </div>
 
       <div class="grid grid-cols-2 gap-4">
-        <div 
+        <div
           class="relative px-6 py-4"
           in:fly={{ y: 20, duration: 400, delay: 500, easing: quintOut }}
         >
           <h3 class="mb-3 text-sm font-medium text-[#809BB5]">Game</h3>
           <div class="space-y-3">
             <div class="relative group aspect-video max-h-24">
-              <div class="absolute inset-0 transition-all duration-300 rounded-lg bg-accent-500/20 blur-xl group-hover:bg-accent-500/30 "></div>
-              <img 
-                src={data.game.thumbnail} 
+              <div
+                class="absolute inset-0 transition-all duration-300 rounded-lg bg-accent-500/20 blur-xl group-hover:bg-accent-500/30"
+              ></div>
+              <img
+                src={data.game.thumbnail}
                 alt={data.game.name}
                 class="relative object-cover w-full rounded-lg aspect-video ring-2 ring-white/10 group-hover:ring-white/20"
               />
             </div>
             <div>
-              <p class="text-base font-semibold text-transparent bg-gradient-to-r from-white to-white/70 bg-clip-text">
+              <p
+                class="text-base font-semibold text-transparent bg-gradient-to-r from-white to-white/70 bg-clip-text"
+              >
                 {data.game.name}
               </p>
               <p class="text-xs text-[#809BB5] flex items-center gap-2">
-                <span class="inline-block w-1.5 h-1.5 rounded-full bg-accent-400/70"></span>
+                <span
+                  class="inline-block w-1.5 h-1.5 rounded-full bg-accent-400/70"
+                ></span>
                 ID: {data.game.id}
               </p>
             </div>
           </div>
         </div>
 
-        <div 
+        <div
           class="relative px-6 py-4"
           in:fly={{ y: 20, duration: 400, delay: 600, easing: quintOut }}
         >
           <h3 class="mb-3 text-sm font-medium text-[#809BB5]">Gamepass</h3>
           <div class="space-y-3">
             <div class="relative group aspect-video max-h-24">
-              <div class="absolute inset-0 transition-all duration-300 rounded-lg bg-accent-500/20 blur-xl group-hover:bg-accent-500/30"></div>
-              <div class="relative flex items-center justify-center w-full rounded-lg aspect-video bg-accent-500/10 ring-2 ring-white/10 group-hover:ring-white/20">
+              <div
+                class="absolute inset-0 transition-all duration-300 rounded-lg bg-accent-500/20 blur-xl group-hover:bg-accent-500/30"
+              ></div>
+              <div
+                class="relative flex items-center justify-center w-full rounded-lg aspect-video bg-accent-500/10 ring-2 ring-white/10 group-hover:ring-white/20"
+              >
                 <Tickets class="w-12 h-12 text-accent-400" />
               </div>
             </div>
             <div>
-              <p class="text-base font-semibold text-transparent bg-gradient-to-r from-white to-white/70 bg-clip-text">
+              <p
+                class="text-base font-semibold text-transparent bg-gradient-to-r from-white to-white/70 bg-clip-text"
+              >
                 {data.gamepass.name || data.gamepass.displayName}
               </p>
               <p class="text-xs text-[#809BB5] flex items-center gap-2">
@@ -146,28 +171,57 @@
         </div>
       </div>
 
-      <div 
+      <div
         class="relative px-6 pt-4"
         in:fly={{ y: 20, duration: 400, delay: 700, easing: quintOut }}
       >
-        <div class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-accent-500/50 to-transparent"></div>
+        <div
+          class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-accent-500/50 to-transparent"
+        ></div>
 
-        <div class="flex items-center justify-between">
+        <div class="flex items-center justify-between mb-4">
           <h3 class="text-sm font-medium text-[#809BB5]">Amount to Claim</h3>
           <div class="flex items-center gap-2">
             <Robux class="w-6 h-6 text-accent-400" />
-            <span class="text-2xl font-bold text-transparent bg-gradient-to-r from-white to-white/70 bg-clip-text">
+            <span
+              class="text-2xl font-bold text-transparent bg-gradient-to-r from-white to-white/70 bg-clip-text"
+            >
               {data.robuxAmount}
             </span>
           </div>
+        </div>
+
+        <div class="space-y-2">
+          <label
+            for="discord-username"
+            class="text-sm font-medium text-[#809BB5]"
+          >
+            Discord Username (Optional)
+          </label>
+          <input
+            id="discord-username"
+            type="text"
+            bind:value={data.discordUsername}
+            placeholder="username"
+            class="w-full px-4 py-2.5 bg-[#1D2535]/50 border border-[#3BA4F0]/20 rounded-lg text-white placeholder-[#809BB5]/50 focus:outline-none focus:border-[#3BA4F0] focus:ring-1 focus:ring-[#3BA4F0] transition-all"
+          />
+          <p class="text-xs text-[#809BB5]">
+            We'll use this to contact you if there are any issues with your
+            claim.
+          </p>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="flex flex-col items-end flex-shrink-0 pt-2 pb-2 border-t border-white/5">
+  <div
+    class="flex flex-col items-end flex-shrink-0 pt-2 pb-2 border-t border-white/5"
+  >
     {#if error}
-      <div class="w-full p-2 mb-2 text-sm text-center text-red-400 rounded-md bg-red-500/10" transition:fade>
+      <div
+        class="w-full p-2 mb-2 text-sm text-center text-red-400 rounded-md bg-red-500/10"
+        transition:fade
+      >
         {error}
       </div>
     {/if}
@@ -180,7 +234,7 @@
       disabled={loading}
     >
       {#if loading}
-        Processing... 
+        Processing...
       {:else}
         Confirm Claim
       {/if}

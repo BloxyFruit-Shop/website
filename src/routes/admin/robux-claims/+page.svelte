@@ -149,7 +149,9 @@
       {/if}
     </div>
 
-    <div class="w-full h-24 bg-amber-500/10 rounded-lg flex flex-col items-center justify-center mt-4 border border-amber-500/20 border-dashed">
+    <div
+      class="w-full h-24 bg-amber-500/10 rounded-lg flex flex-col items-center justify-center mt-4 border border-amber-500/20 border-dashed"
+    >
       <h2 class="text-center text-amber-400 font-bold text-lg">
         Deprecated notice
       </h2>

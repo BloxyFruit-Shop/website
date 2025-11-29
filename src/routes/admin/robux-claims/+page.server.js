@@ -91,6 +91,8 @@ export const load = async ({ locals, url }) => {
     return serialize(order);
   });
 
+  console.log(serializedClaims)
+
   return {
     claims: serializedClaims,
     pagination: {
