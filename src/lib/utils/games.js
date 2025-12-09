@@ -19,18 +19,17 @@ export default {
     ],
     products: []
   },
-  'grow-a-garden': {
-    shortName: 'GG',
-    name: 'Grow a Garden',
-    internalName: 'grow-a-garden',
-    order: ['Seed', 'Gear', 'Egg', 'Sheckles', 'Pet', 'Pack'],
+  'the-forge': {
+    shortName: 'TF',
+    name: 'The Forge',
+    internalName: 'the-forge',
+    order: ['Gamepass', 'Totem', 'Spin', 'Cash Pack'],
     rarities: [
       { name: 'Common', color: 'gray' },
       { name: 'Uncommon', color: 'lightBlue' },
       { name: 'Rare', color: 'purple' },
       { name: 'Legendary', color: 'pink' },
-      { name: 'Mythical', color: 'red' },
-      { name: 'Divine', color: 'orange' }
+      { name: 'Mythical', color: 'red' }
     ],
     products: []
   },
@@ -118,17 +117,18 @@ export default {
     ],
     products: []
   },
-  'pets-go': {
-    shortName: 'PG',
-    name: 'Pets Go',
-    internalName: 'pets-go',
-    order: ['Gems', 'Pet'],
+  'grow-a-garden': {
+    shortName: 'GG',
+    name: 'Grow a Garden',
+    internalName: 'grow-a-garden',
+    order: ['Seed', 'Gear', 'Egg', 'Sheckles', 'Pet', 'Pack'],
     rarities: [
-      { name: 'Common', color: 'green' },
+      { name: 'Common', color: 'gray' },
       { name: 'Uncommon', color: 'lightBlue' },
       { name: 'Rare', color: 'purple' },
-      { name: 'Legendary', color: 'orange' },
-      { name: 'Mythical', color: 'red' }
+      { name: 'Legendary', color: 'pink' },
+      { name: 'Mythical', color: 'red' },
+      { name: 'Divine', color: 'orange' }
     ],
     products: []
   },

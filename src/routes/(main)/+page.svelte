@@ -25,13 +25,12 @@
       ready: true
     },
     {
-      title: 'Grow a Garden',
-      name: 'grow-a-garden',
-      description:
-        'Get rare seeds, powerful gear, pets, and more to grow your dream garden!',
-      logo: '/assets/games/grow-a-garden-logo.webp',
-      image: '/assets/games/grow-a-garden.webp',
-      gradient: '36, 55, 42',
+      title: 'The Forge',
+      name: 'the-forge',
+      description: 'Get the best equipment and forge your way to the top!',
+      logo: '/assets/games/the-forge-logo.webp',
+      image: '/assets/games/the-forge.webp',
+      gradient: '37, 40, 60',
       ready: true
     },
     {
@@ -91,15 +90,15 @@
       ready: true
     },
     {
-      title: 'Pets Go!',
-      name: 'pets-go',
+      title: 'Grow a Garden',
+      name: 'grow-a-garden',
       description:
-        'Get the best items and collect more pets and gems than ever!',
-      logo: '/assets/games/pets-go-logo.webp',
-      image: '/assets/games/pets-go.webp',
-      gradient: '41, 58, 35',
+        'Get rare seeds, powerful gear, pets, and more to grow your dream garden!',
+      logo: '/assets/games/grow-a-garden-logo.webp',
+      image: '/assets/games/grow-a-garden.webp',
+      gradient: '36, 55, 42',
       ready: true
-    }
+    },
   ];
 
   const youtubers = [
