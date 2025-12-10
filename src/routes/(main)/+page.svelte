@@ -98,7 +98,7 @@
       image: '/assets/games/grow-a-garden.webp',
       gradient: '36, 55, 42',
       ready: true
-    },
+    }
   ];
 
   const youtubers = [
@@ -157,15 +157,15 @@
   />
   <meta
     name="description"
-    content="Shop the best deals on Roblox items at BloxyFruit! Buy Blox Fruits, Grow a Garden seeds and gear, Blue Lock styles and passes, Anime Vanguards, Rivals, Murder Mystery 2, Pets Go, Steal a Brainrot, and more. Fast delivery, trusted service, and unbeatable prices for your favorite Roblox games!"
+    content="Shop the best deals on Roblox items at BloxyFruit! Buy Blox Fruits, The Forge, King Legacy, Plants Vs Brainrot, Grow a Garden seeds and gear, Blue Lock styles and passes, Anime Vanguards, Rivals, Steal a Brainrot, and more. Fast delivery, trusted service, and unbeatable prices for your favorite Roblox games!"
   />
   <meta
     property="og:description"
-    content="Shop the best deals on Roblox items at BloxyFruit! Buy Blox Fruits, Grow a Garden seeds and gear, Blue Lock styles and passes, Anime Vanguards, Rivals, Murder Mystery 2, Pets Go, Steal a Brainrot, and more. Fast delivery, trusted service, and unbeatable prices for your favorite Roblox games!"
+    content="Shop the best deals on Roblox items at BloxyFruit! Buy Blox Fruits, The Forge, King Legacy, Plants Vs Brainrot, Grow a Garden seeds and gear, Blue Lock styles and passes, Anime Vanguards, Rivals, Steal a Brainrot, and more. Fast delivery, trusted service, and unbeatable prices for your favorite Roblox games!"
   />
   <meta
     property="twitter:description"
-    content="Shop the best deals on Roblox items at BloxyFruit! Buy Blox Fruits, Grow a Garden seeds and gear, Blue Lock styles and passes, Anime Vanguards, Rivals, Murder Mystery 2, Pets Go, Steal a Brainrot, and more. Fast delivery, trusted service, and unbeatable prices for your favorite Roblox games!"
+    content="Shop the best deals on Roblox items at BloxyFruit! Buy Blox Fruits, The Forge, King Legacy, Plants Vs Brainrot, Grow a Garden seeds and gear, Blue Lock styles and passes, Anime Vanguards, Rivals, Steal a Brainrot, and more. Fast delivery, trusted service, and unbeatable prices for your favorite Roblox games!"
   />
 
   <meta property="og:image:width" content="1400" />
@@ -176,7 +176,7 @@
   <link rel="canonical" href="https://bloxyfruit.com/" />
   <meta
     name="keywords"
-    content="blox fruits, cheap blox fruits, blox fruits items, buy blox fruits, fast blox fruits delivery, grow a garden, grow a garden roblox, buy grow a garden, grow a garden seeds, grow a garden gear, cheap grow a garden, blue lock, blue lock rivals, blue lock roblox, buy blue lock, blue lock styles, blue lock passes, anime defenders, anime defenders items, cheap anime defenders, buy anime defenders, the strongest battlegrounds, battlegrounds gamepasses, cheap gamepasses, Roblox items, buy Roblox items, fast delivery Roblox, online Roblox shop, game items, cheap game items, Roblox gamepasses, buy gamepasses, murder mystery 2, anime vanguards, adopt me, knives, guns, units, blue lock styles, buy styles, flows, pets go, pets go roblox, buy pets go, pets go items, rivals, buy rivals, rivals roblox, steal a brainrot, buy steal a brainrot, steal brainrots, troll gear, roblox store, roblox shop, roblox items store, roblox best prices, roblox fast delivery"
+    content="blox fruits, cheap blox fruits, blox fruits items, buy blox fruits, fast blox fruits delivery, grow a garden, grow a garden roblox, buy grow a garden, grow a garden seeds, grow a garden gear, cheap grow a garden, blue lock, blue lock rivals, blue lock roblox, buy blue lock, blue lock styles, blue lock passes, the forge, buy the forge gamepasses, cheap the forge passes, totems, king legacy, buy king legacy fruits, cheap king legacy items, plants vs brainrot, buy plants vs brainrot units, cheap plants vs brainrot items, anime vanguards, Roblox items, buy Roblox items, fast delivery Roblox, online Roblox shop, game items, cheap game items, Roblox gamepasses, buy gamepasses, blue lock styles, buy styles, flows, rivals, buy rivals, rivals roblox, steal a brainrot, buy steal a brainrot, steal brainrots, troll gear, roblox store, roblox shop, roblox items store, roblox best prices, roblox fast delivery"
   />
 </svelte:head>
 
@@ -187,7 +187,6 @@
   <div
     class="absolute top-[2600px] left-[-300px] size-[250px] bg-[#3BA4F0]/40 blur-[200px]"
   ></div>
-
   <div class="max-w-[1400px] w-full flex justify-center flex-col px-4 sm:px-6">
     <div
       class="w-full max-md:py-10 md:min-h-[calc(clamp(750px,100dvh,1080px)-80px)] flex items-center justify-between @container"
@@ -575,7 +574,7 @@
         <h2 class="font-extrabold text-[32px] leading-none text-center mb-12">
           {translations[$languageStore].testimonialsTitle}
         </h2>
-  
+
         <div id="shapo-widget-c643278e8b387a957403"></div>
       </div>
     </div>
