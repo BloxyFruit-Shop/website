@@ -178,6 +178,33 @@
     name="keywords"
     content="blox fruits, cheap blox fruits, blox fruits items, buy blox fruits, fast blox fruits delivery, grow a garden, grow a garden roblox, buy grow a garden, grow a garden seeds, grow a garden gear, cheap grow a garden, blue lock, blue lock rivals, blue lock roblox, buy blue lock, blue lock styles, blue lock passes, the forge, buy the forge gamepasses, cheap the forge passes, totems, king legacy, buy king legacy fruits, cheap king legacy items, plants vs brainrot, buy plants vs brainrot units, cheap plants vs brainrot items, anime vanguards, Roblox items, buy Roblox items, fast delivery Roblox, online Roblox shop, game items, cheap game items, Roblox gamepasses, buy gamepasses, blue lock styles, buy styles, flows, rivals, buy rivals, rivals roblox, steal a brainrot, buy steal a brainrot, steal brainrots, troll gear, roblox store, roblox shop, roblox items store, roblox best prices, roblox fast delivery"
   />
+  {@html `<script type="application/ld+json">
+    ${JSON.stringify({
+      '@context': 'https://schema.org',
+      '@graph': [
+        {
+          '@type': 'Organization',
+          name: 'BloxyFruit',
+          url: 'https://bloxyfruit.com',
+          logo: 'https://bloxyfruit.com/favicon.png'
+        },
+        {
+          '@type': 'WebSite',
+          name: 'BloxyFruit',
+          url: 'https://bloxyfruit.com'
+        },
+        {
+          '@type': 'ItemList',
+          itemListElement: ourGames.map((game, index) => ({
+            '@type': 'ListItem',
+            position: index + 1,
+            name: game.title,
+            url: `https://bloxyfruit.com/store/${game.name}`
+          }))
+        }
+      ]
+    })}
+  </script>`}
 </svelte:head>
 
 <div class="flex flex-col items-center pt-[80px]">
@@ -333,10 +360,12 @@
             <div class="relative size-32">
               <img
                 src={game.logo}
+                alt="{game.title} Logo Blur"
                 class="absolute top-0 left-0 rounded-lg pointer-events-none select-none size-full blur-xl"
               />
               <img
                 src={game.logo}
+                alt="{game.title} Logo"
                 class="relative z-10 rounded-lg pointer-events-none select-none size-full"
               />
             </div>
@@ -395,7 +424,7 @@
             <div class="size-14 border-4 border-[#3BA4F0]/10 rounded-full z-10">
               <img
                 src={youtuber.icon}
-                alt="Youtuber Icon"
+                alt="{youtuber.name} Icon"
                 class="rounded-full size-full"
               />
             </div>
@@ -453,10 +482,12 @@
             <div class="relative w-full md:w-64 h-36">
               <img
                 src={game.logo}
+                alt="{game.title} Logo Blur"
                 class="absolute top-0 left-0 rounded-lg opacity-50 pointer-events-none select-none size-full blur-xl"
               />
               <img
                 src={game.logo}
+                alt="{game.title} Logo"
                 class="relative z-10 object-cover rounded-lg pointer-events-none select-none size-full"
               />
             </div>
@@ -560,7 +591,7 @@
             class="select-none pointer-events-none absolute left-6 -top-5 size-20 rounded-xl flex items-center justify-center ring ring-offset-0 ring-[#3BA4F0]/5"
             style="background: linear-gradient(180deg, rgba(22, 26, 41, 0) 0%, rgba(59, 164, 240, 0.15) 100%), linear-gradient(134.39deg, rgba(22, 26, 41, 0.55) 0%, rgba(22, 26, 41, 0.3685) 50%, rgba(22, 26, 41, 0.55) 100%)"
           >
-            <img src={reason.icon} class="size-5/6" />
+            <img src={reason.icon} alt={reason.title} class="size-5/6" />
           </div>
           <p class="text-xl font-bold mt-14">{reason.title}</p>
           <p class="font-medium">{reason.description}</p>
