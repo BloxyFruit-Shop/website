@@ -395,6 +395,37 @@
                           Fulfill
                         </Button>
                       </form>
+                      <form
+                        method="POST"
+                        action="?/autoFulfill"
+                        class="inline-block ml-2"
+                        use:enhance={() => {
+                          return async ({ result }) => {
+                            if (
+                              result.type === 'success' &&
+                              result.data?.success
+                            ) {
+                              toast.success(result.data.message);
+                              await invalidateAll();
+                            } else {
+                              toast.error(
+                                result.data?.message ||
+                                  'Auto-fulfillment failed'
+                              );
+                            }
+                          };
+                        }}
+                      >
+                        <input type="hidden" name="claimId" value={claim._id} />
+                        <Button
+                          variant="gradient"
+                          color="amber"
+                          size="small"
+                          type="submit"
+                        >
+                          Auto-Fulfill
+                        </Button>
+                      </form>
                     {/if}
                   </div>
                 </td>

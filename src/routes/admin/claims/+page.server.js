@@ -200,5 +200,76 @@ export const actions = {
     } catch (error) {
       return { success: false, message: error.message };
     }
+  },
+  autoFulfill: async ({ request, locals, fetch }) => {
+    const session = locals.session;
+    if (!session) {
+      throw redirect(302, '/');
+    }
+
+    const user = await users.findOne({ 'session.id': session }).lean();
+    if (!user || !user.role || user.role < roleEnums.Admin) {
+      console.warn(
+        `Unauthorized admin action attempt by user: ${user?.username || 'Unknown'}`
+      );
+      throw redirect(303, '/');
+    }
+
+    const formData = await request.formData();
+    const claimId = formData.get('claimId');
+
+    if (!claimId) {
+      return { success: false, message: 'Claim ID is missing.' };
+    }
+
+    try {
+      const claim = await robuxClaims.findOne({ _id: new ObjectId(claimId) }).lean();
+      if (!claim) {
+        return { success: false, message: 'Claim not found.' };
+      }
+      if (claim.resolved) {
+        return { success: false, message: 'Claim already resolved.' };
+      }
+
+      // Prepare data for API
+      // Assuming game.id is the placeId.
+      const placeId = parseInt(claim.game.id);
+      if (isNaN(placeId)) {
+         return { success: false, message: 'Invalid Place ID in claim data.' };
+      }
+
+      const apiResponse = await fetch('/api/integrations/rbxcrate/buy', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          orderId: claim._id.toString(),
+          robloxUsername: claim.user.username,
+          robuxAmount: claim.gamepass.price,
+          placeId: placeId
+        })
+      });
+
+      const result = await apiResponse.json();
+
+      if (result.success) {
+        await robuxClaims.updateOne(
+          { _id: new ObjectId(claimId) },
+          { 
+            $set: { 
+              resolved: true, 
+              resolvedAt: new Date(),
+              autoFulfilled: true,
+              externalOrderId: result.data?.orderId
+            } 
+          }
+        );
+        return { success: true, message: 'Auto-fulfillment initiated successfully.' };
+      } else {
+        return { success: false, message: result.message || 'Auto-fulfillment failed.' };
+      }
+    } catch (error) {
+      console.error('Auto-fulfill error:', error);
+      return { success: false, message: 'Internal server error during auto-fulfillment.' };
+    }
   }
 };
