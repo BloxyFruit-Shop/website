@@ -1,5 +1,5 @@
 import "@shopify/shopify-api/adapters/node";
-import { shopifyApi, Session } from "@shopify/shopify-api";
+import { shopifyApi, Session, ShopifyError } from "@shopify/shopify-api";
 import bcrypt from "bcrypt";
 import formData from "form-data";
 import Mailgun from "mailgun.js";
@@ -407,7 +407,7 @@ const fetchOrders = async () => {
           email: orderData.email,
           totalAmount: Number(orderData.totalPriceSet.shopMoney.amount),
           items: validOrderItems,
-          status: validOrderItems.find((item) => item.deliveryType === "manual") ? "pending" : "completed",
+          status: validOrderItems.find((item) => item.deliveryType === "manual" || item.deliveryType === "bloxypoints") ? "pending" : "completed",
           game: validOrderItems[0].game,
           createdAt: new Date(orderData.createdAt),
           updatedAt: new Date(orderData.createdAt),
@@ -416,9 +416,33 @@ const fetchOrders = async () => {
         // Auto-fulfill Bloxypoints items in Shopify
         const bloxypointsItems = validOrderItems.filter(item => item.deliveryType === 'bloxypoints');
         if (bloxypointsItems.length > 0) {
+          console.log(`[fetchOrders] Found Bloxypoints items for order ${orderId}. Waiting 60s before risk check...`);
+          
+          // 1. Wait 60 seconds
+          await new Promise(resolve => setTimeout(resolve, 60000));
+
+          // 2. Check Risk
+          const statusDetails = await getOrderStatusDetails(orderId);
+          
+          if (statusDetails?.riskLevel === 'HIGH') {
+             console.warn(`[fetchOrders] Order ${orderId} has HIGH risk. Cancelling...`);
+             await cancelOrder(orderId, "High Fraud Risk detected during automated processing.");
+             
+             // Update local order status
+             await orders.updateOne({ id: orderId }, { $set: { status: 'cancelled' } });
+             
+             // Skip further processing for this order (no points awarded)
+             continue; 
+          }
+
           const variantIds = bloxypointsItems.map(item => item.productId);
-          console.log(`[fetchOrders] Found Bloxypoints items for order ${orderId}. Triggering auto-fulfillment for variants: ${variantIds.join(', ')}`);
+          console.log(`[fetchOrders] Risk check passed for order ${orderId}. Triggering auto-fulfillment for variants: ${variantIds.join(', ')}`);
           await fulfillShopifyOrder(orderId, variantIds);
+
+          // If there are no manual items, mark the order as completed locally
+          if (!validOrderItems.find(item => item.deliveryType === 'manual')) {
+             await orders.updateOne({ id: orderId }, { $set: { status: 'completed' } });
+          }
         } else {
           console.log(`[fetchOrders] No Bloxypoints items found for order ${orderId} (checked ${validOrderItems.length} items).`);
         }
@@ -438,10 +462,11 @@ const fetchOrders = async () => {
                 const robuxAmount = item.robuxAmount || 0;
 
                 if (robuxAmount > 0) {
-                   // Artificial delay for UX/Safety
-                   await new Promise(resolve => setTimeout(resolve, 2000));
+                   // Artificial delay removed (handled globally above)
+                   // await new Promise(resolve => setTimeout(resolve, 2000));
 
                    const totalRobuxToAdd = robuxAmount * item.quantity;
+                   console.log(`[fetchOrders] Adding ${totalRobuxToAdd} robux to user ${userId} for order ${orderId}`);
                    const updatedUser = await users.findOneAndUpdate(
                      { _id: userId },
                      { $inc: { robux: totalRobuxToAdd } },
@@ -693,6 +718,122 @@ export const fetchItems = async () => {
     } catch (err) {
       console.error(`Error fetching products for ${game}:`, err);
     }
+  }
+};
+
+/**
+ * Cancels a Shopify order with a staff note, always using 'OTHER' reason and attempting a refund.
+ * @param {string|number} orderId - The numeric part of the Shopify Order ID.
+ * @param {string} staffNote - A note to add to the order cancellation for internal reference.
+ * @param {boolean} [notifyCustomer=false] - Whether to send a notification email to the customer.
+ * @param {boolean} [restock=false] - Whether to restock the items.
+ * @returns {Promise<boolean>} - True if the order was cancelled successfully, false otherwise.
+ */
+export const cancelOrder = async (
+  orderId,
+  staffNote,
+  notifyCustomer = false,
+  restock = false
+) => {
+  const client = new shopify.clients.Graphql({ session: shopifySession });
+  const shopifyOrderId = `gid://shopify/Order/${orderId}`;
+
+  const mutation = `
+    mutation orderCancel(
+        $orderId: ID!,
+        $notifyCustomer: Boolean,
+        $restock: Boolean!,
+        $refund: Boolean!,
+        $staffNote: String
+      ) {
+      orderCancel(
+          orderId: $orderId,
+          reason: OTHER,
+          notifyCustomer: $notifyCustomer,
+          restock: $restock,
+          refund: $refund,
+          staffNote: $staffNote
+      ) {
+        userErrors {
+          field
+          message
+        }
+      }
+    }`;
+
+  // Always refund
+  const refundValue = true;
+
+  try {
+    console.log(`🛍️ Attempting to cancel Order ID: ${orderId}`);
+    const response = await client.request(mutation, {
+      variables: {
+        orderId: shopifyOrderId,
+        notifyCustomer,
+        restock,
+        refund: refundValue,
+        staffNote,
+      },
+    });
+
+    const userErrors = response?.data?.orderCancel?.userErrors;
+    if (userErrors && userErrors.length > 0) {
+      if (userErrors.some(e => e.message === "Cannot cancel an order that has already been canceled")) {
+        return true; // Consider success if already cancelled
+      }
+      console.error(`🛍️ UserErrors during order cancellation for ${orderId}:`, userErrors);
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.error(`Error canceling order ${orderId}:`, error);
+    return false;
+  }
+};
+
+/**
+ * Retrieves the overall risk level, cancellation status, and financial status for a given Shopify Order ID.
+ * @param {string|number} orderId - The numeric part of the Shopify Order ID.
+ * @returns {Promise<object|null>} - An object containing riskLevel, isCancelled, and financialStatus, or null.
+ */
+export const getOrderStatusDetails = async (orderId) => {
+  const client = new shopify.clients.Graphql({ session: shopifySession });
+  const shopifyOrderId = `gid://shopify/Order/${orderId}`;
+
+  const query = `
+    query GetOrderStatusDetails($orderId: ID!) {
+      order(id: $orderId) {
+        id
+        riskLevel
+        cancelledAt
+        displayFinancialStatus
+      }
+    }`;
+
+  try {
+    const response = await client.request(query, {
+      variables: { orderId: shopifyOrderId },
+    });
+
+    if (response.errors) {
+      console.error(`🛍️ GraphQL Error fetching order status details for Order ID ${orderId}:`, response.errors);
+      return null;
+    }
+
+    const orderData = response?.data?.order;
+    if (!orderData) {
+      return null;
+    }
+
+    return {
+      riskLevel: orderData.riskLevel ?? null,
+      isCancelled: !!orderData.cancelledAt,
+      financialStatus: orderData.displayFinancialStatus ?? null,
+    };
+  } catch (error) {
+    console.error(`🛍️ Failed to get order status details for Order ID ${orderId}:`, error);
+    return null;
   }
 };
 
